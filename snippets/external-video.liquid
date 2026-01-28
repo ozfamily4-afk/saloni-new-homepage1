@@ -1,0 +1,39 @@
+{% comment %}
+  Renders autoplay video ifram
+  Accepts:
+  - video: {Ojbect} Shopify video object
+  - title: {String} Video title
+  - class?: {String} Video class
+  - params?: {String} Video parameters
+
+  Usage:
+  {%- render 'external-video', video: _video, title: 'Autoplay video' -%}
+{% endcomment %}
+
+{%- liquid
+  assign title = title | default: ''
+  assign class = class | default: 'video'
+  if autoplay
+    assign autoplay = '1'
+  endif
+  if loop
+    assign loop = '1'
+  endif
+
+  if video.type == 'youtube'
+    assign params = params | default: 'controls=1&enablejsapi=1&modestbranding=1&mute=1&muted=1&playsinline=1&rel=0' | append: '&autoplay=' | append: autoplay | append: '&loop=' | append: loop | append: '&playlist=' | append: video.id
+    assign video_url = 'https://www.youtube.com/embed/' | append: video.id | append: '?' | append: params
+  else
+    assign params = params | default: 'byline=0&controls=1&muted=1&playsinline=1&title=0&transparent=1' | append: '&autoplay=' | append: autoplay | append: '&loop=' | append: loop | append: '&playlist=' | append: video.id
+    assign video_url = 'https://player.vimeo.com/video/' | append: video.id | append: '?' | append: params
+  endif
+-%}
+
+<iframe
+  src="{{- video_url -}}"
+  allow="autoplay; encrypted-media"
+  title="{{- title -}}"
+  class="{{ class }} {% if video.type == 'youtube' %}js-youtube{% else %}js-vimeo{% endif %}"
+  loading="lazy"
+  allowfullscreen
+></iframe>

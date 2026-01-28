@@ -1,0 +1,207 @@
+{{- 'section-article.css' | asset_url | stylesheet_tag -}}
+
+<script src="{{- 'form-validation.js' | asset_url -}}" defer></script>
+
+<article class="article">
+  <header class="article__head center">
+    <div class="container container--narrow">
+      {%- if article.tags.size > 0 -%}
+        <ul class="list-unstyled caption uppercase color-subdued flex flex--center flex--justify-center">
+          {%- for tag in article.tags -%}
+            {% if tag contains 'read_time:' %}
+              {% continue %}
+            {% endif %}
+
+            <li>
+              {%- assign tag_handle = tag | handle -%}
+              <a href="{{- blog.url | append: '/tagged/' | append: tag_handle -}}" class="full-unstyled-link">
+                {% unless forloop.first %},{% endunless %} {{- tag -}}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul><!-- /.list-unstyled caption uppercase color-subdued flex flex--center flex--justify-center -->
+      {%- endif -%}
+
+      {% if article.title != blank %}
+        <h1 class="article__title">
+          {{- article.title | escape -}}
+        </h1><!-- /.article__title -->
+      {% endif %}
+    </div><!-- /.container container--narrow -->
+  </header><!-- /.article__head center -->
+
+  <div class="article__banner">
+    <div class="container">
+      {% if article.image %}
+        <div
+          class="media media--2-1 article__banner-media"
+          style="--aspect-ratio-original: {%- render 'aspect-ratio', aspect_ratio: article.image.aspect_ratio -%}%;"
+        >
+          {%-
+            liquid
+            assign image_src = article.image | image_url: width: 500
+            capture image_srcset
+              render 'srcset', image: article.image, widths: '750,1100,1500,1780,2000,3000,3840'
+            endcapture
+            assign image_alt = article.image.alt | escape
+            render 'image', src: image_src, srcset: image_srcset, sizes: 'auto', alt: image_alt, width: article.image.width, height: article.image.height, focal_point: article.image.presentation.focal_point
+          -%}
+        </div><!-- /.media -->
+      {% endif %}
+    </div><!-- /.container -->
+  </div><!-- /.article__banner -->
+
+  <div class="article__body">
+    <div class="container container--narrow">
+      <p class="article__meta flex flex--justify">
+        {%- assign article_date = 'date_formats.day_month_year' | t -%}
+        {%- assign author_name = article.author | escape -%}
+        <time datetime="{{- article.published_at -}}" class="caption color-subdued">{{- article.published_at | date: article_date -}}</time>
+
+        <span class="caption color-subdued">{{- 'blog.written_by' | t: author: author_name -}}</span>
+      </p><!-- /.article__meta flex flex--justify -->
+
+      <div class="article__rte rte">{{- article.content -}}</div><!-- /.article__rte rte -->
+    </div><!-- /.container container--narrow -->
+  </div><!-- /.article__body -->
+
+  {%- if article.comments_enabled? or section.settings.show_share_buttons -%}
+    <footer class="article__foot">
+      <div class="container container--narrow">
+        {%- if section.settings.show_share_buttons -%}
+          {%- render 'share-icons', object: article -%}
+        {%- endif -%}
+
+        {% if article.comments_enabled? %}
+          <div class="article__comments" id="comments">
+            <p class="h4 article__comments-title">
+              {{- 'article.comments.title' | t: count: article.comments_count -}}
+            </p><!-- /.h4 article__comments-title -->
+
+            {%- paginate article.comments by 8 -%}
+              {%- for comment in article.comments -%}
+                {% if comment.content != blank %}
+                  <div class="article__comment">
+                    <div class="article__comment-content">
+                      {{- comment.content -}}
+                    </div><!-- /.article__comment-content -->
+
+                    <div class="article__comment-meta right">
+                      {%- assign comment_date = 'date_formats.month_year' | t -%}
+                      <div>
+                        <strong class="caption">{{- comment.author -}}</strong>
+                      </div>
+
+                      <div>
+                        <span class="caption color-subdued">{{- comment.published_at | date: comment_date -}}</span>
+                      </div>
+                    </div><!-- /.article__comment-meta right -->
+                  </div><!-- /.article__comment -->
+                {% endif %}
+              {%- endfor -%}
+
+              {%- if paginate.pages > 1 -%}
+                <div class="article__pagination pagination pt-xxl-pb-xxl mt-xxl--large">
+                  {%- render 'pagination', paginate: paginate, anchor: '' -%}
+                </div><!-- /.article__pagination -->
+              {%- endif -%}
+            {%- endpaginate -%}
+          </div><!-- /#comments .article__comments -->
+
+          <div class="article__form">
+            <form-validation>
+              {%- form 'new_comment', article -%}
+                {%-
+                  liquid
+                  assign post_message = 'article.comments.success' | t
+                  if article.moderated? and comment.status == 'unapproved'
+                    assign post_message = 'article.comments.success_moderated' | t
+                  endif
+                -%}
+
+                <p class="h4 article__form-title">
+                  {{- 'article.comments.form.title' | t -}}
+                </p><!-- /.h4 article__form-title -->
+
+                <div class="form-row form-row--double">
+                  {%-
+                    liquid
+                    assign label = 'article.comments.form.name.label' | t | append: ' <span aria-hidden="true" class="color-red">*</span>'
+                    capture attr
+                      echo 'autocomplete="name"'
+                      echo 'aria-required="true"'
+                    endcapture
+                    if customer
+                      assign value = customer.name
+                    else
+                      assign value = form.author
+                    endif
+                    render 'text-input', id: 'CommentForm-author', label: label, value: value, attr: attr, required: true, name: 'comment[author]'
+                    assign label = nil
+                    assign attr = nil
+                    assign value = nil
+                  -%}
+
+                  {%-
+                    liquid
+                    assign label = 'article.comments.form.email.label' | t | append: ' <span aria-hidden="true" class="color-red">*</span>'
+                    capture attr
+                      echo 'autocomplete="email"'
+                      echo 'aria-required="true"'
+                      echo 'autocorrect="off"'
+                      echo 'autocapitalize="off"'
+                    endcapture
+                    if customer
+                      assign value = customer.email
+                    else
+                      assign value = form.email
+                    endif
+                    render 'text-input', type: 'email', id: 'CommentForm-email', label: label, value: value, attr: attr, required: true, name: 'comment[email]'
+                    assign label = nil
+                    assign attr = nil
+                    assign value = nil
+                  -%}
+                </div><!-- /.form-row form-row--double -->
+
+                <div class="form-row">
+                  {%-
+                    liquid
+                    assign label = 'article.comments.form.message.label' | t | append: ' <span aria-hidden="true" class="color-red">*</span>'
+                    assign attr = 'aria-required="true"'
+                    render 'textarea-input', id: 'CommentForm-body', label: label, attr: attr, required: true, name: 'comment[body]', body: form.body
+                    assign label = nil
+                    assign attr = nil
+                  -%}
+                </div><!-- /.form-row -->
+
+                {%- if form.posted_successfully? -%}
+                  <p class="caption color-subdued" role="status">{{- post_message -}}</p>
+                {%- elsif article.moderated? -%}
+                  <p class="caption color-subdued">{{- 'article.comments.form.hint' | t -}}</p>
+                {%- endif -%}
+
+                {%- assign value = 'article.comments.form.submit' | t -%}
+                {%- render 'button', type: 'submit', value: value -%}
+                {%- assign value = nil -%}
+              {%- endform -%}
+            </form-validation>
+          </div><!-- /.article__form -->
+        {% endif %}
+      </div><!-- /.container container--narrow -->
+    </footer><!-- /.article__foot -->
+  {%- endif -%}
+</article><!-- /.article -->
+
+{% schema %}
+{
+  "name": "t:sections.main-article.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_share_buttons",
+      "label": "t:sections.main-article.settings.show_share_buttons.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

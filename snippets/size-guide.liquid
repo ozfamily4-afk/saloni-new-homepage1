@@ -1,0 +1,150 @@
+{%-
+  liquid
+  assign fields = blank
+  assign size_headings = blank
+  assign size-guide-list = blank
+  assign data-size-guide-js = blank
+-%}
+
+{% for i in (1..4) %}
+  {%-
+    liquid
+    assign column_handle = 'column_' | append: i
+    assign column_name = section.settings[column_handle]
+  -%}
+
+  {% if column_name != blank %}
+    {% capture fields %}
+      {{ fields }}
+      <div class="size-guide__calculate-field">
+        <label for="{{ column_name }}">{{ column_name }}</label>
+
+        <div class="size-guide__calculate-controls">
+          <input data-field name="{{ column_handle }}" class="field__input" type="number" id="{{ column_name }}" value="0">
+          <span data-field-unit>{{ 'products.product.size_guide.cm' | t }}</span>
+        </div><!-- /.size-guide__calculate-controls -->
+      </div><!-- /.size-guide__calculate-field -->
+    {% endcapture %}
+
+    {% capture size_headings %}
+    {{ size_headings }}
+      <li>
+        <span>{{ column_name }}</span>
+      </li>
+    {% endcapture %}
+  {% endif %}
+{% endfor %}
+
+{%- for block in section.blocks -%}
+  {% if block.settings.title != blank %}
+    {% capture size-guide-list %}
+    {{ size-guide-list }}
+      <li
+        data-size="{{ block.settings.title }}"
+      >
+        <span>{{ block.settings.title }}</span>
+
+        {% for i in (1..4) %}
+          {% assign column_handle = 'column_' | append: i %}
+          {% if block.settings[column_handle] > 0 %}
+            <span data-holder-column>{{ block.settings[column_handle] }}</span>
+          {% endif %}
+        {% endfor %}
+      </li>
+    {% endcapture %}
+  {% endif %}
+
+  {%- capture data-size-guide-js -%}
+    {{- data-size-guide-js -}}
+    {%- unless forloop.first -%},{%- endunless -%}
+    {
+      "name": {{- block.settings.title | json -}},
+      "cm": {
+        {%- for i in (1..4) -%}
+          {%- assign column_block_handle = 'column_' | append: forloop.index -%}
+
+          {%- unless forloop.first -%},{%- endunless -%}
+          "{{- column_block_handle -}}": {{- block.settings[column_block_handle] | json -}}
+        {%- endfor -%}
+      },
+      "in": {
+        {%- for i in (1..4) -%}
+          {%- assign column_block_handle = 'column_' | append: forloop.index -%}
+
+          {%- unless forloop.first -%},{%- endunless -%}
+          "{{- column_block_handle -}}": {{- block.settings[column_block_handle] | times: 0.39370 | round: 1 | json -}}
+        {%- endfor -%}
+      }
+    }
+  {%- endcapture -%}
+{%- endfor -%}
+
+{% if section.blocks.size > 0 %}
+  <size-guide>
+    <div class="size-guide-content">
+      <div class="size-guide__choice">
+        {% if section.settings.heading != blank %}
+          <h4 class="caption-ffb">{{ section.settings.heading }}</h4>
+        {% endif %}
+
+        <div class="size-guide__choice-options">
+          <span data-toggle data-toggle-in>{{ 'products.product.size_guide.inch' | t }}</span>
+
+          <span data-toggle data-toggle-cm active>{{ 'products.product.size_guide.cm' | t }}</span>
+        </div><!-- /.size-guide__choice-options -->
+      </div><!-- /.size-guide__choice -->
+
+      <div class="size-guide__calculate">
+        {% if section.settings.calculator_heading != blank %}
+          <h5 class="caption-ffb">{{ section.settings.calculator_heading }}</h5>
+        {% endif %}
+
+        <div class="size-guide__calculate-options">
+          {{ fields }}
+        </div><!-- /.size-guide__calculate-options -->
+
+        <button data-button-calc class="button button--style-3 size-guide__button-calculate">{{ 'products.product.size_guide.calculate' | t }}</button>
+
+        <div data-size-result-wrapper class="size-guide__calculate-result" hidden>
+          {% if section.settings.result_text != blank %}
+            <h5 class="caption-ffb">{{ section.settings.result_text }}</h5>
+          {% endif %}
+
+          <span data-size-result class="size-guide__result-size"></span>
+        </div><!-- /.size-guide__calculate-result -->
+
+        <div data-no-result class="size-guide__calculate-no-result" hidden>
+          {% if section.settings.not_find_result != blank %}
+            <h5 class="caption-ffb">{{ section.settings.not_find_result }}</h5>
+          {% endif %}
+        </div><!-- /.size-guide__calculate-no-result -->
+      </div><!-- /.size-guide__calculate -->
+
+      <div class="size-guide__chart">
+        {% if section.settings.chart_heading != blank %}
+          <h5 class="caption-ffb">{{ section.settings.chart_heading }}</h5>
+        {% endif %}
+
+        <div class="size-guide__table">
+          <ul class="size-guide__table-head">
+            <li>
+              <span>{{ 'products.product.size_guide.size' | t }}</span>
+            </li>
+
+            {{ size_headings }}
+          </ul><!-- /.size-guide__table-head -->
+
+          <ul class="size-guide__table-body">
+            {{ size-guide-list }}
+          </ul><!-- /.size-guide__table-body -->
+        </div><!-- /.size-guide__table -->
+      </div><!-- /.size-guide__chart -->
+    </div><!-- /.size-guide-content -->
+
+    <script type="application/json" data-size-guide>
+      [
+        {{- data-size-guide-js -}}
+      ]
+    </script>
+  </size-guide>
+{% endif %}

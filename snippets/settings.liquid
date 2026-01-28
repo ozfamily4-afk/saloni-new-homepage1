@@ -1,0 +1,136 @@
+{%- style -%}
+  {%- liquid
+    assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
+    assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
+    assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+    assign colors_codes = settings.swatches_hex_codes | newline_to_br | strip_newlines | split: '<br />'
+  %}
+
+  {{ settings.type_body_font | font_face: font_display: 'swap' }}
+  {{ body_font_bold | font_face: font_display: 'swap' }}
+  {{ body_font_italic | font_face: font_display: 'swap' }}
+  {{ body_font_bold_italic | font_face: font_display: 'swap' }}
+  {{ settings.type_header_font | font_face: font_display: 'swap' }}
+
+  :root {
+    --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+    --font-body-style: {{ settings.type_body_font.style }};
+    --font-body-weight: {{ settings.type_body_font.weight }};
+
+    --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+    --font-heading-style: {{ settings.type_header_font.style }};
+    --font-heading-weight: {{ settings.type_header_font.weight }};
+
+    --font-body-scale: {{ settings.body_scale | divided_by: 100.0 }};
+    --font-body-scale-mobile: {{ settings.body_scale_mobile | divided_by: 100.0 }};
+    --font-heading-scale: {{ settings.heading_scale | times: 1.0 | divided_by: settings.body_scale }};
+    --font-heading-scale-mobile: {{ settings.heading_scale_mobile | times: 1.0 | divided_by: settings.body_scale }};
+    {% if settings.headings_uppercase %}--font-heading-uppercase: uppercase{% endif %};
+    --font-button: {% if settings.button_font == 'heading-font' %} var(--font-heading-family){% else %} var(--font-body-family){% endif %};
+    --font-weight-button: {% if settings.make_button_bold %}700{%- else -%}400{% endif %};
+    --font-cart: {% if settings.cart_headings_font == 'heading-font' %} var(--font-heading-family){% else %} var(--font-body-family){% endif %};
+
+    --color-base: {{ settings.base_color }};
+    --color-base-background: {{ settings.base_background }};
+
+    --color-border-arrows: {{ settings.color_border_arrows }};
+
+    --color-tag-base: {{ settings.color_tag_base }};
+    --color-background-tag-base: {{ settings.background_tag_base }};
+
+    --color-tag-custom: {{ settings.color_tag_custom }};
+    --color-background-tag-custom: {{ settings.background_tag_custom }};
+
+    --color-system-button: {{ settings.system_button_style_text }};
+    --color-system-button-background: {{ settings.system_button_style_background }};
+    --color-system-button-hover: {{ settings.system_button_style_hover_text }};
+    --color-system-button-hover-background: {{ settings.system_button_style_hover_background }};
+
+    --color-form-input-label: {{ settings.input_label_color }};
+    --color-form-input-border: {{ settings.input_label_border }};
+    --color-form-input-border-light: {{ settings.input_label_border_light }};
+    --color-form-input-placeholder: {{ settings.input_placeholder_color }};
+    --color-form-input-background: {{ settings.input_background_color }};
+    --color-form-errors: {{ settings.input_errors_color }};
+
+    --color-card-product-image-background: {{ settings.card_product_image_background }};
+
+    {% if settings.cart_overwrite_colors %}
+      --color-cart-background: {{ settings.cart_background }};
+      --color-cart: {{ settings.cart_color }};
+    {% endif %}
+
+    {%- for color_code in colors_codes -%}
+      --color-swatch-{{ color_code | split: '|' | first | handle }}: {{ color_code | split: '|' | last }};
+    {%- endfor -%}
+
+    --border-radius: {{ settings.style_border_radius }}px;
+    --border-radius-form-elements: {{ settings.style_border_radius_form_elements }}px;
+    --border-arrows-round: {{ settings.arrows_shape }}px;
+    --arrows-background-color: {{ settings.arrows_background_color }};
+
+    --page-width: 1412px;
+    --page-width-small: 1404px;
+    --page-width-medium: 1200px;
+
+    --duration-short: 100ms;
+    --duration-default: 200ms;
+    --duration-long: 500ms;
+
+    --z-modals: 800;
+
+    --button-min-width: 18.4rem;
+    --payment-buttons-height: 5.5rem;
+  }
+
+  @media screen and (max-width: 767px) {
+    :root {
+      --button-min-width: 16.8rem;
+    }
+  }
+
+  {%- for i in (1..4) -%}
+    {%- liquid
+      assign color_handle = 'button_style_text_' | append: i
+      assign background_handle = 'button_style_background_' | append: i
+      assign hover_color_handle = 'button_style_hover_text_' | append: i
+      assign hover_background_handle = 'button_style_hover_background_' | append: i
+    %}
+
+    .button.button--style-{{ i }} {
+      color: {{ settings[color_handle] }};
+      background-color: {{ settings[background_handle] }};
+      border-color: {{ settings[background_handle] }};
+    }
+
+    .button.button--style-{{ i }}:hover {
+      color: {{ settings[hover_color_handle] }};
+      background-color: {{ settings[hover_background_handle] }};
+      border-color: {{ settings[hover_background_handle] }};
+    }
+
+    .button.button--style-{{ i }}.button--outline:hover {
+      color: inherit;
+      background-color: transparent;
+      border-color: inherit;
+    }
+  {%- endfor -%}
+
+  {%- for color_code in colors_codes -%}
+    {%-
+      liquid
+      assign swatch_name = color_code | split: '|' | first | handle
+      assign color_image = color_code | where: '.'
+    -%}
+
+    .swatch--{{ swatch_name }} {
+      {% if color_image != blank %}
+        background-image: url({{ color_image | last | split: '|' | last | file_img_url: '36x' }});
+        {% else %}
+        color: var(--color-swatch-{{ swatch_name }});
+      {% endif %}
+    }
+  {%- endfor -%}
+{%- endstyle -%}
+
+

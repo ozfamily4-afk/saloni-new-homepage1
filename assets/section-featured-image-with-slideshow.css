@@ -1,0 +1,202 @@
+.section-featured-image-with-slideshow {
+  padding: 8rem 0;
+  background-color: var(--background);
+  color: var(--color);
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .section-featured-image-with-slideshow {
+    padding: 4rem 0;
+  }
+}
+
+.section-featured-image-with-slideshow .section__inner {
+  display: flex;
+  gap: 0 3.2rem;
+}
+
+@media (max-width: 1023px) {
+  .section-featured-image-with-slideshow .section__inner {
+    flex-direction: column;
+  }
+}
+
+.section-featured-image-with-slideshow .section__content {
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding: 1.4rem 0;
+}
+
+@media (max-width: 1023px) {
+  .section-featured-image-with-slideshow .section__content {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .section-featured-image-with-slideshow .section__content {
+    padding: 2.4rem 0 0;
+  }
+}
+
+.section-featured-image-with-slideshow .section__image-item {
+  width: 50%;
+}
+
+@media (max-width: 1023px) {
+  .section-featured-image-with-slideshow .section__image-item {
+    width: 100%;
+  }
+}
+
+.section-featured-image-with-slideshow .section__image {
+  border-radius: var(--border-radius);
+}
+
+@media (min-width: 1024px) {
+  .section-featured-image-with-slideshow .section__image {
+    height: 100%;
+    padding-bottom: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .section-featured-image-with-slideshow .section__image {
+    padding-bottom: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .section-featured-image-with-slideshow  .section__image--mobile-hidden {
+    display: none;
+  }
+}
+
+.section-featured-image-with-slideshow  .section__image--mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .section-featured-image-with-slideshow  .section__image--mobile {
+    display: block;
+  }
+}
+
+.section-featured-image-with-slideshow .section__content--flip {
+  order: -1;
+}
+
+@media (max-width: 767px) {
+  .section-featured-image-with-slideshow .section__content--flip {
+    margin-bottom: 2rem;
+  }
+}
+
+.section-featured-image-with-slideshow .section__title {
+  margin: 0 0 1.1rem;
+}
+
+.section-featured-image-with-slideshow .section__entry ul,
+.section-featured-image-with-slideshow .section__entry ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.section-featured-image-with-slideshow .section__content p {
+  margin: 0;
+}
+
+.section-featured-image-with-slideshow .section__content p + p {
+  margin-top: 1rem;
+}
+
+.section-featured-image-with-slideshow .section__actions {
+  margin-top: 3.4rem;
+}
+
+@media (max-width: 767px) {
+  .section-featured-image-with-slideshow .section__actions {
+    margin-top: 1.8rem;
+  }
+}
+
+.section-featured-image-with-slideshow .section__slider {
+  position: relative;
+  margin: 5.5rem auto 0;
+  padding: 0 8.8rem;
+}
+
+@media (max-width: 1500px) {
+  .section-featured-image-with-slideshow .section__slider {
+    padding: 0 0rem;
+    margin-top: 9.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .section-featured-image-with-slideshow .section__slider {
+    margin-top: 3.9rem;
+    padding: 0;
+  }
+}
+
+.section-featured-image-with-slideshow .section__arrows {
+  padding: 0;
+  top: 33%;
+  transform: none;
+}
+
+@media (max-width: 1500px) {
+  .section-featured-image-with-slideshow .section__arrows {
+    top: -7rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .section-featured-image-with-slideshow .section__arrows {
+    display: none;
+  }
+}
+
+.section-featured-image-with-slideshow products-carousel {
+  display: block;
+  margin: 0 auto;
+}
+
+.section-featured-image-with-slideshow .section__pagination {
+  margin-top: 2rem;
+}
+
+@media (max-width: 1023px) {
+  .section-featured-image-with-slideshow--alt .section__arrows {
+    padding: 0;
+  }
+}
+
+.section-featured-image-with-slideshow--alt .section__image-item {
+  width: 40%;
+}
+
+@media (max-width: 1023px) {
+  .section-featured-image-with-slideshow--alt .section__image-item {
+    width: 100%;
+  }
+}
+
+.section-featured-image-with-slideshow--alt .section__content {
+  max-width: 100%;
+  width: 60%;
+}
+
+@media (max-width: 1023px) {
+  .section-featured-image-with-slideshow--alt .section__content {
+    width: 100%;
+  }
+}
+
+.section-featured-image-with-slideshow--alt products-carousel {
+  max-width: 92rem;
+}

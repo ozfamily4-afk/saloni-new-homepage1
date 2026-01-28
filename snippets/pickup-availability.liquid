@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="{{ 'pickup-availability.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'pickup-availability.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+{%- assign pick_up_availabilities = product.selected_or_first_available_variant.store_availabilities -%}
+
+{%- if current_variant.available and pick_up_availabilities.size > 0 -%}
+  <modal-opener data-modal="#Pickup-Availability-Modal" class="no-js-hidden pickup-availability">
+    <button
+      type="button"
+      class="pickup-availability__button"
+      aria-haspopup="dialog"
+    >
+      {%- render 'icon-pin' -%}
+
+      <span>{{- 'products.product.pickup_availability.button_html' | t -}}</span>
+    </button>
+  </modal-opener>
+{%- endif -%}
+
+{% capture content %}
+  <div class="pickup-availability__content">
+    <h3>{{ product.title }}</h3>
+
+    {% for availability in pick_up_availabilities %}
+      <p class="pickup-availability__time">
+        {% if availability.available %}
+          {% render 'icon-tick' %} {{ 'products.product.pickup_availability.pick_up_available' | t }}, {{ availability.pick_up_time | downcase }}
+        {% else %}
+          {% render 'icon-dot' %} {{ 'products.product.pickup_availability.pick_up_unavailable' | t }}
+        {% endif %}
+      </p>
+
+      <address>
+        {%- assign address = availability.location.address -%}
+
+        {{ address | format_address | replace: '<p', '<p class="mt-0 mb-0"' }}
+
+        {%- if address.phone.size > 0 -%}
+          <p>{{ address.phone }}</p>
+        {%- endif -%}
+      </address>
+    {% endfor %}
+  </div><!-- /.pickup-availability__content -->
+{% endcapture %}
+
+{%-
+  liquid
+  assign id = 'Pickup-Availability-Modal'
+  render 'modal-dialog', content: content, id: id, modifiers: 'modal-dialog--narrow'
+-%}
+
+{%- assign address = pick_up_availabilities.location.address -%}
+<address class="pickup-availability-list__address">
+  {{ address | format_address }}
+</address>

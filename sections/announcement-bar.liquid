@@ -1,0 +1,179 @@
+
+{%- if section.blocks.size > 0 -%}
+  {{ 'component-announcement-bar.css' | asset_url | stylesheet_tag: preload: true }}
+
+  <script src="{{ 'component-announcement-bar.js' | asset_url }}" defer="defer"></script>
+
+  {% style %}
+    .announcement-bar {
+      --font: {% if settings.announcement_bar_font == 'heading-font' %} var(--font-heading-family){% else %} var(--font-body-family){% endif %};
+      --uppercase: {% if settings.announcement_bar_font == 'heading-font' and settings.headings_uppercase %}uppercase {% else %} none {% endif %};
+      --font-size-desktop: {{ section.settings.font_size }}px;
+      --font-size-mobile: {{ section.settings.font_size_mobile }}px;
+      --background-header-bar: {{ section.settings.background }};
+      --color-text-header-bar : {{ section.settings.color }};
+    }
+  {% endstyle %}
+
+  {%-
+    liquid
+    if section.settings.disable_slider_desktop
+      assign limit = 3
+    else
+      assign limit = 50
+    endif
+  -%}
+
+  <announcement-bar
+    class="announcement-bar medium hidden {% if section.settings.closing_button == 'disable' %}announcement-bar--without-close-button{% endif %}"
+    role="region"
+  >
+    {% if section.settings.closing_button == 'enable' %}
+      <div class="announcement-bar__icon-close hover-icon" close-button>
+        <button type="button" class="icon clickable-area" data-button-close aria-label="{{ 'accessibility.close' | t }}">
+          {% render 'icon-close' %}
+        </button>
+      </div><!-- /.announcement-bar__icon-close -->
+    {% endif %}
+
+    <div class="announcement-bar__container container container--fullwidth">
+      <div
+        id="slider-{{- section.id -}}"
+        class="announcement-bar__inner swiper {% if section.settings.disable_slider_desktop and section.blocks.size <= 3 %}swiper--disabled{% endif %}"
+        data-slider
+        {% if section.settings.disable_slider_desktop and section.blocks.size <= 3 %}
+          data-slider-destroy-tablet-up
+        {% endif %}
+        data-autoplay="{{- section.settings.autoplay -}}"
+        data-interval="{{- section.settings.interval | times: 1000 -}}"
+        {% if section.settings.arrows %}arrows{% endif %}
+        data-size="{{ section.blocks.size }}"
+
+      >
+        <div class="swiper-arrows announcement-bar__arrows {% unless section.settings.arrows %}hidden{% endunless %}">
+          <button class="swiper-arrow swiper-arrow--prev announcement-bar__arrow" arrow-prev aria-label="{{ 'accessibility.previous' | t }}">
+            {% render 'icon-arrow-slider' %}
+          </button>
+
+          <button
+            class="swiper-arrow swiper-arrow--next announcement-bar__arrow" arrow-next aria-label="{{ 'accessibility.next' | t }}">
+            {% render 'icon-arrow-slider' %}
+          </button>
+        </div><!-- /.swiper-arrows -->
+
+        <div class="swiper-wrapper announcement-bar__list">
+          {%- for block in section.blocks limit: limit -%}
+            {%- if block.settings.title == blank -%}
+              {%- continue -%}
+            {%- endif -%}
+
+            <div class="swiper-slide announcement-bar__content">
+              <span>
+                {{- block.settings.title -}}
+              </span>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </announcement-bar>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.announcement-bar.name",
+  "settings": [
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "t:sections.announcement-bar.settings.font_size.label",
+      "unit": "px",
+      "min": 13,
+      "max": 24,
+      "step": 1,
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "t:sections.announcement-bar.settings.font_size_mobile.label",
+      "unit": "px",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_slider_desktop",
+      "label": "t:sections.announcement-bar.settings.disable_slider_desktop.label",
+      "default": false,
+      "info": "t:sections.announcement-bar.settings.disable_slider_desktop.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrows",
+      "label": "t:sections.global.settings.arrows.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.global.settings.autoplay.label",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "interval",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "t:sections.global.settings.autoplay_interval.unit",
+      "label": "t:sections.global.settings.autoplay_interval.label",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "closing_button",
+      "label": "t:sections.announcement-bar.settings.closing_button.label",
+      "options": [
+        {
+          "value": "enable",
+          "label": "t:sections.announcement-bar.settings.closing_button.options.enable"
+        },
+        {
+          "value": "disable",
+          "label": "t:sections.announcement-bar.settings.closing_button.options.disable"
+        }
+      ],
+      "default": "enable"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "t:sections.announcement-bar.blocks.text.name",
+      "type": "text",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "t:sections.announcement-bar.blocks.text.settings.title.label",
+          "default": "Welcome to our store"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

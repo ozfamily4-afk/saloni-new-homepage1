@@ -1,0 +1,79 @@
+{% comment %}
+  Renders gift card recipient form.
+  Accepts:
+  - product: {Object} product object.
+  - form: {Object} the product form object.
+  - section: {Object} section to which this snippet belongs.
+
+  Usage:
+  {% render 'gift-card-recipient-form', product: product, form: form, section: section %}
+{% endcomment %}
+
+{{- 'gift-card-recipient-form.css' | asset_url | stylesheet_tag -}}
+<script src="{{ 'gift-card-recipient-form.js' | asset_url }}" defer="defer"></script>
+
+<gift-card-recipient-form class="gift-card-recipient-form">
+  {%-
+    liquid
+    assign id = 'Recipient-checkbox-' | append: section.id
+    assign name = 'properties[__shopify_send_gift_card_to_recipient]'
+    assign label = 'recipient.form.checkbox' | t
+  -%}
+
+  <input data-checker id='{{ id }}' name='{{ name }}' type="checkbox">
+  <label for='{{ id }}'>{{ label }}</label>
+
+  <div data-recipient-fields class="gift-card-recipient__fields">
+    <div class="gift-card-recipient__row">
+      {%-
+        liquid
+        assign id = 'Recipient-email-' | append: section.id
+        assign name = 'properties[Recipient email]'
+        assign label = 'recipient.form.email_label_optional_for_no_js_behavior' | t
+        assign placeholder = 'recipient.form.email' | t
+
+        render 'text-input', id: id, type: 'email', label: label, name: name, placeholder: placeholder, required: true, value: form.email
+      -%}
+    </div><!-- /.gift-card-recipient__row -->
+
+    <div class="gift-card-recipient__row">
+      {%-
+        liquid
+        assign id = 'Recipient-name-' | append: section.id
+        assign name = 'properties[Recipient name]'
+        assign label = 'recipient.form.name_label' | t
+        assign placeholder = 'recipient.form.name' | t
+
+        render 'text-input', id: id, type: 'text', label: label, name: name, placeholder: placeholder
+      -%}
+    </div><!-- /.gift-card-recipient__row -->
+
+    <div class="gift-card-recipient__row">
+      {%-
+        liquid
+        assign id = 'Recipient-message-' | append: section.id
+        assign name = 'properties[Message Recipient]'
+        assign label = 'recipient.form.message_label' | t
+        assign placeholder = 'recipient.form.message' | t
+
+        render 'textarea-input', id: id, type: 'text', label: label, name: name, placeholder: placeholder, body: form.message
+      -%}
+    </div><!-- /.gift-card-recipient__row -->
+
+    <div class="gift-card-recipient__row">
+      {%-
+        liquid
+        assign id = 'Recipient-send-on-' | append: section.id
+        assign name = 'properties[Send on]'
+        assign label = 'recipient.form.send_on_label' | t
+        assign placeholder = 'recipient.form.send_on' | t
+        capture attr
+          echo 'autocomplete="send_on"'
+          echo 'pattern="\d{4}-\d{2}-\d{2}"'
+        endcapture
+
+        render 'text-input', id: id, type: 'date', label: label, name: name, placeholder: placeholder, attr: attr, value: form.send_on
+      -%}
+    </div><!-- /.gift-card-recipient__row -->
+  </div><!-- /.gift-card-recipient__fields -->
+</gift-card-recipient-form><!-- /.gift-card-recipient-form -->

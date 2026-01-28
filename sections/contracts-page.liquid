@@ -1,0 +1,322 @@
+{% style %}
+  :root {
+    --brand-primary: #BCCF11;
+    --brand-dark: #8A990C;
+    --text-main: #1a1a1a;
+  }
+  
+  .contracts-wrapper * { box-sizing: border-box; margin: 0; padding: 0; }
+  .contracts-wrapper { font-family: 'Inter', sans-serif; background: #f5f5f5; color: var(--text-main); min-height: 100vh; }
+  
+  .contracts-header {
+    background: #000;
+    color: #fff;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .contracts-header h1 { font-size: 24px; font-weight: 700; }
+  .contracts-header a { color: var(--brand-primary); text-decoration: none; font-weight: 600; }
+  
+  .contracts-container { max-width: 1400px; margin: 0 auto; padding: 30px; }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  .stat-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .stat-card h3 { font-size: 12px; color: #999; text-transform: uppercase; margin-bottom: 10px; }
+  .stat-card .value { font-size: 32px; font-weight: 700; }
+  .stat-card .value.primary { color: var(--brand-primary); }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--brand-primary);
+    display: inline-block;
+  }
+  
+  .contracts-grid { display: grid; gap: 15px; }
+  
+  .contract-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .contract-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  }
+  
+  .contract-info { flex: 1; }
+  .contract-title { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+  .contract-meta { font-size: 13px; color: #666; }
+  .contract-meta span { margin-right: 15px; }
+  
+  .contract-amount { font-size: 20px; font-weight: 700; margin-right: 20px; }
+  
+  .status-badge {
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .status-saved { background: #fff3cd; color: #856404; }
+  .status-approved { background: #d4edda; color: #155724; }
+  
+  .leaderboard {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+  }
+  .leaderboard-item:last-child { border-bottom: none; }
+  .leaderboard-rank {
+    width: 40px;
+    height: 40px;
+    background: var(--brand-primary);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 15px;
+  }
+  .leaderboard-name { flex: 1; font-weight: 600; }
+  .leaderboard-stats { text-align: right; }
+  .leaderboard-count { font-size: 13px; color: #666; }
+  .leaderboard-total { font-size: 18px; font-weight: 700; color: var(--brand-dark); }
+  
+  .loading, .empty-state { text-align: center; padding: 50px; color: #999; }
+  
+  .filters { display: flex; gap: 10px; margin-bottom: 20px; }
+  .filter-btn {
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    background: #fff;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--brand-primary);
+    background: var(--brand-primary);
+    color: #000;
+  }
+{% endstyle %}
+
+<div class="contracts-wrapper">
+  <div class="contracts-header">
+    <h1>CONTRACTS</h1>
+    <a href="/cart?view=contract">+ New Contract</a>
+  </div>
+
+  <div class="contracts-container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Contracts</h3>
+        <div class="value" id="stat-total">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Approved</h3>
+        <div class="value primary" id="stat-approved">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Pending</h3>
+        <div class="value" id="stat-pending">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Revenue</h3>
+        <div class="value primary" id="stat-revenue">-</div>
+      </div>
+    </div>
+    
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="saved">Saved</button>
+      <button class="filter-btn" data-filter="approved">Approved</button>
+    </div>
+    
+    <h2 class="section-title">Recent Contracts</h2>
+    
+    <div class="contracts-grid" id="contracts-list">
+      <div class="loading">Loading contracts...</div>
+    </div>
+    
+    <div class="leaderboard">
+      <h2 class="section-title">Sales Leaderboard</h2>
+      <div id="leaderboard-list">
+        <div class="loading">Loading leaderboard...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var API_URL = "https://script.google.com/macros/s/AKfycby4Sz7ThDvADUKluKuRSFoCkudpbkhGMYsTgJxOAmX7INmSRw5ey18CtC814EArwfTiHA/exec";
+  var allContracts = [];
+  var currentFilter = "all";
+  
+  function formatMoney(amount) {
+    var num = parseFloat(amount) || 0;
+    return num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " USD";
+  }
+  
+  function formatDate(dateStr) {
+    var d = new Date(dateStr);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+  
+  function renderContracts(contracts) {
+    var list = document.getElementById("contracts-list");
+    if (!list) return;
+    
+    if (!contracts || contracts.length === 0) {
+      list.innerHTML = '<div class="empty-state"><h3>No contracts found</h3><p>Create your first contract to get started.</p></div>';
+      return;
+    }
+    
+    var filtered = currentFilter === "all" ? contracts : contracts.filter(function(c) {
+      return c.status === currentFilter;
+    });
+    
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="empty-state"><h3>No ' + currentFilter + ' contracts</h3></div>';
+      return;
+    }
+    
+    var html = filtered.map(function(c) {
+      return '<div class="contract-card">' +
+        '<div class="contract-info">' +
+          '<div class="contract-title">' + (c.customer_name || "Unknown Customer") + '</div>' +
+          '<div class="contract-meta">' +
+            '<span>' + formatDate(c.created_at) + '</span>' +
+            '<span>Rep: ' + (c.sales_rep || "-") + '</span>' +
+            '<span>ID: ' + c.id + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="contract-amount">' + formatMoney(c.total_amount) + '</div>' +
+        '<div class="status-badge status-' + c.status + '">' + c.status + '</div>' +
+      '</div>';
+    }).join("");
+    
+    list.innerHTML = html;
+  }
+  
+  function renderStats(contracts) {
+    var total = contracts.length;
+    var approved = contracts.filter(function(c) { return c.status === "approved"; }).length;
+    var pending = contracts.filter(function(c) { return c.status === "saved"; }).length;
+    var revenue = contracts.filter(function(c) { return c.status === "approved"; }).reduce(function(sum, c) {
+      return sum + (parseFloat(c.total_amount) || 0);
+    }, 0);
+    
+    var el1 = document.getElementById("stat-total");
+    var el2 = document.getElementById("stat-approved");
+    var el3 = document.getElementById("stat-pending");
+    var el4 = document.getElementById("stat-revenue");
+    
+    if(el1) el1.textContent = total;
+    if(el2) el2.textContent = approved;
+    if(el3) el3.textContent = pending;
+    if(el4) el4.textContent = formatMoney(revenue);
+  }
+  
+  function renderLeaderboard(leaderboard) {
+    var list = document.getElementById("leaderboard-list");
+    if (!list) return;
+    
+    if (!leaderboard || leaderboard.length === 0) {
+      list.innerHTML = '<div class="empty-state">No sales data yet</div>';
+      return;
+    }
+    
+    var html = leaderboard.map(function(rep, idx) {
+      return '<div class="leaderboard-item">' +
+        '<div class="leaderboard-rank">' + (idx + 1) + '</div>' +
+        '<div class="leaderboard-name">' + rep.name + '</div>' +
+        '<div class="leaderboard-stats">' +
+          '<div class="leaderboard-count">' + rep.count + ' sales</div>' +
+          '<div class="leaderboard-total">' + formatMoney(rep.total) + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+    
+    list.innerHTML = html;
+  }
+  
+  function loadData() {
+    fetch(API_URL + "?action=list")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          allContracts = data.contracts;
+          renderContracts(allContracts);
+          renderStats(allContracts);
+        }
+      })
+      .catch(function(err) {
+        console.error("Error:", err);
+        var list = document.getElementById("contracts-list");
+        if(list) list.innerHTML = '<div class="empty-state"><h3>Error loading contracts</h3></div>';
+      });
+    
+    fetch(API_URL + "?action=leaderboard")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          renderLeaderboard(data.leaderboard);
+        }
+      })
+      .catch(function(err) { console.error("Error:", err); });
+  }
+  
+  document.querySelectorAll(".filter-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      document.querySelectorAll(".filter-btn").forEach(function(b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentFilter = btn.getAttribute("data-filter");
+      renderContracts(allContracts);
+    });
+  });
+  
+  loadData();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Contracts Page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Contracts Page"
+    }
+  ]
+}
+{% endschema %}

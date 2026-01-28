@@ -1,0 +1,212 @@
+announcement-bar {
+  display: block;
+}
+
+.announcement-bar {
+  font-family: var(--font);
+  color: var(--color-text-header-bar);
+  background-color: var(--background-header-bar);
+  text-align: center;
+  padding: 1.3rem 0;
+  position: relative;
+  z-index: 6;
+}
+
+@media (max-width: 767px) {
+  .announcement-bar {
+    padding: 1rem 1.6rem;
+  }
+
+  .announcement-bar--without-close-button {
+    padding: 1rem 0;
+  }
+}
+
+.announcement-bar__icon-close {
+  position: absolute;
+  top: 50%;
+  right: 1.8rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.1rem;
+}
+
+.announcement-bar__icon-close i.icon::after {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+
+.announcement-bar__icon-close:hover svg {
+ opacity: 0.8;
+}
+
+.announcement-bar__arrow {
+  color: var(--color-text-header-bar);
+}
+
+.announcement-bar__arrow svg {
+  height: 1.2rem;
+  vertical-align: middle;
+}
+
+.announcement-bar p {
+  margin: 0;
+}
+
+.announcement-bar p a {
+  color: var(--color-text-header-bar);
+}
+
+.announcement-bar p a:hover {
+  text-decoration: none;
+}
+
+.announcement-bar__link:empty {
+  display: block;
+}
+
+.announcement-bar__link {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.announcement-bar__list {
+  align-items: center;
+}
+
+.announcement-bar__content {
+  position: relative;
+  width: 100%;
+  font-size: var(--font-size-desktop);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.announcement-bar__content span {
+  font-size: var(--font-size-desktop);
+  text-transform: var(--uppercase);
+  display: inline-block;
+  padding: 0 2rem;
+  max-width: 75%;
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .announcement-bar__content span {
+    font-size: var(--font-size-mobile);
+    max-width: 100%;
+  }
+}
+
+.announcement-bar__content a {
+  color: currentColor;
+}
+
+.announcement-bar__content a:hover {
+  text-decoration: none;
+}
+
+.announcement-bar__content p {
+  max-width: 85%;
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .announcement-bar__content {
+    font-size: var(--font-size-mobile);
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .announcement-bar__container,
+  .announcement-bar__inner.swiper--disabled.is-initialized .announcement-bar__list {
+    display: flex !important;
+    flex-flow: row wrap;
+    align-items: center;
+  }
+
+  .announcement-bar__inner,
+  .announcement-bar__inner.swiper--disabled.is-initialized .announcement-bar__content {
+    flex: 1;
+  }
+
+  .announcement-bar__menu {
+    padding-left: 2.4rem;
+  }
+
+  .announcement-bar__list {
+    display: flex;
+    align-items: center;
+  }
+
+  .announcement-bar__item:not(:only-child),
+  .announcement-bar__inner.swiper--disabled.is-initialized .announcement-bar__content {
+    padding: 0 2.4rem;
+  }
+
+  .announcement-bar__item:first-child,
+  .announcement-bar__inner.swiper--disabled.is-initialized .announcement-bar__content:first-child {
+    padding-left: 0;
+  }
+
+  .announcement-bar__item:last-child,
+  .announcement-bar__inner.swiper--disabled.is-initialized .announcement-bar__content:last-child {
+    padding-right: 0;
+  }
+
+  .announcement-bar__list-link:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (min-width: 768px) {
+  .announcement-bar__inner.swiper--disabled .announcement-bar__list{
+    transform: none !important;
+    justify-content: center;
+  }
+
+  .announcement-bar__inner.swiper--disabled .swiper-slide {
+    flex-shrink: 1;
+    width: auto !important;
+    margin-right: 0 !important;
+  }
+
+  .announcement-bar__inner.swiper--disabled .swiper-slide:nth-child(1n + 3)::before {
+    content: '•';
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  .announcement-bar__inner.swiper--disabled .swiper-slide-duplicate {
+    display: none;
+  }
+
+  .announcement-bar__inner.swiper--disabled .swiper-slide span {
+    max-width: 100%;
+    padding: 0 2.4rem;
+  }
+
+  .announcement-bar__inner.swiper--disabled .swiper-slide:nth-child(1n + 3) span {
+    margin-left: 0.8rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .announcement-bar .swiper-arrows {
+    padding: 0;
+  }
+}
+

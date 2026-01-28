@@ -1,0 +1,97 @@
+.section-products {
+  color: var(--color);
+  background-color: var(--background);
+}
+
+.section-products .section__head--center.section__head--layout-narrow {
+  max-width: 77.4rem;
+}
+
+.section-products .section__list--grid {
+  display: grid;
+  gap: 5.6rem 2.4rem;
+  grid-template-columns: repeat(var(--products-count-desktop, 5), 1fr);
+}
+
+@media (max-width: 1023px) {
+  .section-products .section__list--grid {
+    grid-template-columns: repeat(var(--products-count-tablet, 4), 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .section-products .section__list--grid {
+    grid-template-columns: repeat(var(--products-count-mobile, 2), 1fr);
+    gap: 1.6rem;
+  }
+}
+
+.section-products products-carousel {
+  display: block;
+}
+
+.section-products .section__arrows {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  width: 100%;
+}
+
+.section-products .section__arrows svg {
+  height: 2.1rem;
+}
+
+.section-products .section__list--focus {
+  align-items: baseline;
+}
+
+@media (min-width: 1024px) {
+  .section-products .section__list--focus li:nth-child(even) .media--1-2:not(.media-original) {
+    padding-bottom: 150%;
+  }
+
+  .section-products .section__list--focus li:nth-child(even) .media--2-3:not(.media-original) {
+    padding-bottom: 100%;
+  }
+
+  .section-products .section__list--focus li:nth-child(even) .media--1-1:not(.media-original) {
+    padding-bottom: 75%;
+  }
+}
+
+.section-products .section__actions {
+  text-align: center;
+  margin-top: 1.7rem;
+}
+
+@media (max-width: 767px) {
+  .section-products .section__actions {
+    margin-top: 1.3rem;
+  }
+}
+
+.section-products .section__actions--left {
+  text-align: left;
+}
+
+.section-products .section__actions--right {
+	text-align: right;
+}
+
+
+@media (max-width: 767px) {
+  .section-products .section__actions--left,
+  .section-products .section__actions--right {
+    text-align: center;
+  }
+}
+
+.section-products .card__title,
+.section-products .card__price span,
+.section-products .card__price del {
+  color: var(--color);
+}

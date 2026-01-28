@@ -1,0 +1,184 @@
+<link rel="stylesheet" href="{{ 'section-richtext.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'section-richtext.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    .section-richtext--{{ section.id }} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    }
+  </style>
+{% endif %}
+
+{%- if section.settings.pre_title != blank
+    or section.settings.title != blank
+    or section.settings.content != blank
+    or section.settings.button_label != blank and section.settings.button_link != blank -%}
+  <section class="section-richtext section-richtext--{{ section.id }} {{ section.settings.horizontal_alignment }}">
+    <div data-aos="fade-zoom-in" class="container {% if section.settings.narrow_content %}container--narrow{% endif %}">
+      <div class="section__inner section__inner--text-{{ section.settings.horizontal_alignment }}">
+        {%- if section.settings.pre_title != blank
+          or section.settings.title != blank -%}
+          <header class="section__head">
+            {%- if section.settings.pre_title -%}
+              <p class="section__pre-title uppercase">
+                {{- section.settings.pre_title | escape -}}
+              </p><!-- /.section__pre-title -->
+            {%- endif -%}
+
+            {%- if section.settings.title -%}
+              <div class="section__title {{ section.settings.heading_size }}">
+                {{- section.settings.title -}}
+              </div><!-- /.section__title -->
+            {%- endif -%}
+          </header><!-- /.section__head -->
+        {%- endif -%}
+
+        <div class="section__content">
+          {%- if section.settings.content != blank -%}
+            <div class="section__entry">
+              {{- section.settings.content -}}
+            </div><!-- /.section__entry -->
+          {%- endif -%}
+
+          {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+            <div class="section__actions">
+              <a href="{{ section.settings.button_link }}" class="button {{ section.settings.button_style }}">{{ section.settings.button_label }}</a>
+            </div><!-- /.section__actions -->
+          {%- endif -%}
+        </div><!-- /.section__content -->
+      </div><!-- /.section__inner -->
+    </div><!-- /.container -->
+  </section><!-- /.section-richtext -->
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.richtext.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.text_content"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow_content",
+      "label": "t:sections.richtext.settings.narrow_content.label"
+    },
+    {
+      "type": "text_alignment",
+      "id": "horizontal_alignment",
+      "label": "t:sections.global.settings.horizontal_alignment.label",
+      "default": "center"
+    },
+    {
+      "type": "text",
+      "id": "pre_title",
+      "label": "t:sections.global.settings.subheading.label",
+      "default": "Tell your story"
+    },
+    {
+      "type": "richtext",
+      "id": "title",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "<p>Talk about your brand</p>"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:sections.global.settings.description.label",
+      "default": "<p>Use this text to share information</p>"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.global.settings.button_label.label",
+      "default": "Link text"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.global.settings.button_link.label",
+      "default": "/"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.global.settings.button_style.label",
+      "options": [
+        {
+          "value": "button--style-1",
+          "label": "t:sections.global.settings.button_style.options.style_one"
+        },
+        {
+          "value": "button--style-2",
+          "label": "t:sections.global.settings.button_style.options.style_two"
+        },
+        {
+          "value": "button--style-3",
+          "label": "t:sections.global.settings.button_style.options.style_three"
+        },
+        {
+          "value": "button--style-4",
+          "label": "t:sections.global.settings.button_style.options.style_four"
+        }
+      ],
+      "default": "button--style-2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.richtext.name"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

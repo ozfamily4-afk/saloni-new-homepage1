@@ -1,0 +1,377 @@
+{% schema %}
+{
+  "name": "Sticky Hero Slider Pro",
+  "class": "section-sticky-hero",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "⚠️ ÖNEMLİ: Bu slider 'Sticky' (Yapışkan) efektine sahiptir. Efektin çalışması için bu bölümden hemen sonra gelen bölümün bir ARKA PLAN RENGİ (Background Color) olmalıdır. Şeffaf olmamalıdır."
+    },
+    {
+      "type": "range",
+      "id": "slide_duration",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Resim Geçiş Süresi",
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slayt (Video/Resim)",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Medya Ayarları"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video Yükle (Varsa görsel yerine bu görünür)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Masaüstü Görseli"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Mobil Görseli"
+        },
+        {
+          "type": "header",
+          "content": "Yazı ve Renkler"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Yazı Rengi",
+          "default": "#ffffff"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Ürün Adı",
+          "default": "OLAF"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Kategori",
+          "default": "Armchair"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Buton Yazısı",
+          "default": "Discover"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sticky Hero Slider Pro",
+      "blocks": [
+        {"type": "slide"},
+        {"type": "slide"}
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<div class="saloni-sticky-wrapper">
+  
+  <div class="saloni-hero-container" data-image-duration="{{ section.settings.slide_duration | times: 1000 }}">
+    
+    {% for block in section.blocks %}
+      <div class="saloni-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" style="color: {{ block.settings.text_color }};">
+        
+        {% comment %} --- MEDYA (VIDEO veya GÖRSEL) --- {% endcomment %}
+        <div class="saloni-media-wrapper">
+          <a href="{{ block.settings.link }}" class="media-link">
+            
+            {% if block.settings.video != blank %}
+              {{ block.settings.video | video_tag: autoplay: false, loop: false, muted: true, playsinline: true, class: 'hero-media hero-video', controls: false }}
+            {% else %}
+              <picture>
+                {% if block.settings.mobile_image %}
+                  <source media="(max-width: 767px)" srcset="{{ block.settings.mobile_image | image_url: width: 800 }}">
+                {% endif %}
+                <img 
+                  src="{{ block.settings.image | image_url: width: 2000 }}" 
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                  alt="{{ block.settings.title | escape }}"
+                  class="hero-media hero-img"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                >
+              </picture>
+            {% endif %}
+          </a>
+        </div>
+
+        {% comment %} --- SOL ALT (Başlıklar) --- {% endcomment %}
+        <div class="saloni-info-left">
+          <h2 class="hero-title">{{ block.settings.title }}</h2>
+          <p class="hero-subtitle">{{ block.settings.subtitle }}</p>
+        </div>
+
+        {% comment %} --- SAĞ ALT (Discover) --- {% endcomment %}
+        <div class="saloni-info-right">
+          <a href="{{ block.settings.link }}" class="hero-discover" style="color: {{ block.settings.text_color }}; border-color: {{ block.settings.text_color }};">
+            {{ block.settings.btn_text }} <span class="arrow-icon">→</span>
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+
+    {% comment %} --- NAVİGASYON --- {% endcomment %}
+    <button class="nav-btn prev-btn">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="nav-btn next-btn">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+
+    {% comment %} --- ORTA ALT (Scroll) --- {% endcomment %}
+    <div class="scroll-indicator" onclick="window.scrollBy({top: window.innerHeight, behavior: 'smooth'})">
+      <span class="scroll-text">SCROLL</span>
+      <span class="scroll-arrow">↓</span>
+    </div>
+
+  </div>
+  </div>
+<style>
+  /* --- YENİ EKLENEN STICKY CSS --- */
+  .saloni-sticky-wrapper {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 0; /* Altta kalması için 0 veya 1 */
+  }
+
+  /* --- SENİN ORİJİNAL CSS KODLARIN --- */
+  .saloni-hero-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .saloni-slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), visibility 1s;
+    z-index: 1;
+  }
+
+  .saloni-slide.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 2;
+  }
+
+  /* --- MEDYA --- */
+  .saloni-media-wrapper, .media-link {
+    width: 100%; height: 100%; display: block;
+  }
+
+  .hero-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* --- SOL ALT --- */
+  .saloni-info-left {
+    position: absolute;
+    bottom: 80px;
+    left: 80px;
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  .hero-title {
+    font-size: 5rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s;
+    text-transform: uppercase;
+  }
+
+  .hero-subtitle {
+    font-size: 1.8rem;
+    font-weight: 300;
+    margin: 10px 0 0;
+    letter-spacing: 1px;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.5s 0.1s;
+  }
+
+  .saloni-slide.active .hero-title,
+  .saloni-slide.active .hero-subtitle {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* --- SAĞ ALT --- */
+  .saloni-info-right {
+    position: absolute;
+    bottom: 80px;
+    right: 80px;
+    z-index: 10;
+  }
+
+  .hero-discover {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: opacity 0.3s;
+  }
+  
+  .hero-discover:hover { opacity: 0.7; }
+
+  /* --- ORTA ALT --- */
+  .scroll-indicator {
+    position: absolute; bottom: 30px; left: 50%;
+    transform: translateX(-50%); z-index: 20;
+    text-align: center; cursor: pointer;
+    color: inherit; opacity: 0.6;
+    animation: bounce 2s infinite;
+  }
+  .scroll-text { display: block; font-size: 11px; letter-spacing: 3px; margin-bottom: 5px; }
+  .scroll-arrow { font-size: 20px; }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
+    40% {transform: translateX(-50%) translateY(-6px);}
+    60% {transform: translateX(-50%) translateY(-3px);}
+  }
+
+  /* --- NAVİGASYON --- */
+  .nav-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: transparent; border: none; cursor: pointer; z-index: 20;
+    padding: 20px; opacity: 0.4; transition: opacity 0.3s;
+    color: inherit;
+  }
+  .nav-btn:hover { opacity: 1; }
+  .prev-btn { left: 20px; }
+  .next-btn { right: 20px; }
+
+  @media (max-width: 768px) {
+    .hero-title { font-size: 3rem; }
+    .hero-subtitle { font-size: 1.2rem; }
+    .saloni-info-left { left: 30px; bottom: 100px; }
+    .saloni-info-right { right: 30px; bottom: 40px; }
+    .nav-btn { display: none; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Burada "sticky-wrapper" içindeki container'ı seçiyoruz
+    const container = document.querySelector('.saloni-sticky-wrapper .saloni-hero-container');
+    if(!container) return; // Hata önleme
+
+    const slides = container.querySelectorAll('.saloni-slide');
+    const prevBtn = container.querySelector('.prev-btn');
+    const nextBtn = container.querySelector('.next-btn');
+    const scrollInd = container.querySelector('.scroll-indicator');
+    
+    // Panelden gelen resim süresi
+    const imageDuration = parseInt(container.dataset.imageDuration) || 5000;
+    
+    let currentIndex = 0;
+    let timer = null;
+
+    function clearAutoSlide() {
+      if (timer) clearTimeout(timer);
+      slides.forEach(slide => {
+        const vid = slide.querySelector('video');
+        if (vid) {
+          vid.removeEventListener('ended', handleVideoEnd);
+          vid.pause();
+          vid.currentTime = 0; 
+        }
+      });
+    }
+
+    function handleVideoEnd() {
+      nextSlide();
+    }
+
+    function scheduleNextSlide() {
+      const activeSlide = slides[currentIndex];
+      const video = activeSlide.querySelector('video');
+
+      if (video) {
+        // Video varsa
+        video.play().catch(e => console.log('Oynatma hatası:', e));
+        video.addEventListener('ended', handleVideoEnd);
+      } else {
+        // Resim varsa
+        timer = setTimeout(nextSlide, imageDuration);
+      }
+    }
+
+    function updateSlideVisuals() {
+      slides.forEach((slide, idx) => {
+        if(idx === currentIndex) {
+          slide.classList.add('active');
+          const color = slide.style.color;
+          if(prevBtn) prevBtn.style.color = color;
+          if(nextBtn) nextBtn.style.color = color;
+          if(scrollInd) scrollInd.style.color = color;
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+    }
+
+    function goToSlide(index) {
+      clearAutoSlide(); 
+      currentIndex = (index + slides.length) % slides.length;
+      updateSlideVisuals();
+      scheduleNextSlide(); 
+    }
+
+    function nextSlide() { goToSlide(currentIndex + 1); }
+    function prevSlide() { goToSlide(currentIndex - 1); }
+
+    if(nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if(prevBtn) prevBtn.addEventListener('click', prevSlide);
+
+    updateSlideVisuals();
+    scheduleNextSlide();
+  });
+</script>

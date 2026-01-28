@@ -1,0 +1,128 @@
+cookie-banner {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0.7rem 0;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  z-index: var(--z-modals);
+  visibility: hidden;
+  opacity: 0;
+  will-change: visibility, opacity;
+  transition: opacity var(--duration-default), visibility var(--duration-default);
+}
+
+@media screen and (max-width: 767px) {
+  cookie-banner {
+    text-align: center;
+    padding: 2rem 0;
+  }
+}
+
+cookie-banner.is-visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.cookie-banner__inner {
+  gap: 1rem;
+}
+
+cookie-banner:not(.cookie-banner--left),
+cookie-banner:not(.cookie-banner--right) {
+  flex-wrap: nowrap;
+}
+
+@media screen and (max-width: 767px) {
+  .cookie-banner__inner {
+    display: block;
+  }
+}
+
+.cookie-banner__text {
+  font-size: 1.4rem;
+}
+
+.cookie-banner__text p {
+  margin: 0;
+}
+
+.cookie-banner__button {
+  min-width: auto;
+  padding-inline: 4rem;
+  height: 3.5rem;
+}
+
+.cookie-banner__close {
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+@media (hover: hover) {
+  .cookie-banner__close:hover {
+    text-decoration: underline;
+  }
+}
+
+.cookie-banner__actions {
+  column-gap: 2rem;
+  flex-wrap: nowrap;
+  text-transform: uppercase;
+}
+
+@media screen and (max-width: 767px) {
+  .cookie-banner__actions {
+    padding-top: 1rem;
+    justify-content: center;
+  }
+}
+
+.cookie-banner--left,
+.cookie-banner--right {
+  max-width: 31rem;
+  padding: 3rem 0;
+}
+
+@media (max-width: 480px) {
+  .cookie-banner--left,
+  .cookie-banner--right {
+    max-width: 100%;
+    padding: 2rem 0;
+  }
+}
+
+.cookie-banner--left .cookie-banner__container,
+.cookie-banner--right .cookie-banner__container {
+  padding: 0 3rem;
+}
+
+@media (max-width: 767px) {
+  .cookie-banner--left .cookie-banner__container,
+  .cookie-banner--right .cookie-banner__container {
+    padding: 0 1.6rem;
+  }
+}
+
+.cookie-banner--right {
+  left: unset;
+  right: 0;
+}
+
+.cookie-banner--left .cookie-banner__text,
+.cookie-banner--right .cookie-banner__text {
+  margin-bottom: 1rem;
+}
+
+.cookie-banner--full-width .cookie-banner__text {
+  max-width: 69%;
+}
+
+@media (max-width: 767px) {
+  .cookie-banner--full-width .cookie-banner__text {
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
+}

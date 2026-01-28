@@ -1,0 +1,61 @@
+{%- capture socials -%}
+facebook,
+twitter,
+instagram,
+pinterest,
+snapchat,
+tiktok,
+tumblr,
+linkedin,
+youtube,
+vimeo
+{%- endcapture -%}
+
+{%-
+  liquid
+  assign socials = socials | strip_newlines | split: ','
+-%}
+
+{%- capture socials_html -%}
+  {%- for social in socials -%}
+    {%- assign social_link = 'social_' | append: social | append: '_link' -%}
+
+    {%- if settings[social_link] != blank -%}
+      <li>
+        <a href="{{- settings[social_link] -}}" target="_blank" aria-label="{{ social }}">
+          {%-
+            liquid
+            case social
+              when 'facebook'
+                render 'icon-facebook'
+              when 'twitter'
+                render 'icon-twitter'
+              when 'pinterest'
+                render 'icon-pinterest'
+              when 'instagram'
+                render 'icon-instagram'
+              when 'snapchat'
+                render 'icon-snapchat'
+              when 'tiktok'
+                render 'icon-tiktok'
+              when 'tumblr'
+                render 'icon-tumblr'
+              when 'linkedin'
+                render 'icon-linkedin'
+              when 'youtube'
+                render 'icon-youtube'
+              when 'vimeo'
+                render 'icon-vimeo'
+            endcase
+          -%}
+        </a>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if socials_html -%}
+  <ul class="list-unstyled {{ class }}" role="list">
+    {{- socials_html -}}
+  </ul>
+{%- endif -%}

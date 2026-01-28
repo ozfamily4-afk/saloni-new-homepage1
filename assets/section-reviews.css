@@ -1,0 +1,123 @@
+.section-reviews {
+  background-color: var(--background);
+  color: var(--color);
+}
+
+.section-reviews .section__head--center.section__head--layout-narrow {
+  max-width: 77.4rem;
+}
+
+@media (max-width: 767px) {
+  .section-reviews .section__head.section__head--with-arrow {
+    padding: 0;
+  }
+
+  .section-reviews .section__arrows {
+    display: none;
+  }
+}
+
+.section-reviews .section__body {
+  margin: 0 auto;
+}
+
+.section-reviews slider-reviews {
+  display: block;
+}
+
+.section-reviews .section__list {
+  align-items: unset;
+}
+
+@media (max-width: 767px) {
+  .section-reviews .section__list li {
+    text-align: center;
+  }
+}
+
+.section-reviews .section__list--style-card .section__review {
+  padding: 4rem;
+  border: 1px solid var(--testimonial-border);
+  border-radius: var(--border-radius);
+  background-color: var(--testimonial-background);
+}
+
+.section-reviews .section__review-stars {
+  color: var(--stars-color);
+}
+
+.section-reviews .section__review-stars i + i {
+  margin-left: 0.4rem;
+}
+
+.section-reviews .section__review-title {
+  line-height: 1.13;
+  margin: 1.6rem 0 0;
+}
+
+.section-reviews blockquote {
+  font-weight: 400;
+  font-style: normal;
+  margin: 0;
+  padding: 0;
+  border: none;
+  margin: 2.4rem 0 2rem;
+}
+
+@media (max-width: 767px) {
+  .section-reviews blockquote {
+    margin: 2.1rem 0;
+  }
+}
+
+.section-reviews blockquote p {
+  margin: 0;
+}
+
+.section-reviews blockquote li a {
+  text-decoration: underline;
+}
+
+.section-reviews blockquote li a:hover {
+  text-decoration: none;
+}
+
+.section__review-author-inner {
+  text-wrap: nowrap;
+}
+
+.section__list--style-card .section__review-author-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.8rem;
+}
+
+.section-reviews.center .section__list--style-card .section__review-author-inner {
+  justify-content: center;
+}
+
+.section-reviews.right .section__list--style-card .section__review-author-inner {
+  justify-content: flex-end;
+}
+
+.section-reviews .section__review-author {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.section-reviews .section__review-addition {
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.section-reviews .section__pagination {
+  margin-top: 5.4rem;
+}
+
+@media (max-width: 767px) {
+  .section-reviews .section__pagination {
+    margin-top: 2.1rem;
+  }
+}

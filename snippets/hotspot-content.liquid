@@ -1,0 +1,34 @@
+{%- comment -%}
+  Example:
+  {% render 'hotspot-content', id: section.id | append: '-' | append: forloop.index %}
+
+  Accepts:
+  - id {String} Use for mobile content binds the button hotspot to the content popover
+  - block {Object} Contains the hotspot options
+{%- endcomment -%}
+
+{% if block.product != blank %}
+  <div {% if id != blank %}id="hotspot-content-{{ id }}"{% endif %} class="hotspot__content">
+    <button type="button" data-button-close class="hotspot__close-button clickable-area">{% render 'icon-close' %}</button>
+
+      <a href="{{ block.product.url }}" class="hotspot__inner">
+        {%-
+          liquid
+          assign image = block.product.featured_image
+          assign image_src = image | image_url: width: 150
+          capture image_srcset
+            render 'srcset', image: image
+          endcapture
+          assign image_alt = image.alt | escape
+
+          render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+        -%}
+
+        <div class="hotspot__entry">
+          <h6 class="caption-ffb" style="--font-title: {% if settings.card_product_heading_font == 'heading-font' %} var(--font-heading-family){% else %} var(--font-body-family){% endif %};">{{ block.product.title }}</h6>
+
+          <ins>{{ block.product.price | money_without_trailing_zeros }}</ins>
+        </div><!-- /.hotspot__entry -->
+      </a><!-- /.hotspot__inner -->
+  </div><!-- /.hotspot__content -->
+{% endif %}

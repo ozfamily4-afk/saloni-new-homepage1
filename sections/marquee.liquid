@@ -1,0 +1,195 @@
+{% schema %}
+{
+  "name": "Saloni Clean Marquee",
+  "class": "section-marquee-clean",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Outline/Text Color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "hover_fill_color",
+      "label": "Hover Fill Color",
+      "default": "#BCCF12"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 20,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "label": "Font Size",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 5,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "label": "Animation Speed",
+      "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Location",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Location Name",
+          "default": "VIENNA"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Saloni Clean Marquee",
+      "blocks": [
+        { "type": "text", "settings": { "text": "VIENNA" } },
+        { "type": "text", "settings": { "text": "FAIRFAX" } },
+        { "type": "text", "settings": { "text": "BRAMBLETON" } },
+        { "type": "text", "settings": { "text": "RESTON" } },
+        { "type": "text", "settings": { "text": "LEESBURG" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<div class="clean-marquee-section">
+  <div class="clean-marquee-wrapper">
+    <div class="clean-marquee-track">
+      {% for block in section.blocks %}
+        <div class="clean-marquee-item">
+          <span class="clean-text">{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+      
+      {% for block in section.blocks %}
+        <div class="clean-marquee-item">
+          <span class="clean-text">{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+      {% for block in section.blocks %}
+        <div class="clean-marquee-item">
+          <span class="clean-text">{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="clean-marquee-track" aria-hidden="true">
+      {% for block in section.blocks %}
+        <div class="clean-marquee-item">
+          <span class="clean-text">{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+      {% for block in section.blocks %}
+        <div class="clean-marquee-item">
+          <span class="clean-text">{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+      {% for block in section.blocks %}
+        <div class="clean-marquee-item">
+          <span class="clean-text">{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Aynı Lüks Fontu Kullanıyoruz */
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap');
+
+  .clean-marquee-section {
+    background-color: {{ section.settings.bg_color }};
+    padding: 30px 0;
+    overflow: hidden;
+    /* Çok hafif gri çizgiler - Siyah zemindeki beyaz çizgilerin yerini aldı */
+    border-top: 1px solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    width: 100%;
+  }
+
+  .clean-marquee-wrapper {
+    display: flex;
+    overflow: hidden;
+    user-select: none;
+    width: 100%;
+  }
+
+  .clean-marquee-track {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 100%;
+    animation: clean-scroll {{ section.settings.speed }}s linear infinite;
+  }
+
+  @keyframes clean-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+
+  .clean-marquee-item {
+    display: flex;
+    align-items: center;
+    /* Ayraç olmadığı için boşluğu biraz daha net verelim */
+    padding-right: 8vw; 
+  }
+
+  .clean-text {
+    font-family: 'Cinzel', serif; 
+    font-size: {{ section.settings.font_size }}px;
+    line-height: 1;
+    font-weight: 500; /* Beyaz zeminde biraz daha belirgin olması için medium */
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    
+    /* Hollow Text - Siyah Çizgili */
+    color: transparent;
+    -webkit-text-stroke: 1px {{ section.settings.text_color }};
+    
+    transition: all 0.4s ease;
+    cursor: default;
+    position: relative;
+  }
+
+  /* Hover Efekti: İçi Sarı Doluyor */
+  .clean-marquee-section:hover .clean-text {
+    color: {{ section.settings.hover_fill_color }};
+    -webkit-text-stroke: 0; /* Çizgiyi kaldır */
+    /* Beyaz zeminde okunabilirlik için çok hafif gölge */
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1); 
+  }
+  
+  /* Hover'da akışı durdur */
+  .clean-marquee-section:hover .clean-marquee-track {
+    animation-play-state: paused;
+  }
+
+  @media screen and (max-width: 768px) {
+    .clean-marquee-section { padding: 20px 0; }
+    .clean-text {
+      font-size: 42px; /* Mobilde ideal boyut */
+      -webkit-text-stroke: 0.5px {{ section.settings.text_color }};
+    }
+    .clean-marquee-item { padding-right: 12vw; }
+  }
+</style>

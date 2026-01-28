@@ -1,0 +1,44 @@
+{% if image %}
+  <div class="menu__card">
+    {% if link != blank %}
+      <a aria-label="{{ title }}" href="{{ link }}">
+    {% endif %}
+
+    <div class="menu__card-image media media--1-2">
+      {%-
+        liquid
+        assign image_src = image | image_url: width: 500
+        capture image_srcset
+          render 'srcset', image: image, widths: '750,1100,1500,1780,2000,3000,3840'
+        endcapture
+        assign image_alt = image.alt | escape
+
+        render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+      -%}
+    </div><!-- /.menu__card-image -->
+
+    {% if link != blank %}
+      </a>
+    {% endif %}
+
+    {% if title != blank %}
+      <div class="menu__card-content">
+        <h5 class="menu__card-title caption-ffb">
+          {% if link != blank %}
+            <a aria-label="{{ title }}" href="{{ link }}">
+          {% endif %}
+            {{ title }}
+          {% if link != blank %}
+            </a>
+          {% endif %}
+        </h5><!-- /.menu__card-title -->
+
+        {% if subtitle != blank %}
+          <h6 class="menu__card-subtitle caption-ffb">
+            {{ subtitle }}
+          </h6><!-- /.menu__card-subtitle -->
+        {% endif %}
+      </div><!-- /.menu__card-content -->
+    {% endif %}
+  </div><!-- /.menu__card -->
+{% endif %}

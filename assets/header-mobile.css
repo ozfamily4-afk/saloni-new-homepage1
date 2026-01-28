@@ -1,0 +1,243 @@
+header-mobile-drawer {
+  display: block;
+}
+
+.header-mobile {
+  display: none;
+  user-select: none;
+}
+
+@media (max-width: 1023px) {
+  .header-mobile {
+    display: block;
+  }
+}
+
+@media (max-width: 767px) {
+  .header-mobile {
+    padding: 0 0.4rem;
+  }
+}
+
+.header-mobile.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+button[type="button"].header-mobile__button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 0.5rem 0;
+}
+
+.header-mobile__button svg:nth-child(2) {
+  display: none;
+  transform: scale(1.5);
+}
+
+header-mobile-drawer[active] .header-mobile__button svg:nth-child(1) {
+  display: none;
+}
+
+header-mobile-drawer[active] .header-mobile__button svg:nth-child(2) {
+  display: block;
+}
+
+.header-mobile .header-mobile__nav {
+  position: fixed;
+  top: 9.8rem;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--background-header, var(--color-base-background));
+  transform: translateX(-100%);
+  transition: transform var(--duration-default);
+}
+
+.header-mobile .header-mobile__nav.active {
+  transform: translateX(0%);
+  opacity: 1;
+}
+
+.header-mobile .header-mobile__nav .header-mobile__list {
+  padding: 0 1rem;
+}
+
+.header-mobile .header-mobile__nav .header-mobile__list.is-current {
+  overflow: hidden auto;
+  overscroll-behavior: none;
+}
+
+.header-mobile .header-mobile__nav .header-mobile__list.header__mobile-level-one {
+  font-family: var(--font-navigation);
+  text-transform: var(--uppercase);
+  height: calc(100% - 80px);
+}
+
+.header__mobile-level-one.active-two {
+  transform: translateX(-100%);
+}
+
+.header__mobile-level-one.active-three {
+  transform: translateX(-200%);
+}
+
+.header-mobile .header-mobile__nav li {
+  line-height: 1;
+  border-bottom: 1px solid var(--color-header-border);
+  padding: 2.73rem 0.9rem;
+  cursor: pointer;
+}
+
+.header-mobile .header-mobile__list a,
+.header-mobile .header__mobile-back button[type="button"] {
+  font-size: inherit;
+  position: relative;
+  display: block;
+  line-height: 1;
+  color: var(--color-header);
+}
+
+.header-mobile .header-mobile__nav li a span:hover {
+  text-decoration: underline;
+  display: inline-block;
+}
+
+.header-mobile .header__mobile-arrow {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  fill: currentColor;
+  width: 4.4rem;
+  height: 4.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-mobile .header-mobile__nav .header__mobile-back {
+  position: relative;
+  padding-left: 2.8rem;
+  margin-left: 1.1rem;
+}
+
+.header-mobile .header__mobile-icon-back {
+  right: unset;
+  left: 0;
+  transform: translateY(-50%) rotate(180deg);
+  width: auto;
+  height: auto;
+}
+
+.header__mobile-level-two,
+.header__mobile-level-three {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  left: 0;
+  right: 0;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.header-mobile .header-mobile__list > li > ul li + li {
+  margin-left: 3rem;
+  margin-right: 1rem;
+  padding-right: 0;
+}
+
+.header-mobile .header-mobile__list li.header__mobile-is-item-card {
+  margin: 0;
+  padding: 2.73rem 0.9rem;
+}
+
+.header-mobile li.open > ul {
+  opacity: 1;
+  pointer-events: auto;
+  height: 100%;
+}
+
+.header-mobile a.header__mobile-account {
+  display: inline-block;
+}
+
+.header-mobile .header__mobile-account-icon {
+  margin-left: 1rem;
+}
+
+.header-mobile .header-mobile__currency ul {
+  display: none;
+  position: static;
+  opacity: 1;
+  transform: none;
+}
+
+.header-mobile .header-mobile__currency li {
+  padding-left: 4rem;
+}
+
+.header-mobile .header-mobile__currency li:last-child {
+  border: none;
+  padding-bottom: 0;
+}
+
+.header-mobile li:hover .header-mobile__currency a {
+  text-decoration: none;
+}
+
+.header-mobile .header-mobile__currency nav {
+  margin: 0;
+}
+
+.header-mobile .header-mobile__currency nav > a {
+  display: inline-block;
+}
+
+.header-mobile .header-mobile__currency nav > a::after {
+  display: none;
+}
+
+.header-mobile .header-mobile__currency label:hover {
+  text-decoration: underline;
+}
+
+.header-mobile_link_counter {
+  position: relative;
+  top: -0.7rem;
+  color: var(--color-products-counter, var(--color-base-background));
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.header-mobile_link_counter:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--background-products-counter);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.header-mobile__search .header-mobile__predictive-search {
+  position: static;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.header-mobile__search .header-mobile__predictive-search input[type="search"] {
+  border-color: red;
+  border-color: var(--color-header-border)
+}
+
+.header-mobile__search button[data-button-close] {
+  opacity: 0;
+  pointer-events: none;
+}

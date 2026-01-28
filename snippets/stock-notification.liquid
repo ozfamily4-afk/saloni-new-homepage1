@@ -1,0 +1,21 @@
+<div data-purchase-options-notification class="product__stock-notification" id="Product-Stock-Notification-{{ section.id }}">
+  {%- if
+    current_variant.inventory_management != nil
+    and current_variant.inventory_policy != 'continue'
+    and current_variant.inventory_quantity <= block.threshold
+  -%}
+    {%- if current_variant.inventory_quantity <= 0 and current_variant.available -%}
+    {%- elsif current_variant.inventory_quantity != 0 -%}
+      <p class="product__stock-notification-text">
+        <span class="product__stock-notification-icon">{% render 'icon-box' %}</span>
+        {{- 'products.product.stock_notification' | t: inventory: current_variant.inventory_quantity -}}
+      </p><!-- /.product__stock-notification-text -->
+
+      <div class="progress-bar">
+        <div class="progress-bar__progress">
+          <span class="progress-bar__progress-inner" style="width: {{ current_variant.inventory_quantity | times: 100.0 | divided_by: block.threshold }}%;"></span><!-- /.progress-bar__progress-inner -->
+        </div><!-- /.progress-bar__progress -->
+      </div><!-- /.progress-bar -->
+    {%- endif -%}
+  {%- endif -%}
+</div><!-- /.product__stock-notification -->

@@ -1,0 +1,64 @@
+.card-featured .card__image {
+  border-radius: var(--border-radius);
+}
+
+.card-featured .card__image-mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .card-featured .card__image-mobile {
+    display: block;
+  }
+
+  .card-featured .card__image-hidden-mobile {
+    display: none;
+  }
+}
+
+.card-featured .card__content {
+  padding: 2.4rem 0;
+}
+
+@media (max-width: 767px) {
+  .card-featured .card__content {
+    padding: 2.4rem 0 1.5rem;
+    text-align: center;
+  }
+}
+
+.card-featured .card__title {
+  font-family: var(--cards-heading-font);
+  margin: 0 0 1rem;
+}
+
+.card-featured .card__content--center {
+  text-align: center;
+}
+
+.card-featured .card__content--right {
+  text-align: right;
+}
+
+.card-featured .card__entry {
+  opacity: 0.7;
+}
+
+.card-featured .card__entry-price {
+  margin-top: 1rem;
+}
+
+.card-featured .card__actions {
+  margin-top: 2.4rem;
+}
+
+.card-featured--small {
+  max-width: 50%;
+  margin: auto;
+}
+
+@media (max-width: 767px) {
+  .card-featured--small {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,7 @@
+<link rel="stylesheet" href="{{ 'spinner.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'spinner.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<div hidden id="spinner"></div>

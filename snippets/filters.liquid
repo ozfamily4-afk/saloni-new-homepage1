@@ -1,0 +1,306 @@
+{%- comment -%}
+  Accepts:
+  - filters {Array} Filters
+  - resources {Array} Resources
+  - paginate {Object} Paginate
+  - expanded {Boolean} Expanded
+
+  Usage:
+  % render 'filters'
+    filters: collection.filters,
+    resources: collection.products,
+    paginate: paginate
+  %}
+{%- endcomment -%}
+
+{%-
+  liquid
+  assign active_filters = filters | where: 'type', 'list' | map: 'active_values' | where: 'active'
+  assign active_filter_price = filters | where: 'type', 'price_range' | first
+  assign range_max = active_filter_price.range_max
+
+  assign count = active_filters.size
+  if active_filter_price.min_value.value > 0 or active_filter_price.max_value.value < range_max
+    assign count = active_filters.size | plus: 1
+  endif
+  if count > 0
+    assign active_count = ' (' | append: count | append: ')'
+  endif
+-%}
+
+<style>
+  filters-component {
+    --filter-labels-font: {% if settings.filter_labels_font == 'heading-font' %} var(--font-heading-family){% else %} var(--font-body-family){% endif %}
+  }
+</style>
+
+<filters-component
+  data-id="{{ section.id }}"
+  data-{{ template }}="true"
+  {% if expanded %}open-desktop{% endif %}
+  {% if filters == blank %}empty{% endif %}
+  {% if section.settings.enable_filters %}data-enable-filters{% endif %}
+>
+  <div class="filter-wrapper">
+    {% if section.settings.enable_filters or section.settings.enable_sorting %}
+      <ul class="filter__head list-unstyled">
+        {% if section.settings.enable_filters %}
+          <li>
+            <button data-opener type="button" class="filter__toggle">
+              <span class="filter__toggle-icon">{% render 'icon-filter' %}</span>
+
+              {{ 'filters.filter' | t | append: active_count }}
+            </button><!-- /.filter__toggle -->
+          </li>
+        {% endif %}
+
+        {% if section.settings.enable_sorting %}
+          <li>
+            <div class="select-sort__wrapper">
+              {%- assign prime_object = collection | default: search -%}
+              {%- assign sort_by = prime_object.sort_by | default: prime_object.default_sort_by -%}
+
+              <select data-filter-sort class="filter__select-sort">
+                {%- for option in prime_object.sort_options %}
+                  <option
+                    value="{{ option.value }}"
+                    {%- if option.value == sort_by %}
+                      selected="selected"
+                    {%- endif %}
+                  >
+                    {{ option.name }}
+                  </option>
+                {% endfor -%}
+              </select>
+
+              {%- render 'icon-chevron-down' -%}
+            </div><!-- /.select-sort__wrapper -->
+          </li>
+        {% endif %}
+
+        {% if active_filters.size > 0 or active_filter_price.min_value.value > 0 or active_filter_price.max_value.value < range_max %}
+          <li class="filter__active-items">
+            {% for value in active_filters %}
+              <a data-active class="filter__active" href="{{ value.url_to_remove }}">
+                {{ value.label | remove: 'badge:' }}
+
+                <span class="filter__active-icon-close">{% render 'icon-close-filter' %}</span>
+              </a>
+            {% endfor %}
+
+            {% if active_filter_price.min_value.value > 0 or active_filter_price.max_value.value < range_max %}
+              <a data-active class="filter__active" href="{{ active_filter_price.url_to_remove }}">
+                <strong>
+                  <span>{{ active_filter_price.min_value.value | default: 0 | money }}</span> - <span>{{ active_filter_price.max_value.value | default: 0 | money }}</span>
+                </strong>
+
+                <span class="filter__active-icon-close">{% render 'icon-close-filter' %}</span>
+              </a>
+            {% endif %}
+
+            <button data-clear type="button" class="filter__active--clear">
+              {{ 'filters.clear' | t }}
+
+              <span class="filter__active-icon-close">{% render 'icon-clear-filter' %}</span>
+            </button>
+          </li>
+        {% endif %}
+      </ul><!-- /.filter__head -->
+    {% endif %}
+
+    <div class="filter__inner filter__inner--{{ section.settings.filters_layout }}">
+      {% if section.settings.enable_filters %}
+        <div class="filter__body">
+          <form data-form class="filter__form">
+            <div class="filter__mobile-head">
+              <button data-close type="button" class="filter__toggle filter__toggle--mobile">
+                <span class="filter__toggle-icon">
+                  {% render 'icon-filter' %}
+                  {{ 'filters.filter' | t | append: active_count }}
+                </span>
+
+                {% render 'icon-close' %}
+              </button><!-- /.filter__toggle -->
+            </div><!-- /.filter__mobile-head -->
+
+            <ul class="filter__list list-unstyled">
+              {%- for filter in filters -%}
+                <li>
+                  {% if filter.type != 'price_range' %}
+                    <div class="filter__group">
+                      <h6 data-group class="{% if section.settings.filters_layout == 'vertical' %}filter__group-toggle{% endif %} caption-ffb">
+                        {{ filter.label }}
+
+                        <span class="filter__group-icon-arrow">{%- render 'icon-chevron-down' -%}</span>
+                      </h6>
+
+                      {% if filter.operator == 'AND' %}
+                        <span class="filter__and-text">
+                          {{ 'filters.filter_and_operator_subtitle' | t }}
+                        </span>
+                      {% endif %}
+
+                      <div class="filter__options">
+                        {% for filter_value in filter.values %}
+                          {%-
+                            liquid
+                            assign is_swatch = false
+                            if filter.label == settings.swatches_option or filter_value.swatch != blank
+                              assign is_swatch = true
+                            endif
+                          -%}
+
+                          <div class="filter__option">
+                            <input
+                              type="checkbox"
+                              data-filter
+                              data-add="{{ filter_value.url_to_add }}"
+                              name="{{ filter_value.param_name }}"
+                              value="{{ filter_value.value }}"
+                              id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                              {% if filter_value.active -%}checked{%- endif %}
+                              {% if filter_value.count == 0 and filter_value.active == false -%}disabled{%- endif %}
+                              {% if is_swatch or filter_value.image != blank %}class="visually-hidden"{% endif %}
+                            >
+
+                            <label
+                              {% if is_swatch %}
+                                class="swatch {% if filter_value.swatch == blank %}swatch--{{- filter_value.value | handle -}}{% endif %}"
+                                title="{{ filter_value.value }}"
+                                {% if is_swatch %}{% render 'swatch-inline' item: filter_value %}{% endif %}
+                              {% endif %}
+                              for="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                            >
+
+                              {% if filter_value.image %}
+                                <div class="filter__option-image">
+                                  {%-
+                                    liquid
+                                    assign image = filter_value.image
+                                    assign image_src = image | image_url: width: 200
+                                    capture image_srcset
+                                      render 'srcset', image: image
+                                    endcapture
+                                    assign image_alt = image.alt | escape
+
+                                    render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height
+                                  -%}
+                                </div><!-- /.filter__option-image -->
+                              {% endif %}
+
+                              <span {% if is_swatch %}class="visually-hidden"{% endif %}>{{ filter_value.label | remove: 'badge:' }}</span>
+                            </label>
+                          </div><!-- /.filter__option -->
+                        {% endfor %}
+                      </div><!-- /.filter__options -->
+                    </div><!-- /.filter__group -->
+                  {% else %}
+                    <div class="filter__group">
+                      <h6 data-group class="{% if section.settings.filters_layout == 'vertical' %}filter__group-toggle{% endif %} caption-ffb">
+                        {{ filter.label }}
+
+                        <span class="filter__group-icon-arrow">{%- render 'icon-chevron-down' -%}</span>
+                      </h6>
+
+                      <div class="filter__options">
+                        <price-range>
+                          {%-
+                            liquid
+                              assign range_max_money = range_max | money_without_currency | replace: ',', '' | split: '.' | first
+                              assign max_value = filter.max_value.value | money_without_currency | replace: ',', '' | default: range_max_money | replace: ',', '' | split: '.' | first
+                              assign min_value = filter.min_value.value | money_without_currency | replace: ',', '' | default: 0 | split: '.' | first
+                          -%}
+
+                          <div class="filter__price-range">
+                            <div class="filter__price-range-controls">
+                              <span>{{ cart.currency.symbol }}</span>
+                              <input
+                                data-filter
+                                data-min-input
+                                id="Filter-{{ filter.min_value.param_name }}"
+                                name="{{ filter.min_value.param_name }}"
+                                type="number"
+                                value="{{ min_value }}"
+                                placeholder="0"
+                                {% if range_max == 0 or range_max == blank %}disabled{% endif %}
+                              >
+                                <label hidden for="Filter-{{ filter.min_value.param_name }}">{{ min_value }}</label>
+                            </div><!-- /.filter__price-range-controls -->
+
+                            <div class="filter__price-range-controls">
+                              <span>{{ cart.currency.symbol }}</span>
+                              <input
+                                data-filter
+                                data-max-input
+                                id="Filter-{{ filter.max_value.param_name }}"
+                                name="{{ filter.max_value.param_name }}"
+                                type="number"
+                                max="{{ range_max_money }}"
+                                value="{{ max_value }}"
+                                placeholder="0"
+                                {% if range_max == 0 or range_max == blank %}disabled{% endif %}
+                              >
+                                <label hidden for="Filter-{{ filter.max_value.param_name }}">{{ max_value }}</label>
+                            </div><!-- /.filter__price-range-controls -->
+                          </div><!-- /.filter__price-range -->
+
+                          {% if range_max != 0 %}
+                            <div class="filter__price-slider">
+                              <label hidden for="FilterRangeSliderMin">{{ min_value }}</label>
+                              <input aria-label="Price slider" id="FilterRangeSliderMin" data-filter type="range" value="{{ min_value }}" min="0" max="{{ range_max_money }}" data-min-slider>
+
+                              <label hidden for="FilterRangeSliderMax">{{ max_value }}</label>
+                              <input aria-label="Price slider" id="FilterRangeSliderMax" data-filter type="range" value="{{ max_value }}" min="0" max="{{ range_max_money }}" data-max-slider>
+                            </div><!-- /.filter__price-slider -->
+                          {% endif %}
+                        </price-range>
+                      </div><!-- /.filter__options -->
+                    </div><!-- /.filter__group -->
+                  {% endif %}
+                </li>
+              {%- endfor -%}
+            </ul><!-- /.filter__list -->
+          </form>
+
+          <div class="filter__mobile-actions">
+            <button data-button-mobile-clear class="button button--style-4" type="button">{{ 'filters.clear' | t }}</button>
+            <button data-button-mobile-apply class="button button--style-4" type="button">{{ 'filters.apply' | t }}</button>
+          </div><!-- /.filter__mobile-actions -->
+        </div><!-- /.filter__body -->
+      {% endif %}
+
+      {%- if resources == blank -%}
+        <div class="collection__not-found" id="ProductGridContainer">
+          <h2 class="h3 regular center">
+            {{- 'collection.empty' | t -}}<br>
+          </h2><!-- /.h3 regular -->
+        </div><!-- /.collection__not-found -->
+      {%- else -%}
+        <div class="collection__grid list-unstyled grid grid--{{ products_per_row_desktop }} grid--mobile-{{ products_per_row_mobile }}" id="product-grid" data-id="{{- section.id -}}">
+          {%- for result in resources -%}
+            {% if result.object_type == 'product' %}
+              {%- render 'card-product', product_ref: result, class: 'grid__item', collection_ref: collection, divide_image_by: products_per_row_mobile -%}
+            {% else %}
+            {%- render 'card-result', result: result, class: 'grid__item' -%}
+            {% endif %}
+          {%- endfor -%}
+        </div><!-- /#product-grid.collection__grid list-unstyled grid grid--4 -->
+      {%- endif -%}
+    </div><!-- /.filter__inner -->
+
+    {%- if paginate.pages > 1 and section.settings.infinite_scroll == false -%}
+      <div class="pagination">
+        {%- render 'pagination', paginate: paginate, anchor: '' -%}
+      </div><!-- /.pagination -->
+    {%- endif -%}
+
+    {% if section.settings.infinite_scroll %}
+      <div data-infinite-scroll class="collection__infinite-scroll">
+        <infinite-scroll
+          data-next="{{ paginate.next.url }}"
+        >
+        </infinite-scroll>
+      </div><!-- /.collection__infinite-scroll -->
+    {% endif %}
+  </div><!-- /.filter-wrapper -->
+</filters-component>

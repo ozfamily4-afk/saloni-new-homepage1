@@ -1,0 +1,13 @@
+.collection-hero {
+  margin: 6.4rem 0;
+  text-align: center;
+}
+
+.collection-hero__entry {
+  max-width: 65rem;
+}
+
+.collection-hero .collection-hero__search-form {
+  max-width: 50rem;
+  margin: 0 auto;
+}

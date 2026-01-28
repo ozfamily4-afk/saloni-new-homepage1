@@ -1,0 +1,40 @@
+{%- comment -%}
+  Accepts:
+  - product {Object}
+  - option {Object} The option on the product
+
+  Usage:
+  {% render 'color-swatches' product: product_ref, option: option %}
+{%- endcomment -%}
+
+{%- for value in option.values -%}
+  <style>
+    .swatch--{{ value | handle }} {
+      color: {% if value.swatch.color != blank %}{{ value.swatch.color }};{% else %}{{ value | handle }};{% endif %}
+    }
+  </style>
+
+  <input
+    type="radio"
+    data-name="{{ option.name }}"
+    data-type="{{ option.name }}"
+    data-color-swatch
+    data-value="{{ value }}"
+    data-position="{{ option.position }}"
+    id="{{- section.id -}}-{{- option.position -}}-{{- forloop.index0 -}}-{{- product.id -}}-{{- value | escape -}}"
+    name="swatch-{{ product.id }}-{{ section.id }}"
+    value="{{- value | escape -}}"
+    class="visually-hidden"
+    {% if option.selected_value == value %}checked{% endif %}
+  >
+  <label
+    for="{{- section.id -}}-{{- option.position -}}-{{- forloop.index0 -}}-{{- product.id -}}-{{- value | escape -}}"
+    class="swatch swatch--{{- value | handle -}}"
+    title="{{- value | escape -}}"
+    {% if value.swatch.image != blank %}
+      style="background-image: url({{ value.swatch.image | image_url: width: 36 }})"
+    {% endif %}
+  >
+    <span class="visually-hidden">{{- value -}}</span>
+  </label>
+{%- endfor -%}

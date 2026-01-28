@@ -1,0 +1,65 @@
+{% if
+  predictive_search.resources.products.size > 0 or
+  predictive_search.resources.articles.size > 0 or
+  predictive_search.resources.pages.size > 0 or
+  predictive_search.resources.collections.size > 0
+%}
+  <div id="predictive-search-results">
+    <div class="predictive-search-results__inner">
+      <div class="predictive-search-products">
+        <p class="predictive-search-products__title">
+          {{ 'predictive_search.product_results' | t }}
+        </p><!-- /.predictive-search-products__title -->
+
+        {% if predictive_search.resources.products.size > 0 %}
+          <ul class="list-unstyled">
+            {%- for product_resource in predictive_search.resources.products -%}
+              <li>
+                {% render 'card-product' product_ref: product_resource %}
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          <div class="predictive-search__actions">
+            <a href="{{ routes.search_url | append: '?q=' | append: predictive_search.terms | append: '&type=product' | append: '&options[prefix]=last' }}" class="button {{ settings.search_suggestion_button_style }}">
+              {{ 'predictive_search.all_products' | t }}
+            </a>
+          </div><!-- /.predictive-search__actions -->
+        {% else %}
+          <p class="predictive-search-products__no-results">
+            {{ 'predictive_search.product_no_results' | t }}
+          </p><!-- /.predictive-search-products__no-results -->
+        {% endif %}
+      </div><!-- /.predictive-search-products -->
+
+      {% if
+        predictive_search.resources.articles.size > 0 or
+        predictive_search.resources.pages.size > 0 or
+        predictive_search.resources.collections.size > 0
+      %}
+
+        <div class="predictive-search-results__aside">
+          {%-
+            liquid
+            if predictive_search.resources.queries.size > 0
+              assign title = 'predictive_search.suggestions' | t
+              render 'search_resource' resources: predictive_search.resources.queries, title: title
+            endif
+            if predictive_search.resources.articles.size > 0
+              assign title = 'predictive_search.blog_posts' | t
+              render 'search_resource' resources: predictive_search.resources.articles, title: title
+            endif
+            if predictive_search.resources.pages.size > 0
+              assign title = 'predictive_search.pages' | t
+              render 'search_resource' resources: predictive_search.resources.pages, title: title
+            endif
+            if predictive_search.resources.collections.size > 0
+              assign title = 'predictive_search.collections' | t
+              render 'search_resource' resources: predictive_search.resources.collections, title: title
+            endif
+          -%}
+        </div><!-- /.predictive-search-results__aside -->
+      {% endif %}
+    </div><!-- /.predictive-search-results__inner -->
+  </div>
+{% endif %}

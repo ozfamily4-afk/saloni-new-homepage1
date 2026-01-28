@@ -1,0 +1,300 @@
+{% comment %}
+  COLORIUM MASONRY GALLERY + BRAND GRADIENT HEADING + CTA
+  Optimized for Shopify Theme Check
+{% endcomment %}
+
+<section class="colorium-masonry-section" id="section-{{ section.id }}">
+  <div class="colorium-masonry-wrapper">
+    
+    {% comment %} --- VİDEODAKİ GİBİ PREMİUM BAŞLIK --- {% endcomment %}
+    {% if section.settings.heading != blank %}
+      <h2 class="colorium-heading animated-brand-text">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="colorium-masonry-grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'image' and block.settings.image != blank %}
+          <div class="masonry-item-wrapper" {{ block.shopify_attributes }}>
+            <a href="{{ block.settings.image | image_url: width: 2000 }}" class="masonry-item" data-lightbox="colorium-{{ section.id }}">
+              <img 
+                src="{{ block.settings.image | image_url: width: 800 }}" 
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                alt="{{ block.settings.image.alt | escape }}"
+                loading="lazy"
+                class="masonry-img"
+              >
+              <div class="masonry-overlay">
+                <span class="zoom-icon">🔍</span>
+              </div>
+            </a>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% comment %} --- CTA BUTONU --- {% endcomment %}
+    {% if section.settings.cta_text != blank %}
+      <div class="colorium-cta-wrapper">
+        <a href="{{ section.settings.cta_link }}" class="colorium-cta-button">
+          {{ section.settings.cta_text }}
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% comment %} --- CSS --- {% endcomment %}
+<style>
+  /* Genel Font Ayarı (Saloni tarzı clean sans-serif) */
+  .colorium-masonry-section {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    padding: 60px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* === COLORIUM MARKA BAŞLIĞI === */
+  .colorium-heading {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 4rem; /* Videodaki gibi büyük ve iddialı */
+    font-weight: 800; /* Kalın */
+    letter-spacing: -1px; /* Harfleri biraz yaklaştırdık (Modern stil) */
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  /* Marka Renk Geçişi (Turuncu > Yeşil > Mavi > Mor) */
+  .animated-brand-text {
+    background: linear-gradient(
+      120deg,
+      #ff7e00 0%,   /* Colorium Turuncusu */
+      #00a859 25%,  /* Canlı Yeşil */
+      #0066cc 50%,  /* Kurumsal Mavi */
+      #8e44ad 75%,  /* Derin Mor */
+      #ff7e00 100%  /* Döngü için Turuncu */
+    );
+    
+    background-size: 300% auto; /* Geçişin yumuşak olması için genişletildi */
+    
+    /* Metni maskeleme */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    
+    /* Akışkan Animasyon (Shimmer Effect) */
+    animation: brand-flow 6s linear infinite;
+  }
+
+  @keyframes brand-flow {
+    0% {
+      background-position: 0% center;
+    }
+    100% {
+      background-position: 300% center; /* Renklerin akıp gitmesi */
+    }
+  }
+  /* =============================== */
+
+  /* MASONRY YAPISI */
+  .colorium-masonry-grid {
+    column-count: 1;
+    column-gap: 20px;
+  }
+
+  @media(min-width: 768px) {
+    .colorium-masonry-grid { column-count: 2; }
+  }
+
+  @media(min-width: 1024px) {
+    .colorium-masonry-grid { column-count: 3; }
+  }
+
+  .masonry-item-wrapper {
+    break-inside: avoid;
+    margin-bottom: 20px;
+  }
+
+  .masonry-item {
+    display: block;
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: zoom-in;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .masonry-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .masonry-item:hover .masonry-img {
+    transform: scale(1.04);
+  }
+
+  /* Overlay - Hafif karartma */
+  .masonry-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .masonry-item:hover .masonry-overlay {
+    opacity: 1;
+  }
+  
+  .zoom-icon {
+    font-size: 30px;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  }
+
+  /* CTA BUTONU - Siyah Minimal */
+  .colorium-cta-wrapper {
+    text-align: center;
+    margin-top: 60px;
+  }
+
+  .colorium-cta-button {
+    display: inline-block;
+    padding: 18px 50px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 0; /* Videodaki gibi keskin köşeli olabilir veya hafif 4px */
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .colorium-cta-button:hover {
+    background: #333;
+    transform: translateY(-2px);
+  }
+
+  /* LIGHTBOX */
+  .lightbox-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(255,255,255,0.95); /* Videodaki ferah his için beyaz arka plan */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    z-index: 999999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+  }
+  
+  .lightbox-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lightbox-overlay img {
+    max-width: 90%;
+    max-height: 90vh;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+  }
+
+  .lightbox-overlay.active img {
+    transform: scale(1);
+  }
+</style>
+
+{% comment %} --- JAVASCRIPT --- {% endcomment %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const lightboxTriggers = document.querySelectorAll('[data-lightbox="colorium-{{ section.id }}"]');
+    
+    const overlay = document.createElement('div');
+    overlay.classList.add('lightbox-overlay');
+    const img = document.createElement('img');
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
+
+    lightboxTriggers.forEach(trigger => {
+      trigger.addEventListener("click", function(e) {
+        e.preventDefault();
+        const highResUrl = this.href;
+        img.src = highResUrl;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    overlay.addEventListener("click", () => {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => { img.src = ''; }, 300);
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Colorium Masonry",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Başlık",
+      "default": "COLORIUM"
+    },
+    {
+      "type": "header",
+      "content": "CTA Ayarları"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Buton Metni",
+      "default": "DISCOVER PRODUCTS"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Buton Linki"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Görsel",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Görsel Seç"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Colorium Masonry",
+      "blocks": [
+        {"type": "image"},
+        {"type": "image"},
+        {"type": "image"}
+      ]
+    }
+  ]
+}
+{% endschema %}

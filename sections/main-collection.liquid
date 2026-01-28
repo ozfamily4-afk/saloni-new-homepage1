@@ -1,0 +1,144 @@
+{{- 'section-collection.css' | asset_url | stylesheet_tag -}}
+
+{%- if section.settings.enable_filters or section.settings.enable_sorting -%}
+  {{- 'filter-form.css' | asset_url | stylesheet_tag -}}
+  <script src="{{ 'filters-component.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'price-range.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% if section.settings.infinite_scroll %}
+  <script src="{{ 'infinite-scroll.js' | asset_url }}" defer="defer"></script>
+{% endif %}
+
+<div data-filter-wrapper class="collection collection--mobile-grid-{{ section.settings.products_per_row_mobile }}">
+  <div class="container {% if section.settings.enable_fullwidth %}container--fullwidth{% endif %}">
+    {% if settings.enable_breadcrumbs %}
+      <div class="collection__breadcrumbs breadcrumbs">
+        {%- render 'breadcrumbs' -%}
+      </div><!-- /.collection__breadcrumbs -->
+    {% endif %}
+
+    <div class="collection__inner">
+      <div class="collection__filters">
+        {%- paginate collection.products by section.settings.products_per_page -%}
+          {% render 'filters'
+            filters: collection.filters,
+            resources: collection.products,
+            expanded: section.settings.enable_expanded,
+            paginate: paginate,
+            products_per_row_desktop: section.settings.products_per_row,
+            products_per_row_mobile: section.settings.products_per_row_mobile
+          %}
+        {%- endpaginate -%}
+      </div><!-- /.collection__filters -->
+    </div><!-- /.collection__inner -->
+  </div><!-- /.container -->
+</div><!-- /.collection -->
+
+{% schema %}
+{
+  "name": "t:sections.main-collection.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_fullwidth",
+      "label": "t:sections.global.settings.enable_wide.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection.settings.header.filters_and_sorting.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filters",
+      "label": "t:sections.main-collection.settings.enable_filters.label",
+      "default": true,
+      "info": "t:sections.main-collection.settings.enable_filters.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_expanded",
+      "label": "t:sections.main-collection.settings.enable_expanded.label"
+    },
+    {
+      "type": "select",
+      "id": "filters_layout",
+      "label": "t:sections.main-collection.settings.filters_layout.label",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "t:sections.main-collection.settings.filters_layout.options.horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "t:sections.main-collection.settings.filters_layout.options.vertical"
+        }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "t:sections.main-collection.settings.enable_sorting.label",
+      "default": true,
+      "info": "t:sections.main-collection.settings.enable_sorting.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection.settings.header.products_grid.content"
+    },
+    {
+      "type": "select",
+      "id": "products_per_row",
+      "label": "t:sections.main-collection.settings.products_per_row.label",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "products_per_row_mobile",
+      "label": "t:sections.main-collection.settings.products_per_row_mobile.label",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:sections.main-collection.settings.products_per_row_mobile.options.option_1"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.main-collection.settings.products_per_row_mobile.options.option_2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 4,
+      "max": 40,
+      "step": 4,
+      "label": "t:sections.main-collection.settings.products_per_page.label",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_scroll",
+      "label": "t:sections.main-collection.settings.enable_infinite_scroll.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

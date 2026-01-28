@@ -1,0 +1,16 @@
+{%-
+  liquid
+  assign colors_codes = settings.swatches_hex_codes | newline_to_br | strip_newlines | split: '<br />'
+  assign color_image = colors_codes | where: '.' | where: item.value
+  if color_image != blank
+    assign color_image = color_image | last | split: '|' | last | file_img_url: '36x'
+  endif
+-%}
+
+{% if item.swatch.color != blank %}
+  style="color: {{ item.swatch.color }};"
+{% elsif item.swatch.image != blank %}
+  style="background-image: url({{ item.swatch.image | image_url: width: 36 }});"
+{% elsif color_image != blank %}
+  style="background-image: url({{ color_image }});"
+{% endif %}

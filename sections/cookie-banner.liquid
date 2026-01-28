@@ -1,0 +1,150 @@
+<script src="{{- 'cookie-banner.js' | asset_url -}}" defer="defer"></script>
+
+{% if section.settings.enable or section.settings.show_in_editor %}
+  {{- 'section-cookie-banner.css' | asset_url | stylesheet_tag: preload: true -}}
+
+  {%- assign _section = section.settings -%}
+
+  {%- if _section.enable
+      or _section.show_in_editor
+      and _section.text != blank
+      and _section.accept_button_text != blank
+      and _section.close_button_text != blank
+  -%}
+    <cookie-banner
+      class="no-js-hidden cookie-banner--{{ section.settings.position }}"
+      style="--color-background: {{ _section.background }}; --color-text: {{ _section.color }};"
+      {% if request.design_mode and section.settings.show_in_editor %}
+        data-open-in-design-mode="true"
+      {% endif %}
+
+    >
+      <div class="container container--fullwidth cookie-banner__container">
+        <div class="cookie-banner__inner flex flex--justify flex--center">
+          <div class="cookie-banner__text">
+            {{ _section.text }}
+          </div><!-- /.cookie-banner__text -->
+
+          <div class="cookie-banner__actions flex flex--center">
+            {% assign button_style = _section.button_style | append: ' cookie-banner__button ' %}
+            {% if section.settings.button_outline_hover %}
+              {% assign button_style = button_style | append: 'button--outline' %}
+            {% endif %}
+
+            {%- render 'button',
+              type: 'button',
+              style: button_style,
+              name: 'accept-cookies',
+              id: 'accept-cookies',
+              value: _section.accept_button_text,
+              attr: 'data-action'
+            -%}
+
+            <button type="button" class="link cookie-banner__close" id="close-cookies" data-action>
+              {{ _section.close_button_text }}
+            </button>
+          </div><!-- /.cookie-banner__actions -->
+        </div><!-- /.cookie-banner__inner -->
+      </div><!-- /.container -->
+    </cookie-banner>
+  {%- endif -%}
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:sections.cookie-banner.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable",
+      "label": "t:sections.cookie-banner.settings.enable.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_in_editor",
+      "label": "t:sections.cookie-banner.settings.show_in_editor.label",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "t:sections.cookie-banner.settings.position.label",
+      "info": "t:sections.cookie-banner.settings.position.info",
+      "options": [
+        {
+          "value": "full-width",
+          "label": "t:sections.cookie-banner.settings.position.options.full_width"
+        },
+        {
+          "value": "left",
+          "label": "t:sections.cookie-banner.settings.position.options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.cookie-banner.settings.position.options.right"
+        }
+      ],
+      "default": "full-width"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.cookie-banner.settings.text.label",
+      "default": "<p>We use cookies to improve user experience and analyze website traffic.</p>"
+    },
+    {
+      "type": "text",
+      "id": "accept_button_text",
+      "label": "t:sections.cookie-banner.settings.accept.label",
+      "default": "Accept"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_outline_hover",
+      "label": "t:sections.cookie-banner.settings.button_outline_hover.label"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.global.settings.button_style.label",
+      "options": [
+        {
+          "value": "button--style-1",
+          "label": "t:sections.global.settings.button_style.options.style_one"
+        },
+        {
+          "value": "button--style-2",
+          "label": "t:sections.global.settings.button_style.options.style_two"
+        },
+        {
+          "value": "button--style-3",
+          "label": "t:sections.global.settings.button_style.options.style_three"
+        },
+        {
+          "value": "button--style-4",
+          "label": "t:sections.global.settings.button_style.options.style_four"
+        }
+      ],
+      "default": "button--style-2"
+    },
+    {
+      "type": "text",
+      "id": "close_button_text",
+      "label": "t:sections.cookie-banner.settings.close.label",
+      "default": "Close"
+    }
+  ]
+}
+{% endschema %}

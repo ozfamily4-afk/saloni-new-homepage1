@@ -1,0 +1,321 @@
+{{- 'section-form-contact.css' | asset_url | stylesheet_tag -}}
+
+<script src="{{- 'form-validation.js' | asset_url -}}" defer></script>
+
+<style>
+  {% if section.settings.overwrite_colors %}
+    .section-form-contact--{{ section.id }} {
+      --background: {{ section.settings.background }};
+      --color-block: {{ section.settings.color_block }};
+    }
+  {% endif %}
+
+  .section-form-contact--{{ section.id }} {
+    --background-block: {{ section.settings.background_block }};
+  }
+</style>
+
+<section class="section-form-contact section-form-contact--{{ section.id }}">
+  <div class="section__container container container--narrow">
+    <form-validation>
+      {%- form 'contact', id: 'ContactForm' -%}
+        {%- if form.posted_successfully? -%}
+          <h3 class="h4 caption-ffb" tabindex="-1" autofocus>{{- 'contact.form.success' | t -}}</h3><!-- /.h4 -->
+        {%- elsif form.errors -%}
+          <div class="color-red">
+            <p>{{ 'contact.form.errors_message' | t }}</p>
+            {{- form.errors | default_errors -}}
+          </div><!-- /.color-red -->
+        {%- endif -%}
+
+        <div class="form-row form-row--double">            
+          <div class="error-slot">
+            {%- liquid
+              assign label = 'contact.form.name' | t | append: ' <span class="color-red" aria-hidden="true">*</span>'
+              capture attr
+                echo 'autocomplete="name" '
+                echo 'required '
+                echo 'aria-required="true" '
+                echo 'onblur="this.value=this.value.trim()"'
+              endcapture
+              if form.name
+                assign value = form.name
+              elsif customer
+                assign value = customer.name
+              else
+                assign value = ''
+              endif
+            -%}
+            {%- render 'text-input', id: 'ContactForm-name', label: label, name: 'contact[Name]', attr: attr, value: value -%}
+            <span class="hidden field-error" data-error></span>
+          </div>
+
+          {%- liquid
+            assign label = 'contact.form.email' | t | append: ' <span class="color-red" aria-hidden="true">*</span>'
+            capture attr
+              echo 'type="email" '
+              echo 'autocomplete="email" '
+              echo 'spellcheck="false" '
+              echo 'autocapitalize="off" '
+              echo 'required '
+              echo 'aria-required="true" '
+              echo 'onblur="this.value=this.value.trim()" '
+              echo 'oninput="this.setCustomValidity(&#39;&#39;)" '
+              echo 'oninvalid="this.setCustomValidity(&#39;Please enter a valid email address&#39;)"'
+            endcapture
+
+            if form.email
+              assign value = form.email
+            elsif customer
+              assign value = customer.email
+            else
+              assign value = ''
+            endif
+
+            if form.errors contains 'email'
+              assign error = form.errors.translated_fields['email'] | capitalize | append: ' ' | append: form.errors.messages['email']
+              assign has_error = true
+            endif
+          -%}
+          {%- render 'text-input', id: 'ContactForm-email', type: 'email', label: label, name: 'contact[email]', attr: attr, value: value, has_error: has_error, message: error -%}
+          <span class="hidden field-error" data-error></span>
+        </div>
+        <!-- /.form-row form-row--double -->
+
+                <!-- ZIP CODE (US) + PHONE (US) -->
+        <div class="form-row form-row--double">
+          <!-- PHONE -->
+          <div class="error-slot">
+            {%- liquid
+              assign label = 'Phone <span class="color-red" aria-hidden="true">*</span>'
+              capture attr
+                echo 'inputmode="tel" '
+                echo 'pattern="[0-9]{10}" '
+                echo 'maxlength="10" '
+                echo 'required '
+                echo 'aria-required="true" '
+                echo 'onblur="this.value=this.value.trim()" '
+                echo 'title="Enter 10-digit US phone number (numbers only, e.g., 5551234567)"'
+              endcapture
+            -%}
+            {%- render 'text-input', id: 'ContactForm-phone', label: label, name: 'contact[Phone]', attr: attr, value: '' -%}
+            <span class="hidden field-error" data-error></span>
+          </div>
+          
+          <!-- ZIP -->
+          <div class="error-slot">
+            {%- liquid
+              assign label = 'ZIP Code <span class="color-red" aria-hidden="true">*</span>'
+              capture attr
+                echo 'inputmode="numeric" '
+                echo 'pattern="[0-9]{5}(?:-[0-9]{4})?" '
+                echo 'maxlength="10" '
+                echo 'required '
+                echo 'aria-required="true" '
+                echo 'onblur="this.value=this.value.trim()" '
+                echo 'title="Enter 5 digits or ZIP+4 (e.g., 22102 or 22102-1234)"'
+              endcapture
+            -%}
+            {%- render 'text-input', id: 'ContactForm-zip', label: label, name: 'contact[Zip]', attr: attr, value: '' -%}
+            <span class="hidden field-error" data-error></span>
+          </div>      
+        </div>
+
+
+        <div class="form-row">
+          {%-
+            liquid
+            assign label = 'contact.form.subject' | t
+            capture attr
+              echo 'autocomplete="subject"'
+            endcapture
+            if form.subject
+              assign value = form.subject
+            elsif customer
+              assign value = customer.subject
+            else
+              assign value = ''
+            endif
+            render 'text-input', id: 'ContactForm-subject', label: label, name: 'contact[Subject]', attr: attr, value: value
+          -%}
+        </div><!-- /.form-row -->
+
+        <div class="form-row">
+          {%-
+            liquid
+            assign label = 'contact.form.message' | t
+            assign name = 'contact[' | append: label | append: ']'
+            render 'textarea-input', id: 'ContactForm-body', label: label, name: name, body: form.body
+          -%}
+        </div><!-- /.form-row -->
+
+        <div class="form-row">
+          {%- assign value = 'contact.form.submit' | t -%}
+          {%- render 'button', type: 'submit', style: section.settings.button_style, value: value -%}
+          {%- assign value = nil -%}
+        </div><!-- /.form-row -->
+      {%- endform -%}
+    </form-validation>
+
+    {% if section.blocks.size > 0 %}
+      <ul class="section__list">
+        {% for block in section.blocks %}
+          {% assign _block = block.settings %}
+
+          <li>
+            <div class="section__block">
+              {% if _block.heading != blank %}
+                <h3 class="caption-ffb">{{ _block.heading }}</h3>
+              {% endif %}
+
+              {% if block.type == 'telephone' %}
+                {% if _block.number != blank %}
+                  <div class="section__block-phone">
+                    <p>
+                      {% render 'icon-phone' %}
+                      <a href="tel:{{ _block.number }}">{{ _block.number }}</a>
+                    </p>
+                  </div><!-- /.section__block-phone -->
+                {% endif %}
+
+                {% if _block.description != blank %}
+                  <div class="section__block-entry">
+                    {{ _block.description }}
+                  </div><!-- /.section__block-entry -->
+                {% endif %}
+
+              {% elsif block.type == 'contact' %}
+                <div class="section__block-email">
+                  <h5 class="caption-ffb">{{ 'form_contact.email' | t }}</h5>
+
+                  <p>
+                    {% render 'icon-email' %}
+
+                    <a href="mailto:{{ _block.email }}">{{ _block.email }}</a>
+                  </p>
+                </div><!-- /.section__block-email -->
+
+                <div class="section__block-address">
+                  <h5 class="caption-ffb">{{ 'form_contact.address' | t }}</h5>
+
+                  <p>
+                    {% render 'icon-pin' %}
+
+                    {{ _block.address }}
+                  </p>
+                </div><!-- /.section__block-address -->
+              {% endif %}
+            </div><!-- /.section__block -->
+          </li>
+        {% endfor %}
+      </ul><!-- /.section__list -->
+    {% endif %}
+  </div><!-- /.container container--narrow -->
+</section><!-- /.container--narrow -->
+
+{% schema %}
+{
+  "name": "t:sections.form-contact.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "background_block",
+      "label": "t:sections.form-contact.settings.background_block.label",
+      "default": "#F4F4F4"
+    },
+    {
+      "type": "color",
+      "id": "color_block",
+      "label": "t:sections.form-contact.settings.color_block.label",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.global.settings.button_style.label",
+      "options": [
+        {
+          "value": "button--style-1",
+          "label": "t:sections.global.settings.button_style.options.style_one"
+        },
+        {
+          "value": "button--style-2",
+          "label": "t:sections.global.settings.button_style.options.style_two"
+        },
+        {
+          "value": "button--style-3",
+          "label": "t:sections.global.settings.button_style.options.style_three"
+        },
+        {
+          "value": "button--style-4",
+          "label": "t:sections.global.settings.button_style.options.style_four"
+        }
+      ],
+      "default": "button--style-2"
+    }
+  ],
+  "max_blocks": 2,
+  "limit": 1,
+  "blocks": [
+    {
+      "type": "telephone",
+      "name": "t:sections.form-contact.blocks.telephone.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.global.settings.heading.label"
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "t:sections.form-contact.settings.number.label"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "t:sections.form-contact.settings.description.label"
+        }
+      ]
+    },
+    {
+      "type": "contact",
+      "name": "t:sections.form-contact.blocks.contact.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.global.settings.heading.label"
+        },
+        {
+          "type": "text",
+          "id": "email",
+          "label": "t:sections.form-contact.settings.email.label"
+        },
+        {
+          "type": "text",
+          "id": "address",
+          "label": "t:sections.form-contact.settings.address.label"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

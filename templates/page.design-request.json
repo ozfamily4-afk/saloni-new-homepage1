@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "design-request-form",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

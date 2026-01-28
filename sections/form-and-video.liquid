@@ -1,0 +1,196 @@
+{% comment %}
+  Section: Form + Video (5-grid 2/3, container)
+{% endcomment %}
+<section id="form-video-{{ section.id }}" class="form-video-section container">
+  <div class="page-width">
+    <div class="form-video-grid">
+      <!-- SOL: FORM (2 kolon) -->
+      <div class="col form-col">
+        {% for block in section.blocks %}
+          {% if block.type == '@app' %}
+            {% render block %}
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- SAĞ: VİDEO (3 kolon) -->
+      <div class="col video-col">
+        {% if section.settings.video_shopify %}
+          {{ section.settings.video_shopify
+            | video_tag:
+              autoplay: true,
+              loop: true,
+              muted: true,
+              controls: false,
+              playsinline: true
+          }}
+        {% elsif section.settings.video_file_url != blank or section.settings.video_file_url_mp4 != blank %}
+          {%- assign poster_url = section.settings.poster | image_url: width: 1600 -%}
+          <video class="fvb-video"
+                 autoplay
+                 loop
+                 muted
+                 playsinline
+                 preload="metadata"
+                 {% if section.settings.poster %}poster="{{ poster_url }}"{% endif %}>
+            {% if section.settings.video_file_url != blank %}
+              <source src="{{ section.settings.video_file_url }}" type="video/webm">
+            {% endif %}
+            {% if section.settings.video_file_url_mp4 != blank %}
+              <source src="{{ section.settings.video_file_url_mp4 }}" type="video/mp4">
+            {% endif %}
+          </video>
+        {% else %}
+          <div class="video-placeholder"></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% comment %} <style> 
+    /* 5 kolon grid ve hizalama */
+    #form-video-{{ section.id }} .form-video-grid{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: {{ section.settings.gap }}px;
+      align-items:start;
+    }
+    /* solda 2 kolon form, sağda 3 kolon video */
+    #form-video-{{ section.id }} .form-col{ grid-column: 1 / span 2; }
+    #form-video-{{ section.id }} .video-col{ grid-column: 3 / span 3; }
+
+    /* video boyutlandırma */
+    #form-video-{{ section.id }} .fvb-video{ width:100%; height:auto; display:block; }
+
+    /* Shopify video_tag çıktısını da genişletmek için */
+    #form-video-{{ section.id }} .video-col video{ width:100%; height:auto; display:block; }
+
+    /* Mobilde tek sütun, form üstte */
+    @media (max-width: 768px){
+      #form-video-{{ section.id }} .form-video-grid{
+        grid-template-columns: 1fr;
+      }
+      #form-video-{{ section.id }} .form-col,
+      #form-video-{{ section.id }} .video-col{
+        grid-column: auto / span 1;
+      }
+    }
+
+    
+
+  </style> {% endcomment %}
+
+  <style>
+  /* === GRID TEMELİ === */
+  #form-video-{{ section.id }} .form-video-grid{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5'lik grid */
+    gap: {{ section.settings.gap }}px;
+    align-items: start; /* mobil/varsayılan */
+  }
+
+  /* 2 / 3 kolon paylaşımı */
+  #form-video-{{ section.id }} .form-col{  grid-column: 1 / span 2; }
+  #form-video-{{ section.id }} .video-col{ grid-column: 3 / span 3; }
+
+  /* === KRİTİK: grid item'lar daralabilsin, taşma olmasın === */
+  #form-video-{{ section.id }} .form-col,
+  #form-video-{{ section.id }} .video-col{
+    min-width: 0;          /* içerik geniş olsa bile kolon daralabilir */
+    overflow: hidden;      /* dışarı taşan kenarlıkları kes */
+  }
+
+  /* Form app'lerin sabit genişliklerini kır ve %100'e çek */
+  #form-video-{{ section.id }} .form-col > *{ max-width: 100%; }
+  #form-video-{{ section.id }} .form-col [style*="width:"],
+  #form-video-{{ section.id }} .form-col form,
+  #form-video-{{ section.id }} .form-col .hs-form,
+  #form-video-{{ section.id }} .form-col .hulkapps-form,
+  #form-video-{{ section.id }} .form-col .qikify-form{
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+  #form-video-{{ section.id }} .form-col input,
+  #form-video-{{ section.id }} .form-col select,
+  #form-video-{{ section.id }} .form-col textarea,
+  #form-video-{{ section.id }} .form-col .form-group{
+    max-width: 100%;
+  }
+
+  /* Video boyutlandırma (genişlik) */
+  #form-video-{{ section.id }} .fvb-video{ width:100%; height:auto; display:block; }
+  #form-video-{{ section.id }} .video-col video{ width:100%; height:auto; display:block; }
+
+  /* === SADECE DESKTOP: EŞİT YÜKSEKLİK === */
+  @media (min-width: 769px){
+    #form-video-{{ section.id }} .form-video-grid{ align-items: stretch; } /* kolonları eşit yükseklik */
+    #form-video-{{ section.id }} .video-col{ display:flex; }               /* video içeriğini kolon yüksekliğine esnet */
+    #form-video-{{ section.id }} .video-col > *{ flex:1 1 auto; }          /* içerik yüksekliği doldursun */
+    #form-video-{{ section.id }} .video-col video{
+      width:100%;
+      height:100%;         /* kolon kadar yüksek */
+      object-fit:cover;    /* kırpıp doldur */
+    }
+  }
+
+  /* === MOBİL: tek sütun === */
+  @media (max-width: 768px){
+    #form-video-{{ section.id }} .form-video-grid{ grid-template-columns: 1fr; }
+    #form-video-{{ section.id }} .form-col,
+    #form-video-{{ section.id }} .video-col{ grid-column: auto / span 1; }
+  }
+</style>
+
+</section>
+
+{% schema %}
+{
+  "name": "Form + Video (5-grid 2/3)",
+  "settings": [
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Sütun aralığı (px)",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Video (Shopify media)"
+    },
+    {
+      "type": "video",
+      "id": "video_shopify",
+      "label": "Video seç (Shopify Files/Media)"
+    },
+    {
+      "type": "header",
+      "content": "Video (URL ile alternatif)"
+    },
+    {
+      "type": "url",
+      "id": "video_file_url",
+      "label": "WEBM URL (opsiyonel)"
+    },
+    {
+      "type": "url",
+      "id": "video_file_url_mp4",
+      "label": "MP4 URL (opsiyonel)"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "Poster görsel (opsiyonel)"
+    }
+  ],
+  "blocks": [
+    { "type": "@app" }
+  ],
+  "presets": [
+    { "name": "Form + Video (5-grid 2/3)" }
+  ]
+}
+{% endschema %}

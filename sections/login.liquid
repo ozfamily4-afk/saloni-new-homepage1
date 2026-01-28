@@ -1,0 +1,217 @@
+{{- 'customer.css' | asset_url | stylesheet_tag -}}
+
+<script src="{{- 'form-validation.js' | asset_url -}}" defer></script>
+
+<div class="page-customer">
+  {% if section.settings.image %}
+    <div class="page-customer__image media {% if section.settings.image_mobile %}page-customer__image--mobile-hidden{% endif %}">
+      {%-
+        liquid
+        assign image = section.settings.image
+        assign image_src = image | image_url: width: 500
+        capture image_srcset
+          render 'srcset', image: image, widths: '1500,1980,2200,3000'
+        endcapture
+        assign image_alt = image.alt | escape
+
+        render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point, lazyload: false
+      -%}
+    </div><!-- /.page-customer__image -->
+  {% endif %}
+
+  {% if section.settings.image_mobile %}
+    <div class="page-customer__image page-customer__image--mobile media">
+      {%-
+        liquid
+        assign image = section.settings.image_mobile
+        assign image_src = image | image_url: width: 375
+        capture image_srcset
+          render 'srcset', image: image
+        endcapture
+        assign image_alt = image.alt | escape
+
+        render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point, lazyload: false
+      -%}
+    </div><!-- /.page-customer__image -->
+  {% endif %}
+
+  <div class="form-customer form-customer--recover" id="recover">
+    <div class="container">
+      <div class="form__inner form__inner--{{ section.settings.horizontal_alignment }}">
+        <div class="form__head center">
+          <h1 class="h3 form__title">
+            {{- 'customer.recover_password.title' | t -}}
+          </h1><!-- /.h3 form__title -->
+
+          <p class="form__subtitle color-subdued">
+            {{- 'customer.recover_password.subtitle' | t -}}
+          </p><!-- /.form__subtitle color-subdued -->
+        </div><!-- /.form__head center -->
+
+        <div class="form__body">
+          <form-validation>
+            {%- form 'recover_customer_password' -%}
+              {%- assign recover_success = form.posted_successfully? -%}
+
+              <div class="form-row">
+                {%-
+                  liquid
+                  assign label = 'customer.recover_password.email' | t
+                  assign error = ''
+                  assign has_error = false
+                  capture attr
+                    echo 'autocorrect="off"'
+                    echo 'autocapitalize="off"'
+                    echo 'autocomplete="email"'
+                    if form.errors
+                      assign error = form.errors.messages['form']
+                      assign has_error = true
+                      echo 'autofocus'
+                    endif
+                  endcapture
+                  render 'text-input', id: 'RecoverEmail', label: label, type: 'email', name: 'email', attr: attr, message: error, has_error: has_error
+                  assign label = nil
+                  assign attr = nil
+                  assign error = nil
+                  assign has_error = nil
+                -%}
+              </div><!-- /.form-row -->
+
+              <div class="form-row center">
+                <div>
+                  {%- assign value = 'customer.recover_password.submit' | t -%}
+                  {%- render 'button', type: 'submit', value: value -%}
+                  {%- assign value = nil -%}
+                </div>
+              </div><!-- /.form-row center -->
+
+              <div class="form-row center">
+                <div>
+                  <a href="#login" class="link">{{- 'customer.recover_password.cancel' | t -}}</a>
+                </div>
+              </div><!-- /.form-row center -->
+            {%- endform -%}
+          </form-validation>
+        </div><!-- /.form__body -->
+      </div><!-- /.form__inner -->
+    </div><!-- /.container -->
+  </div><!-- /#recover.form-customer form-customer--recover -->
+
+  <div class="form-customer form-customer--login" id="login">
+    <div class="container">
+      <div class="form__inner form__inner--{{ section.settings.horizontal_alignment }}">
+        <div class="form__head center">
+          <h1 class="h3 form__title">
+            {{- 'customer.login.title' | t -}}
+          </h1><!-- /.h3 form__title -->
+
+          {%- if recover_success == true -%}
+            <p class="form__subtitle color-subdued" tabindex="-1" autofocus>
+              {{- 'customer.recover_password.success' | t -}}
+            </p><!-- /.form__subtitle color-subdued -->
+          {%- endif -%}
+        </div><!-- /.form__head center -->
+
+        <div class="form__body">
+          <form-validation>
+            {%- form 'customer_login', novalidate: 'novalidate' -%}
+              {%- if form.errors -%}
+                <div class="color-red">
+                  {{- form.errors | default_errors -}}
+                </div><!-- /.color-red -->
+              {%- endif -%}
+
+              <div class="form-row">
+                {%-
+                  liquid
+                  assign label = 'customer.login.email' | t
+                  assign has_error = false
+                  capture attr
+                    echo 'autocorrect="off"'
+                    echo 'autocapitalize="off"'
+                    echo 'autocomplete="email"'
+                    if form.errors contains 'form'
+                      assign has_error = true
+                    endif
+                  endcapture
+                  render 'text-input', id: 'CustomerEmail', label: label, type: 'email', name: 'customer[email]', attr: attr, message: error, has_error: has_error
+                  assign label = nil
+                  assign attr = nil
+                  assign has_error = nil
+                -%}
+              </div><!-- /.form-row -->
+
+              <div class="form-row">
+                {%-
+                  liquid
+                  assign label = 'customer.login.password' | t
+                  assign has_error = false
+                  capture attr
+                    echo 'autocomplete="current-password"'
+                    if form.errors contains 'form'
+                      assign has_error = true
+                    endif
+                  endcapture
+                  render 'text-input', id: 'CustomerPassword', label: label, type: 'password', name: 'customer[password]', attr: attr, message: error, has_error: has_error
+                  assign label = nil
+                  assign attr = nil
+                  assign has_error = nil
+                -%}
+              </div><!-- /.form-row -->
+
+              <div class="form-row">
+                <div>
+                  <a href="#recover" class="link">{{- 'customer.login.forgot_password' | t -}}</a>
+                </div>
+              </div><!-- /.form-row -->
+
+              <div class="form-row center">
+                <div>
+                  {%- assign value = 'customer.login.submit' | t -%}
+                  {%- render 'button', type: 'submit', value: value -%}
+                  {%- assign value = nil -%}
+                </div>
+              </div><!-- /.form-row center -->
+
+              <div class="form-row center">
+                <div>
+                  <a href="{{- routes.account_register_url -}}" class="link">{{- 'customer.login.create_account' | t -}}</a>
+                </div>
+              </div><!-- /.form-row center -->
+            {%- endform -%}
+          </form-validation>
+        </div><!-- /.form__body -->
+      </div><!-- /.form__inner -->
+    </div><!-- /.container -->
+  </div><!-- /#login.form-customer form-customer--login -->
+</div><!-- /.page-customer -->
+
+{% schema %}
+{
+  "name": "t:sections.login.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text_alignment",
+      "id": "horizontal_alignment",
+      "label": "t:sections.global.settings.horizontal_alignment.label",
+      "default": "left"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.global.settings.image.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.global.settings.image.label_mobile"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

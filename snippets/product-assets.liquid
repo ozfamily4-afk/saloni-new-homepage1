@@ -1,0 +1,42 @@
+{%- comment -%}
+  Accepts:
+  - product: { Object } Product
+  - enable_zoom_gallery: { Boolean } Enable zoom gallery
+
+  Usage:
+  {% render 'product-assets' product_ref: product %}
+{%- endcomment -%}
+
+<link rel="stylesheet" href="{{ 'accordion-item.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'accordion-item.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+{% if enable_zoom_gallery %}
+  <link rel="stylesheet" href="{{- 'photoswipe.css' | asset_url -}}" media="print" onload="this.media='all'">
+
+  <noscript>
+    {{- 'photoswipe.css' | asset_url | stylesheet_tag -}}
+  </noscript>
+
+  <script src="{{- 'photoswipe-lightbox.umd.min.js' | asset_url -}}" defer></script>
+  <script src="{{- 'photoswipe.umd.min.js' | asset_url -}}" defer></script>
+{% endif %}
+
+{% if product_ref != blank %}
+  <script src="{{- 'product-media.js' | asset_url -}}" defer="defer"></script>
+  <script src="{{- 'product-selector.js' | asset_url -}}" defer="defer"></script>
+{% endif %}
+
+<script src="{{ 'accordion-item.js' | asset_url }}" defer="defer"></script>
+
+{%- assign first_3d_model = product_ref.media | where: 'media_type', 'model' | first -%}
+{%- if first_3d_model -%}
+  <link id="ModelViewerStyle" rel="stylesheet" href="https://cdn.shopify.com/shopifycloud/model-viewer-ui/assets/v1.0/model-viewer-ui.css" media="print" onload="this.media='all'">
+
+  <script type="application/json" id="ProductJSON-{{ product_ref.id }}">
+    {{ product_ref.media | where: 'media_type', 'model' | json }}
+  </script>
+  <script src="{{ 'product-model.js' | asset_url }}" defer></script>
+{%- endif -%}

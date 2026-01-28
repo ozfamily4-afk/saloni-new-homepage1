@@ -1,0 +1,282 @@
+<link rel="stylesheet" href="{{ 'accordion-item.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'accordion-item.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<noscript>
+  {{- 'photoswipe.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<link rel="stylesheet" href="{{- 'photoswipe.css' | asset_url -}}" media="print" onload="this.media='all'">
+
+<script src="{{- 'photoswipe-lightbox.umd.min.js' | asset_url -}}" defer="defer"></script>
+<script src="{{- 'photoswipe.umd.min.js' | asset_url -}}" defer="defer"></script>
+
+<script src="{{- 'product-media.js' | asset_url -}}" defer="defer"></script>
+<script src="{{- 'product-selector.js' | asset_url -}}" defer="defer"></script>
+<script src="{{ 'quickview-opener.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'accordion-item.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'purchase-options.js' | asset_url }}" defer="defer"></script>
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    #Product-Quickview-Modal {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    }
+  </style>
+{% endif %}
+
+<section data-product-quickview data-id="{{ section.id }}" class="{{ section.id }}">
+  {%-
+    liquid
+    assign id = 'Product-Quickview-Modal'
+    capture content
+      if product
+        render 'product' product: product
+      endif
+    endcapture
+    render 'modal-dialog', content: content, id: id, modifiers: 'modal-dialog--quickview'
+  -%}
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.quickview.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "font_labels",
+      "label": "t:sections.main-product.settings.font_labels.label",
+      "info": "t:sections.main-product.settings.font_labels.info",
+      "options": [
+        {
+          "value": "heading-font",
+          "label": "t:sections.main-product.settings.font_labels.options.heading-font"
+        },
+        {
+          "value": "body-font",
+          "label": "t:sections.main-product.settings.font_labels.options.body-font"
+        }
+      ],
+      "default": "body-font"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.quickview.headers.media.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_zoom_gallery",
+      "label": "t:sections.main-product.settings.enable_zoom_gallery.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_desktop",
+      "label": "t:sections.global.settings.aspect_ratio_desktop.label",
+      "options": [
+        {
+          "value": "media--original",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.original.label"
+        },
+        {
+          "value": "media--2-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_3.label"
+        },
+        {
+          "value": "media--1-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_2.label"
+        },
+        {
+          "value": "media--1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        }
+      ],
+      "default": "media--2-3"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_mobile",
+      "label": "t:sections.global.settings.aspect_ratio_mobile.label",
+      "options": [
+        {
+          "value": "media--mobile-original",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.original.label"
+        },
+        {
+          "value": "media--mobile-2-3",
+          "label": "t:sections.global.settings.aspect_ratio_mobile.options.2_3.label"
+        },
+        {
+          "value": "media--mobile-1-2",
+          "label": "t:sections.global.settings.aspect_ratio_mobile.options.1_2.label"
+        },
+        {
+          "value": "media--mobile-1-1",
+          "label": "t:sections.global.settings.aspect_ratio_mobile.options.1_1.label"
+        }
+      ],
+      "default": "media--mobile-2-3"
+    },
+    {
+      "type": "select",
+      "id": "thumbs_position",
+      "label": "t:sections.main-product.settings.thumbs_position.label",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.main-product.settings.thumbs_position.options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.main-product.settings.thumbs_position.options.right"
+        },
+        {
+          "value": "bottom",
+          "label": "t:sections.main-product.settings.thumbs_position.options.bottom"
+        }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.quickview.headers.pagination_on_mobile.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.global.settings.autoplay.label",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "t:sections.global.settings.autoplay_interval.unit",
+      "label": "t:sections.global.settings.autoplay_interval.label",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "t:sections.main-product.blocks.badge.name",
+      "limit": 1
+    },
+    {
+      "type": "title",
+      "name": "t:sections.main-product.blocks.heading.name",
+      "limit": 1
+    },
+    {
+      "type": "vendor",
+      "name": "t:sections.main-product.blocks.vendor.name",
+      "limit": 1
+    },
+    {
+      "type": "price",
+      "name": "t:sections.main-product.blocks.price.name",
+      "limit": 1
+    },
+    {
+      "type": "variant_picker",
+      "name": "t:sections.main-product.blocks.variant_picker.name",
+      "limit": 1
+    },
+    {
+      "type": "quantity",
+      "name": "t:sections.main-product.blocks.quantity.name",
+      "limit": 1
+    },
+    {
+      "type": "buy_buttons",
+      "name": "t:sections.main-product.blocks.buy_buttons.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "t:sections.global.settings.button_style.label",
+          "options": [
+            {
+              "value": "button--style-1",
+              "label": "t:sections.global.settings.button_style.options.style_one"
+            },
+            {
+              "value": "button--style-2",
+              "label": "t:sections.global.settings.button_style.options.style_two"
+            },
+            {
+              "value": "button--style-3",
+              "label": "t:sections.global.settings.button_style.options.style_three"
+            },
+            {
+              "value": "button--style-4",
+              "label": "t:sections.global.settings.button_style.options.style_four"
+            }
+          ],
+          "default": "button--style-2"
+        }
+      ]
+    },
+    {
+      "type": "purchase_options",
+      "name": "t:sections.main-product.blocks.purchase-options.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:sections.main-product.blocks.purchase-options.settings.paragraph_info.content"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.main-product.blocks.purchase-options.settings.title.label",
+          "default": "Purchase Options"
+        }
+      ]
+    },
+    {
+      "type": "pickup_availability",
+      "name": "t:sections.main-product.blocks.pickup_availability.name",
+      "limit": 1
+    },
+    {
+      "type": "custom_liquid",
+      "name": "t:sections.custom-liquid.name",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "t:sections.custom-liquid.settings.custom_liquid.label",
+          "info": "t:sections.custom-liquid.settings.custom_liquid.info"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

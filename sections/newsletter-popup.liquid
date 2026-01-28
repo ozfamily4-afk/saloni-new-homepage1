@@ -1,0 +1,287 @@
+{{- 'section-newsletter-popup.css' | asset_url | stylesheet_tag -}}
+
+<script src="{{- 'cookies.js' | asset_url -}}" defer="defer"></script>
+<script src="{{- 'newsletter-popup.js' | asset_url -}}" defer="defer"></script>
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    .newsletter-popup--{{- section.id -}} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    }
+  </style>
+{% endif %}
+
+{%- if section.settings.title != blank
+    or section.settings.entry != blank
+    or section.settings.image != blank
+  -%}
+  <newsletter-popup
+    id="NewsletterModal-{{- section.id -}}"
+    class="newsletter-popup flex flex--justify-center flex--center newsletter-popup--image-{{ section.settings.image_position }} newsletter-popup--{{ section.id }}"
+    {% if request.design_mode and section.settings.show_in_editor %}
+      data-open-in-design-mode="true"
+    {% endif %}
+    data-enable="{{ section.settings.enable }}"
+    data-delay="{{- section.settings.delay -}}"
+  >
+    <div class="newsletter-popup__wrapper {% if section.settings.image == blank %}newsletter-popup__wrapper--narrow{% endif %}"
+      aria-modal="true"
+      role="dialog"
+      tabindex="-1"
+    >
+      <div class="grid {% if section.settings.image != blank %}grid--2{% endif %} newsletter-popup__grid">
+        <div class="grid__item newsletter-popup__content flex flex--center">
+          <button
+            id="ModalClose-{{- section.id -}}"
+            type="button"
+            class="newsletter-popup__close"
+            aria-label="{{- 'accessibility.close' | t -}}"
+          >{% render 'icon-close' %}</button>
+
+          {% if section.settings.logo or section.settings.logo_svg != blank %}
+            <div class="newsletter-popup__logo">
+              {% if section.settings.logo_svg != blank %}
+                {{ section.settings.logo_svg }}
+              {% else %}
+                {{
+                  section.settings.logo
+                  | image_url: width: 300
+                  | image_tag: alt: section.settings.logo.alt, loading: 'lazy'
+                }}
+              {% endif %}
+            </div><!-- /.newsletter-popup__logo -->
+          {% endif %}
+
+          {%- if section.settings.title != blank -%}
+            <h6 class="newsletter-popup__title {{ section.settings.heading_size }}">
+              {{- section.settings.title -}}
+            </h6><!-- /.newsletter-popup__title -->
+          {%- endif -%}
+
+          {%- if section.settings.entry != blank -%}
+            <div class="newsletter-popup__entry">
+              {{- section.settings.entry -}}
+            </div><!-- /.newsletter-popup__entry -->
+          {%- endif -%}
+
+          <div class="newsletter-popup__form">
+            {%- liquid
+              if section.settings.form_code != blank
+                echo section.settings.form_code
+              else
+                render 'newsletter-form', namespace: section.id, js_class: 'js-form', button_style: section.settings.button_style
+              endif
+            -%}
+          </div><!-- /.newsletter-popup__form -->
+
+          {% if  section.settings.button_close_text != blank %}
+            <button
+              id="newsletter-popup-close-button"
+              class="newsletter-popup__close-button caption-ffb"
+            >
+              {{ section.settings.button_close_text }}
+            </button><!-- /.newsletter-popup__close-button -->
+          {% endif %}
+        </div><!-- /.grid__item -->
+
+        {% if section.settings.image != blank or section.settings.image_mobile != blank %}
+          <div class="grid__item newsletter-popup__image">
+            <div class="newsletter-popup__media">
+              {%-
+                liquid
+                if section.settings.image != blank
+                  assign image = section.settings.image
+                  assign image_src = image | image_url: width: 375
+                  capture image_srcset
+                    render 'srcset', image: image
+                  endcapture
+                  assign image_alt = image.alt | escape
+                  assign class = blank
+                  if section.settings.image_mobile != blank
+                    assign class = 'newsletter-popup__media-image-hidden-mobile'
+                  endif
+                  render 'image', src: image_src, srcset: image_srcset, class: class, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+                endif
+
+                if section.settings.image_mobile != blank
+                  assign image_mobile = section.settings.image_mobile
+                  assign image_src = image_mobile | image_url: width: 375
+                  capture image_srcset
+                    render 'srcset', image: image_mobile
+                  endcapture
+                  assign image_alt = image_mobile.alt | escape
+                  assign class = 'newsletter-popup__media-image-mobile'
+                  render 'image', src: image_src, srcset: image_srcset, class: class, alt: image_alt, width: image_mobile.width, height: image_mobile.height, focal_point: image_mobile.presentation.focal_point
+                endif
+              -%}
+            </div><!-- /.media -->
+          </div><!-- /.grid__item -->
+        {% endif %}
+      </div><!-- /.grid -->
+    </div><!-- /.newsletter-popup__wrapper -->
+  </newsletter-popup>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.newsletter-popup.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable",
+      "label": "t:sections.newsletter-popup.settings.enable.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_in_editor",
+      "label": "t:sections.newsletter-popup.settings.show_in_editor.label",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "delay",
+      "label": "t:sections.newsletter-popup.settings.delay.label",
+      "unit": "s",
+      "min": 4,
+      "max": 30,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.media"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "t:sections.newsletter-popup.settings.image-position.label",
+      "options": [
+        {
+          "value": "right",
+          "label": "t:sections.newsletter-popup.settings.image-position.options.right"
+        },
+        {
+          "value": "left",
+          "label": "t:sections.newsletter-popup.settings.image-position.options.left"
+        },
+        {
+          "value": "top",
+          "label": "t:sections.newsletter-popup.settings.image-position.options.top"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.global.settings.image.label_desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.global.settings.image.label_mobile"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.newsletter-popup.settings.logo.label"
+    },
+    {
+      "type": "html",
+      "id": "logo_svg",
+      "label": "t:sections.newsletter-popup.settings.logo_svg.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.text_content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "Subscribe to newsletter"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h4",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "richtext",
+      "id": "entry",
+      "label": "t:sections.newsletter-popup.settings.entry.label",
+      "default": "<p>Subscribe to our newsleeter so you don't miss anything good.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_close_text",
+      "label": "t:sections.newsletter-popup.settings.button_close_text.label",
+      "default": "NO, I'LL PAY FULL PRICE"
+    },
+    {
+      "type": "html",
+      "id": "form_code",
+      "label": "t:sections.newsletter-popup.settings.form_code.label",
+      "info": "t:sections.newsletter-popup.settings.form_code.info"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.global.settings.button_style.label",
+      "options": [
+        {
+          "value": "button--style-1",
+          "label": "t:sections.global.settings.button_style.options.style_one"
+        },
+        {
+          "value": "button--style-2",
+          "label": "t:sections.global.settings.button_style.options.style_two"
+        },
+        {
+          "value": "button--style-3",
+          "label": "t:sections.global.settings.button_style.options.style_three"
+        },
+        {
+          "value": "button--style-4",
+          "label": "t:sections.global.settings.button_style.options.style_four"
+        }
+      ],
+      "default": "button--style-2"
+    }
+  ]
+}
+{% endschema %}

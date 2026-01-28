@@ -1,0 +1,110 @@
+{% comment %}
+    Renders an article card
+    Accepts:
+    - article_ref: {Object} Article Liquid object
+    Usage:
+    {%- render 'card-article', article_ref: blog.articles[0] -%}
+{% endcomment %}
+
+{%-
+  liquid
+  assign tags = blank
+  for tag in article_ref.tags
+    if tag contains 'read_time:'
+      assign time_read = tag | remove: 'read_time:'
+      assign read_time = 'blog.time_read' | t: time: time_read
+    else
+      capture tags
+        echo tags
+        echo tag | append: ','
+      endcapture
+    endif
+  endfor
+  assign tags_arr = tags | strip | split: ','
+-%}
+
+{%- if article_ref != empty -%}
+  <article class="card-article">
+    <a href="{{- article_ref.url -}}" class="card-article__media media media--1-1">
+      <span class="visually-hidden">{{- article_ref.title | escape -}}</span>
+
+      {%-
+        liquid
+        if article_ref.image
+          assign image_src = article_ref.image | image_url: width: 500
+          capture image_srcset
+            render 'srcset', image: article_ref.image, widths: '1100,1500,1780,2000,3000,3840'
+            assign sizes = '(max-width: 480px) 767px,(max-width: 767px) 1100px,(max-width: 1023px) 1500px'
+          endcapture
+          assign image_alt = article_ref.image.alt | escape
+          render 'image', src: image_src, srcset: image_srcset, sizes: sizes, alt: image_alt, width: article_ref.image.width, height: article_ref.image.height, focal_point: article_ref.image.presentation.focal_point
+        else
+          echo 'image' | placeholder_svg_tag
+        endif
+      -%}
+    </a>
+
+    <div class="card-article__body">
+      <div class="card-article__meta">
+        {% if section.settings.show_date %}
+          {%- assign article_date = 'date_formats.day_month_year' | t -%}
+          <time datetime="{{- article_ref.published_at -}}" class="caption color-subdued">{{- article_ref.published_at | date: article_date -}}</time>
+        {% endif %}
+
+        {% if read_time != blank %}
+          <span>{{ read_time }}</span>
+        {% endif %}
+      </div><!-- /.card-article__meta -->
+
+      {% if section.settings.show_tags %}
+        {%- if tags_arr.size > 0 and blog -%}
+          <ul class="card-article__tags list-unstyled caption color-subdued flex">
+            {%- for tag in tags_arr -%}
+              <li class="card-article__tag">
+                {%- assign tag_handle = tag | handle -%}
+                <a href="{{- blog.url | append: '/tagged/' | append: tag_handle -}}" class="full-unstyled-link">
+                  {{- tag -}} {% unless forloop.last %}, {% endunless %}
+                </a>
+              </li><!-- ./card-article__tag -->
+            {%- endfor -%}
+          </ul><!-- /.card-article__tags list-unstyled caption color-subdued -->
+        {%- endif -%}
+      {% endif %}
+
+      <h4 class="card-article__title">
+        <a href="{{- article_ref.url -}}" class="full-unstyled-link">{{- article_ref.title | escape -}}</a>
+      </h4><!-- /.card-article__title -->
+
+      {%- if article_ref.excerpt != blank and section.settings.show_excerpt -%}
+        <div class="card-article__entry">
+          {{- article_ref.excerpt -}}
+        </div><!-- /.card-article__entry -->
+      {%- endif -%}
+
+      {% if section.settings.show_author %}
+        <div class="card-article__author">
+          {% if article_ref.user.image != blank %}
+            {%-
+              liquid
+              assign image = article_ref.user.image
+              assign image_src = image | image_url: width: 100
+              capture image_srcset
+                render 'srcset', image: image
+              endcapture
+              assign image_alt = image.alt | escape
+
+              render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+            -%}
+          {% endif %}
+
+          {%- assign author_name = article_ref.author | escape -%}
+          <span class="caption color-subdued">{{- 'blog.written_by' | t: author: author_name -}}</span>
+        </div><!-- /.card-article__author -->
+      {% endif %}
+
+      <div class="card-article__actions">
+        <a href="{{- article_ref.url -}}" class="link">{{- 'blog.read_more' | t -}}</a>
+      </div><!-- /.card-article__actions -->
+    </div><!-- /.card-article__body -->
+  </article><!-- /.card-article -->
+{%- endif -%}

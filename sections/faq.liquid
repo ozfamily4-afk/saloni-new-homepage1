@@ -1,0 +1,307 @@
+<link rel="stylesheet" href="{{ 'section-faq.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'accordion-item.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'section-faq.css' | asset_url | stylesheet_tag -}}
+  {{- 'accordion-item.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<script src="{{ 'accordion-item.js' | asset_url }}" defer="defer"></script>
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    .section-faq--{{ section.id }} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+      --question-border: {{ section.settings.question_border }};
+      --question-background: {{ section.settings.question_background }};
+    }
+  </style>
+{% endif %}
+
+{% if section.settings.image_desktop or section.blocks.size > 0 %}
+  <div class="section-faq section-faq--{{ section.id }} {% if section.settings.image_desktop == blank %}section-faq--without-image{% endif %}">
+    <div class="container {% if section.settings.enable_wide %}container--fluid{% endif %}">
+      <div class="section__inner">
+        <div class="section__content {% if section.settings.flip %}section__content--flip{% endif %}">
+          {% if section.settings.heading != blank %}
+            <h2 class="section__title {{ section.settings.heading_size }}">
+              {{ section.settings.heading | newline_to_br }}
+            </h2><!-- /.section__title -->
+          {% endif %}
+
+          {% if section.blocks.size > 0 %}
+            <div class="section__accordion">
+              {%
+                liquid
+                for block in section.blocks
+                  assign _block = block.settings
+                  assign is_open = false
+                  if forloop.first
+                    assign is_open = true
+                  endif
+
+                  render 'accordion-item', modifier: 'faq', title: _block.heading, content: _block.content, open: is_open
+                endfor
+              %}
+            </div><!-- /.section__accordion -->
+          {% endif %}
+        </div><!-- /.section__content -->
+
+        <div class="section__image-wrapper">
+          <div class="
+            section__image
+            media
+            {{ section.settings.aspect_ratio_desktop }}
+            {{ section.settings.aspect_ratio_mobile }}
+            {% if section.settings.image_mobile != blank %}section__image--mobile-hidden{% endif %}
+          ">
+          {% if section.settings.image_desktop != blank %}
+            {%-
+              liquid
+              assign image = section.settings.image_desktop
+              assign image_src = image | image_url: width: 500
+              capture image_srcset
+                render 'srcset', image: image, widths: '1100,1500,1780,2000,3000,3840'
+              endcapture
+              assign image_alt = image.alt | escape
+
+              render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+            -%}
+          {% else %}
+            {{ 'collection-6' | placeholder_svg_tag }}
+          {% endif %}
+          </div><!-- /.section__image -->
+
+          {% if section.settings.image_mobile != blank %}
+            <div class="
+              section__image
+              section__image--mobile
+              media
+              media--mobile
+              {{ section.settings.aspect_ratio_mobile }}
+            ">
+              {%-
+                liquid
+                assign image = section.settings.image_mobile
+                assign image_src = image | image_url: width: 375
+                capture image_srcset
+                  render 'srcset', image: image
+                endcapture
+                assign image_alt = image.alt | escape
+
+                render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+              -%}
+            </div><!-- /.media media--9-16 media--mobile -->
+          {% endif %}
+        </div><!-- /.section__image-wrapper -->
+      </div><!-- /.section__inner -->
+    </div><!-- /.container -->
+  </div><!-- /.section-faq -->
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:sections.faq.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "question_border",
+      "label": "t:sections.faq.settings.question_border.label",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "question_background",
+      "label": "t:sections.faq.settings.question_background.label",
+      "default": "transparent"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_wide",
+      "label": "t:sections.global.settings.enable_wide.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "flip",
+      "label": "t:sections.global.settings.flip.label",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.media"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_desktop",
+      "label": "t:sections.global.settings.aspect_ratio_desktop.label",
+      "options": [
+        {
+          "value": "media--1-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_2.label"
+        },
+        {
+          "value": "media--2-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_3.label"
+        },
+        {
+          "value": "media--3-4",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_4.label"
+        },
+        {
+          "value": "media--1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        },
+        {
+          "value": "media--4-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.4_3.label"
+        },
+        {
+          "value": "media--3-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_2.label"
+        },
+        {
+          "value": "media--16-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.16_9.label"
+        }
+      ],
+      "default": "media--4-3"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_mobile",
+      "label": "t:sections.global.settings.aspect_ratio_mobile.label",
+      "options": [
+        {
+          "value": "media--mobile-1-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_2.label"
+        },
+        {
+          "value": "media--mobile-2-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_3.label"
+        },
+        {
+          "value": "media--mobile-3-4",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_4.label"
+        },
+        {
+          "value": "media--mobile-1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        },
+        {
+          "value": "media--mobile-4-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.4_3.label"
+        },
+        {
+          "value": "media--mobile-3-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_2.label"
+        },
+        {
+          "value": "media--mobile-16-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.16_9.label"
+        }
+      ],
+      "default": "media--mobile-1-1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "t:sections.global.settings.image.label_desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.global.settings.image.label_mobile"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.text_content"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "FAQ section heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "t:sections.faq.blocks.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.global.settings.heading.label",
+          "default": "Express your brand"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:sections.faq.blocks.settings.content.label",
+          "default": "<p>Use this text to share information about your store with your customers. Describe products, share announcements, or welcome customers to your store.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.faq.name",
+      "blocks": [
+        {
+          "type": "faq"
+        },
+        {
+          "type": "faq"
+        },
+        {
+          "type": "faq"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

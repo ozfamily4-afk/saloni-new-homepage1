@@ -1,0 +1,19 @@
+.share-icons ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 4rem 0;
+  border: solid var(--color-form-input-border-light);
+  border-width: 0.1rem 0;
+}
+
+.share-icons li a {
+  display: flex;
+  align-items: center;
+}
+
+.share-icons svg {
+  margin-right: 0.8rem;
+}

@@ -1,0 +1,109 @@
+{%- comment -%}
+  Renders cart drawer
+
+  Usage:
+  {%- render 'cart-drawer' -%}
+{%- endcomment -%}
+
+{{- 'component-cart-drawer.css' | asset_url | stylesheet_tag: preload: true -}}
+
+<link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'component-cart-items.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<script src="{{- 'cart.js' | asset_url -}}" defer="defer"></script>
+<script src="{{- 'cart-drawer.js' | asset_url -}}" defer="defer"></script>
+<script src="{{ 'cart-drawer-upsell.js' | asset_url }}" defer="defer"></script>
+
+<cart-drawer tabindex="-1">
+  <div class="cart-drawer" id="CartDrawer">
+    <div id="CartDrawer-Overlay" class="cart-drawer__overlay"></div><!-- /.cart-drawer__overlay -->
+
+    <div
+      class="cart-drawer__inner"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{- 'cart.title' | t -}}"
+    >
+      <div id="CartDrawer-Header" class="cart-drawer__head">
+        <div class="cart-drawer__head-inner">
+          <p class="cart-drawer__title h4 caption-ffb">
+            {{ 'cart.title' | t }} {% if cart.item_count > 0 %}({{ cart.item_count }}){% endif %}
+          </p><!-- /.cart-drawer__title h4 -->
+
+          <button
+            class="cart-drawer__close"
+            type="button"
+            onclick="this.closest('cart-drawer').close()"
+            aria-label="{{- 'accessibility.close' | t -}}"
+            data-drawer-close
+          >
+            {%- render 'icon-close' -%}
+          </button>
+        </div><!-- /.cart-drawer__head-inner -->
+
+        {% if cart.item_count > 0 %}
+          <p class="cart-drawer__head-count-message">{{- 'cart.items' | t: count: cart.item_count -}}</p><!-- /.cart-drawer__head-count-message -->
+        {% endif %}
+      </div><!-- /.cart-drawer__head -->
+
+      <div class="cart-drawer__body" id="CartDrawer-Body">
+        {%- render 'shipping-bar', class: 'cart-drawer__shipping-bar' -%}
+
+        {%- if cart == empty -%}
+          <div class="cart-drawer__empty">
+            <p>{{- 'cart.empty' | t -}}</p>
+
+            <a class="drawer__empty-link" href="{{ settings.empty_cart_link }}">
+              <span>{{- 'cart.shop_now' | t -}}</span>
+
+              {% render 'icon-plus' %}
+            </a>
+          </div><!-- /.cart-drawer__empty -->
+
+        {%- else -%}
+          <cart-drawer-items>
+            <form
+              action="{{- routes.cart_url -}}"
+              id="CartDrawer-Form"
+              class="cart-drawer__form"
+              method="post"
+            >
+              <div class="cart-drawer__contents" id="CartDrawer-CartItems">
+                <table class="cart-drawer__items" role="table">
+                  <tbody>
+                    {%- for line_item in cart.items -%}
+                      {%- render 'line-item', line_item: line_item, compact: true, modifier: 'drawer' -%}
+                    {%- endfor -%}
+                  </tbody>
+                </table><!-- /.cart-drawer__items -->
+              </div><!-- /#CartDrawer-CartItems.cart-drawer__contents -->
+            </form>
+          </cart-drawer-items>
+
+
+          {% if settings.enable_cart_upsell_products %}
+            <div class="cart-drawer__upsell">
+              {% render 'cart-drawer-upsell' upsell_product: cart.items[0].product %}
+            </div><!-- /.cart-drawer__upsell -->
+          {% endif %}
+        {%- endif -%}
+      </div><!-- /.cart-drawer__body -->
+
+      <div class="cart-drawer__summary" id="CartDrawer-Summary">
+        {% if cart != empty %}
+          <form
+            action="{{- routes.cart_url -}}"
+            id="CartDrawer-FormSummary"
+            class="cart-drawer__form-summary"
+            method="post"
+          >
+            {%- render 'cart-summary', show_cart_link: true -%}
+          </form>
+        {% endif %}
+      </div><!-- /.cart-drawer__summary -->
+    </div><!-- /.cart-drawer__inner -->
+  </div><!-- /#CartDrawer.cart-drawer -->
+</cart-drawer>

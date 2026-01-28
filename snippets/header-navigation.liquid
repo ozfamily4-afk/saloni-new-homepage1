@@ -1,0 +1,83 @@
+{%- comment -%}
+  Accepts:
+  - menu {Object} A setting of type link_list
+
+  Usage:
+  {% render 'header-navigation', menu: section.settings.menu %}
+
+{%- endcomment -%}
+
+{% if menu.links.size > 0 %}
+  <nav class="header-navigation">
+    <ul class="list-unstyled">
+      {% for link in menu.links %}
+        {%-
+          liquid
+          assign has_dropdown = true
+          for block in section.blocks
+            assign _block = block.settings
+            if _block.handle == link.title and link.links != blank
+              assign has_dropdown = false
+            endif
+          endfor
+        -%}
+
+        {% capture dropdown_menu %}
+          <ul class="header__dropdown list-unstyled">
+            {% for child_link in link.links %}
+              <li>
+                <a href="{{ child_link.url }}">
+                  {{- child_link.title -}}
+
+                  {%- if child_link.links != blank -%}
+                    <span class="header__dropdown-icon-arrow">{% render 'icon-arrow' %}</span>
+                  {%- endif -%}
+                </a>
+
+                {% if child_link.links != blank %}
+                  <ul class="header__dropdown-child list-unstyled">
+                    {% for grand_child_link in child_link.links %}
+                      <li>
+                        <a href="{{ grand_child_link.url }}">{{ grand_child_link.title }}</a>
+                      </li>
+                    {% endfor %}
+                  </ul><!-- /.header__dropdown-child -->
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul><!-- /.header__dropdown -->
+        {% endcapture %}
+
+        <li class="header__item {% if has_dropdown %}header__item--has-dropdown{% endif %}">
+          <a class="
+            header__link-primary
+            header__link-color-change
+            hover-underline
+            {% if link.active %}is-active{% endif %}"
+            href="{{ link.url }}">
+            {{ link.title }}
+
+            {% if section.settings.products_counter and link.object.all_products_count > 0 %}
+              <small>{{ link.object.all_products_count }}</small>
+            {% endif %}
+          </a>
+
+          {%-
+            liquid
+            if section.blocks.size == 0
+              echo dropdown_menu
+            endif
+            for block in section.blocks
+              assign _block = block.settings
+              if _block.handle == link.title and link.links.size > 0
+                render 'menu-mega' _settings: section.settings, block: _block, link: link
+              elsif link.links != blank
+                  echo dropdown_menu
+                endif
+            endfor
+          -%}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav><!-- /.header-navigation -->
+{% endif %}

@@ -1,0 +1,384 @@
+{% schema %}
+{
+  "name": "Saloni Hero Slider Final",
+  "settings": [
+    { "type": "header", "content": "Görünüm Ayarları" },
+    { "type": "text", "id": "scroll_text", "label": "Scroll Yazısı", "default": "SCROLL" },
+    { "type": "range", "id": "title_size", "label": "Başlık (Desktop)", "min": 20, "max": 100, "step": 1, "default": 52 },
+    { "type": "range", "id": "subtitle_size", "label": "Alt Başlık (Desktop)", "min": 12, "max": 50, "step": 1, "default": 18 },
+    { "type": "range", "id": "price_size", "label": "Fiyat Boyutu", "min": 10, "max": 30, "step": 1, "default": 14 },
+    { "type": "range", "id": "title_size_mobile", "label": "Başlık (Mobil)", "min": 10, "max": 50, "step": 1, "default": 32 }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        { "type": "header", "content": "Görseller" },
+        { "type": "image_picker", "id": "image", "label": "Görsel (Masaüstü)" },
+        { "type": "image_picker", "id": "image_mobile", "label": "Mobil Görsel (Opsiyonel)", "info": "Mobilde tam görünmesini istediğiniz dikey fotoğrafı buraya yükleyin." },
+        { "type": "header", "content": "İçerik" },
+        { "type": "text", "id": "left_title", "label": "Başlık", "default": "ORION" },
+        { "type": "text", "id": "left_subtitle", "label": "Alt Başlık", "default": "Sofa" },
+        { "type": "text", "id": "left_price", "label": "Fiyat / Etiket", "default": "Starting from $1,300" },
+        { "type": "text", "id": "right_cta_label", "label": "Buton Yazısı", "default": "DISCOVER" },
+        { "type": "url", "id": "right_cta_link", "label": "Buton Linki" }
+      ]
+    }
+  ],
+  "presets": [ { "name": "Saloni Hero Slider Final" } ]
+}
+{% endschema %}
+
+<div id="saloni-hero-{{ section.id }}" class="saloni-hero-wrapper">
+
+  {% comment %}
+    -----------------------------
+    LCP OPTIMIZATION
+    -----------------------------
+  {% endcomment %}
+  {% if section.blocks.size > 0 %}
+    {% assign first_block = section.blocks.first %}
+    {% if first_block.settings.image %}
+      <img
+        src="{{ first_block.settings.image | image_url: width: 800 }}"
+        alt="Hero LCP Image"
+        width="800"
+        height="450"
+        loading="eager"
+        fetchpriority="high"
+        class="lcp-hero-injected"
+        style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;"
+      >
+    {% endif %}
+  {% endif %}
+
+  {% for block in section.blocks %}
+    <div class="saloni-hero-slide {% if forloop.first %}active-slide{% endif %}" data-index="{{ forloop.index0 }}">
+      
+      <div class="hero-image-wrapper">
+        {% if block.settings.image_mobile %}
+          {% if forloop.first %}
+            {{ block.settings.image_mobile | image_url: width: 600 | image_tag: class: 'hero-image mobile-img', loading: 'eager', fetchpriority: 'high' }}
+            {{ block.settings.image | image_url: width: 1200 | image_tag: class: 'hero-image desktop-img', loading: 'eager', fetchpriority: 'high' }}
+          {% else %}
+            {{ block.settings.image_mobile | image_url: width: 600 | image_tag: class: 'hero-image mobile-img', loading: 'lazy', fetchpriority: 'low' }}
+            {{ block.settings.image | image_url: width: 1200 | image_tag: class: 'hero-image desktop-img', loading: 'lazy', fetchpriority: 'low' }}
+          {% endif %}
+        {% elsif block.settings.image %}
+          {% if forloop.first %}
+            {{ block.settings.image | image_url: width: 1200 | image_tag: class: 'hero-image', loading: 'eager', fetchpriority: 'high' }}
+          {% else %}
+            {{ block.settings.image | image_url: width: 1200 | image_tag: class: 'hero-image', loading: 'lazy', fetchpriority: 'low' }}
+          {% endif %}
+        {% else %}
+          {{ 'lifestyle-1' | placeholder_svg_tag: 'hero-image placeholder' }}
+        {% endif %}
+      </div>
+
+      <div class="hero-content-container">
+        
+        <div class="hero-text-box">
+          {% if block.settings.left_title != blank %}
+            <h2 class="hero-title anim-item">{{ block.settings.left_title }}</h2>
+          {% endif %}
+          
+          {% if block.settings.left_subtitle != blank %}
+            <p class="hero-subtitle anim-item delay-1">{{ block.settings.left_subtitle }}</p>
+          {% endif %}
+          
+          {% if block.settings.left_price != blank %}
+            <div class="hero-price-tag anim-item delay-2">{{ block.settings.left_price }}</div>
+          {% endif %}
+        </div>
+
+        {% if block.settings.right_cta_label != blank %}
+          <div class="hero-btn-wrapper anim-item delay-3">
+            <a href="{{ block.settings.right_cta_link | default: '#' }}" class="hero-btn">
+              <span>{{ block.settings.right_cta_label }}</span>
+              <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+
+  <div class="saloni-scroll-indicator" id="saloni-scroll-btn">
+    <span class="scroll-text">{{ section.settings.scroll_text }}</span>
+    <span class="scroll-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </div>
+
+  <button class="hero-arrow prev" onclick="moveSlide(-1)">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+  </button>
+  <button class="hero-arrow next" onclick="moveSlide(1)">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  </button>
+</div>
+
+<style>
+  /* ==============================
+     MASAÜSTÜ (DEFAULT) STİLLERİ
+     ============================== */
+  .saloni-hero-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: #000;
+    overflow: hidden;
+    color: #fff;
+    margin: 0; padding: 0;
+  }
+
+  .saloni-hero-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .saloni-hero-slide.active-slide { opacity: 1; z-index: 2; }
+
+  .hero-image-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .mobile-img { display: none; }
+
+  .hero-content-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    padding: 0 5% 60px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 40%);
+  }
+
+  .hero-text-box { text-align: left; max-width: 60%; }
+  
+  .hero-title { 
+    font-size: {{ section.settings.title_size }}px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    margin: 0 0 5px 0; 
+    line-height: 1; 
+    color: #fff; 
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3); 
+  }
+  
+  .hero-subtitle { 
+    font-size: {{ section.settings.subtitle_size }}px; 
+    margin: 0 0 15px 0; 
+    color: #f0f0f0; 
+    text-shadow: 0 2px 5px rgba(0,0,0,0.3); 
+  }
+
+  /* --- FİYAT / ETIKET DÜZENLEMESİ --- */
+  .hero-price-tag { 
+    font-size: {{ section.settings.price_size }}px; 
+    font-style: italic; 
+    color: #fff; 
+    background-color: rgba(0, 0, 0, 0.75);
+    /* Daha küçük kutu için padding azaltıldı: */
+    padding: 6px 12px;
+    display: inline-block;
+    /* Metnin yatay kalmasını sağlar (satır atlamaz): */
+    white-space: nowrap; 
+    backdrop-filter: blur(4px);
+    /* Hafif tracking (harf aralığı) ile daha şık durur: */
+    letter-spacing: 0.5px;
+  }
+
+  .hero-btn {
+    display: flex; align-items: center; gap: 8px; text-decoration: none; color: #fff;
+    font-size: 14px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+    background: rgba(255, 255, 255, 0.15); padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 50px;
+    backdrop-filter: blur(4px); transition: all 0.3s ease;
+  }
+  .hero-btn:hover { background: #fff; color: #000; }
+
+  .anim-item { opacity: 0; }
+  .saloni-hero-slide.active-slide .anim-item { animation: fadeUp 0.8s forwards; }
+  .delay-1 { animation-delay: 0.2s; }
+  .delay-2 { animation-delay: 0.4s; }
+  .delay-3 { animation-delay: 0.6s; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .hero-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 60; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .prev { left: 20px; } .next { right: 20px; }
+  
+  .saloni-scroll-indicator { 
+    position: absolute; 
+    left: 50%; 
+    bottom: 20px; 
+    transform: translateX(-50%); 
+    z-index: 50; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    color: #fff; 
+    cursor: pointer; 
+    gap: 5px;
+  }
+  
+  .scroll-text {
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    opacity: 0.9;
+  }
+  
+  .scroll-icon svg { animation: bounce 2s infinite; }
+  @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-5px);} }
+
+  /* ==============================
+     MOBİL (MAX 768px) AYARLARI
+     ============================== */
+  @media(max-width: 768px) {
+    .saloni-hero-wrapper {
+      z-index: 5 !important;
+      height: auto !important; 
+      min-height: auto !important;
+      display: block; 
+    }
+    .saloni-hero-slide {
+      position: relative !important; 
+      height: auto !important;
+      display: none;
+    }
+    .saloni-hero-slide.active-slide { display: block !important; }
+    
+    .hero-image-wrapper {
+      position: relative !important;
+      width: 100%;
+      height: auto !important;
+      line-height: 0; font-size: 0;
+    }
+    .desktop-img { display: none !important; }
+    .mobile-img { display: block !important; }
+    .hero-image {
+      position: relative !important;
+      width: 100%;
+      height: auto !important;
+      object-fit: contain;
+      display: block; 
+    }
+
+    .hero-content-container {
+      position: absolute; 
+      top: 0; left: 0; right: 0; bottom: 0; 
+      padding: 0; 
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 25%);
+      pointer-events: none;
+    }
+
+    .hero-subtitle, 
+    .hero-price-tag, 
+    .btn-icon {
+      display: none !important; 
+    }
+
+    .saloni-scroll-indicator {
+      bottom: 20px;
+    }
+    .scroll-text {
+      font-size: 10px;
+    }
+
+    .hero-text-box {
+      position: absolute;
+      bottom: 25px;
+      left: 20px;
+      max-width: 30%;
+      margin: 0;
+      text-align: left;
+      pointer-events: auto;
+    }
+    .hero-title {
+      font-size: 10px !important;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin: 0;
+      text-shadow: none;
+    }
+
+    .hero-btn-wrapper {
+      position: absolute;
+      bottom: 25px;
+      right: 20px;
+      margin: 0;
+      pointer-events: auto;
+    }
+    
+    .hero-btn {
+      background: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+      font-size: 10px !important;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff !important;
+      text-transform: uppercase;
+      backdrop-filter: none;
+    }
+
+    .hero-arrow { display: none; }
+  }
+</style>
+
+<script>
+  var slideIndex_{{ section.id | replace: '-', '_' }} = 0;
+  
+  function moveSlide(n) {
+    var slides = document.querySelectorAll('#saloni-hero-{{ section.id }} .saloni-hero-slide');
+    if(slides.length === 0) return;
+    
+    slides[slideIndex_{{ section.id | replace: '-', '_' }}].classList.remove('active-slide');
+
+    slideIndex_{{ section.id | replace: '-', '_' }} += n;
+    if (slideIndex_{{ section.id | replace: '-', '_' }} >= slides.length) { slideIndex_{{ section.id | replace: '-', '_' }} = 0; }
+    if (slideIndex_{{ section.id | replace: '-', '_' }} < 0) { slideIndex_{{ section.id | replace: '-', '_' }} = slides.length - 1; }
+
+    slides[slideIndex_{{ section.id | replace: '-', '_' }}].classList.add('active-slide');
+  }
+
+  setInterval(function() {
+      moveSlide(1);
+  }, 5000);
+  
+  document.addEventListener("DOMContentLoaded", function() {
+    var scrollBtn = document.querySelector('#saloni-hero-{{ section.id }} #saloni-scroll-btn');
+    if(scrollBtn) {
+      scrollBtn.addEventListener('click', function() {
+         var slider = document.querySelector('#saloni-hero-{{ section.id }}');
+         window.scrollTo({ top: slider.offsetHeight, behavior: 'smooth' });
+      });
+    }
+  });
+</script>

@@ -1,0 +1,94 @@
+<style>
+  .section-products--{{ section.id }} {
+    {% if section.settings.overwrite_colors %}
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    {% endif %}
+    --products-count-desktop: {{ _section.products_count_desktop }};
+    --products-count-tablet: {{ _section.products_count_tablet }};
+    --products-count-mobile: {{ _section.products_count_mobile }};
+  }
+</style>
+
+<section data-aos="fade-zoom-in" class="section-products section section-products--{{ section.id }}">
+  <div class="container {% if _section.enable_fullwidth %}container--fullwidth{% endif %}">
+    {% if _section.heading != blank %}
+      <div class="
+        section__head
+        section__head--{{ section.settings.horizontal_alignment }}
+        {% if type == 'slider' and _section.arrows %}section__head--with-arrow section__head--layout-{{ section.settings.layout_arrows }} {% endif %}
+      ">
+        {% if _section.pre_heading != blank %}
+          <h6 class="section__pre-heading">
+            {{ _section.pre_heading }}
+          </h6><!-- /.section__pre-heading -->
+        {% endif %}
+
+        <h2 class="section__heading {{ _section.heading_size }}">
+          {{ _section.heading | newline_to_br }}
+        </h2><!-- /.section__heading -->
+
+        {% if type == 'slider' and _section.arrows %}
+          <div class="section__arrows swiper-arrows swiper-arrows--border">
+            <button data-arrow-prev class="swiper-arrow swiper-arrow--prev" prev aria-label="{{ 'accessibility.previous' | t }}">
+              {% render 'icon-arrow-slider' %}
+            </button>
+
+            <button data-arrow-next class="swiper-arrow swiper-arrow--next" next aria-label="{{ 'accessibility.next' | t }}">
+              {% render 'icon-arrow-slider' %}
+            </button>
+          </div><!-- /.section__arrows -->
+        {% endif %}
+      </div><!-- /.section__head -->
+    {% endif %}
+
+    <div class="section__body">
+      <{{ element }}
+        id="slider-{{- section.id -}}"
+        {% if type == 'slider' %}
+          class="swiper"
+          data-autoplay="{{ _section.autoplay }}",
+          data-autoplay-speed="{{ _section.autoplay_speed | times: 1000 }}"
+          data-slides-desktop="{{ _section.products_count_desktop }}"
+          data-slides-tablet="{{ _section.products_count_tablet }}"
+          data-slides-mobile="{{ _section.products_count_mobile }}"
+          data-arrows="{{ _section.arrows }}"
+          data-loop="{{ _section.loop }}"
+          data-breakpoints
+        {% endif %}
+      >
+        <ul class="
+          list-unstyled
+          {% if type == 'slider' %}swiper-wrapper {% else %}section__list--grid{% endif %}
+          section__list
+          section__list--cards-{{ _section.products_count_desktop }}
+          section__list--cards-tablet-{{ _section.products_count_tablet }}
+          {% if settings.card_product_aspect_ratio_desktop != 'media--original' and _section.focus %}section__list--focus{% endif %}
+        ">
+          {% for resource in resources limit: _section.products_limit %}
+            <li {% if type == 'slider' %}class="swiper-slide"{% endif %}>
+              {%- render 'card-product' product_ref: resource -%}
+            </li><!-- /.swiper-slide -->
+          {% endfor %}
+
+          {% if resources == blank %}
+            {% for i in (1.._section.products_count_desktop) %}
+              <li {% if type == 'slider' %}class="swiper-slide"{% endif %}>
+                {% assign placeholder_image_handle = 'product-' | append: i %}
+                {%- render 'card-product', placeholder_image: placeholder_image_handle -%}
+              </li><!-- /.swiper-slide -->
+            {% endfor %}
+          {% endif %}
+        </ul><!-- /.swiper-wrapper -->
+      </{{ element }}>
+    </div><!-- /.section__body -->
+
+    {% if _section.button_label != blank and _section.button_link != blank %}
+      <div class="section__foot">
+        <div class="section__actions section__actions--{{ section.settings.button_position }}">
+          <a href="{{	_section.button_link }}" class="button {{ _section.button_style }}">{{ _section.button_label }}</a>
+        </div><!-- /.section__actions -->
+      </div><!-- /.section__foot -->
+    {% endif %}
+  </div><!-- /.container -->
+</section><!-- /.section-products -->

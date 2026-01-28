@@ -1,0 +1,95 @@
+{{- 'section-blog.css' | asset_url | stylesheet_tag -}}
+{{- 'card-article.css' | asset_url | stylesheet_tag -}}
+
+<section class="blog">
+  <header class="blog__head">
+    {%- if blog.all_tags.size > 0 -%}
+      <nav class="blog__nav caption center">
+        <div class="container container--medium">
+          {% if section.settings.enable_filters %}
+            <ul class="blog__links list-unstyled">
+              <li class="blog__link {% unless request.path contains 'tagged' %}blog__link--active{% endunless %}">
+                {%-
+                  liquid
+                  assign link_all_text = 'blog.categories.all.text' | t
+                  assign link_all_title = 'blog.categories.all.title' | t
+                  echo link_all_text | link_to: blog.url, title: link_all_title | replace: 'href', 'class="full-unstyled-link" href'
+                -%}
+              </li><!-- /.blog__link -->
+
+              {%- for tag in blog.all_tags -%}
+                {% if tag contains 'read_time:' %}
+                  {% continue %}
+                {% endif %}
+
+                {% assign tag_handle = tag | downcase %}
+                <li class="blog__link {% if request.path contains tag_handle %}blog__link--active{% endif %}">
+                  {{- tag | link_to_tag: tag | replace: 'href', 'class="full-unstyled-link" href' -}}
+                </li><!-- /.blog__link -->
+              {%- endfor -%}
+            </ul><!-- /.blog__links list-unstyled -->
+          {% endif %}
+        </div><!-- /.container -->
+      </nav><!-- /.blog__nav caption center -->
+    {%- endif -%}
+  </header><!-- /.blog__head -->
+
+  {%- paginate blog.articles by 8 -%}
+    <div class="blog__body">
+      <div class="container container--medium">
+        {%- if blog.articles_count > 0 -%}
+          <div class="blog__grid grid grid--2">
+            {%- for article_ref in blog.articles -%}
+              {% render 'card-article', article_ref: article_ref %}
+            {%- endfor -%}
+          </div><!-- /.blog__grid grid -->
+        {%- else -%}
+          <h2 class="h5 regular center">{{- 'blog.empty' | t -}}</h2><!-- /.h5 regular center -->
+        {%- endif -%}
+      </div><!-- /.container -->
+    </div><!-- /.blog__body -->
+
+    {%- if paginate.pages > 1 -%}
+      <div class="blog_pagination pagination">
+        {%- render 'pagination', paginate: paginate, anchor: '' -%}
+      </div><!-- /.blog_pagination -->
+    {%- endif -%}
+  {%- endpaginate -%}
+</section><!-- /.blog -->
+
+{% schema %}
+{
+  "name": "t:sections.main-blog.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_filters",
+      "label": "t:sections.main-blog.settings.enable_filters.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "t:sections.featured-articles.settings.show_date.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "t:sections.featured-articles.settings.show_excerpt.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "t:sections.featured-articles.settings.show_author.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "t:sections.featured-articles.settings.show_tags.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

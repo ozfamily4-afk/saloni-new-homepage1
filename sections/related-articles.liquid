@@ -1,0 +1,76 @@
+{{- 'related-articles.css' | asset_url | stylesheet_tag -}}
+{{- 'card-article.css' | asset_url | stylesheet_tag -}}
+
+{%- if blog.previous_article or blog.next_article -%}
+  <section class="related-articles section">
+    <div class="container">
+      <div class="related-articles__head section__head">
+        {% if section.settings.pre_heading != blank %}
+          <h6 class="article__pre-heading section__pre-heading">
+            {{ section.settings.pre_heading }}
+          </h6><!-- /.article__pre-heading -->
+        {% endif %}
+
+        {% if section.settings.heading != blank %}
+          <h2 class="article__title section__heading {{ section.settings.heading_size }}">
+            {{ section.settings.heading }}
+          </h2><!-- /.article__title -->
+        {% endif %}
+      </div><!-- /.related-articles__head  -->
+
+      <div class="related-articles__body">
+        <div class="grid grid--2">
+          {%- if blog.previous_article -%}
+            <div class="grid__item">
+              {%- render 'card-article', article_ref: blog.previous_article -%}
+            </div><!-- /.grid__item -->
+          {%- endif -%}
+
+          {%- if blog.next_article -%}
+            <div class="grid__item">
+              {%- render 'card-article', article_ref: blog.next_article -%}
+            </div><!-- /.grid__item -->
+          {%- endif -%}
+        </div><!-- /.grid -->
+      </div><!-- /.related-articles__body -->
+    </div><!-- /.container container--narrow -->
+  </section><!-- /.related-articles -->
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.related-articles.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "pre_heading",
+      "label": "t:sections.global.settings.subheading.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    }
+  ]
+}
+{% endschema %}

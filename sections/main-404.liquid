@@ -1,0 +1,73 @@
+{{- 'section-not-found.css' | asset_url | stylesheet_tag -}}
+
+<section class="section-not-found">
+  <div class="container center">
+    {%- if section.settings.heading != blank -%}
+      <h1 class="section__title {{ section.settings.heading_size }}">{{- section.settings.heading -}}</h1><!-- /.regular -->
+    {%- endif -%}
+
+    {%- if section.settings.description != blank -%}
+      <div class="section__entry">
+        {{ section.settings.description }}
+      </div><!-- /.section__entry -->
+    {%- endif -%}
+
+    {%- if section.settings.link_text != blank and section.settings.link_url != blank -%}
+      <div class="section__actions">
+        <a href="{{ section.settings.link_url }}">{{ section.settings.link_text }}</a>
+      </div><!-- /.section__actions -->
+    {%- endif -%}
+  </div><!-- /.container center -->
+</section><!-- /.section -->
+
+{% schema %}
+{
+  "name": "t:sections.main-404.name",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "<p>404</p>"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:sections.global.settings.description.label",
+      "default": "<p>Page not found</p>"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "t:sections.main-404.settings.link_text.label",
+      "default": "Continue shopping"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "t:sections.main-404.settings.link_url.label",
+      "default": "/collections/all"
+    }
+  ]
+}
+{% endschema %}

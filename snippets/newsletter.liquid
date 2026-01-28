@@ -1,0 +1,68 @@
+{%- comment -%}
+  Accepts:
+  - heading {String} Heading
+  - subheading {String} Body text
+  - show_privacy_note {Boolean} Show privacy note
+  - button_style {String} Button style
+
+  Usage:
+  {% render 'newsletter' heading: _block.heading, subheading: _block.subheading, show_privacy_note: _block.show_privacy_note %}
+{%- endcomment -%}
+
+<link rel="stylesheet" href="{{ 'newsletter.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'newsletter.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<script src="{{- 'form-validation.js' | asset_url -}}" defer></script>
+
+<form-validation>
+  <div class="newsletter">
+    {% if heading != blank %}
+      <h5 class="newsletter__heading caption-ffb">{{ heading }}</h5><!-- /.newsletter__heading -->
+    {% endif %}
+
+    {% if subheading != blank %}
+      <p class="newsletter__subheading">{{ subheading }}</p><!-- /.newsletter__subheading -->
+    {% endif %}
+
+    {% form 'customer', id: 'Contact-Form-Newsletter' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+
+      {%- if form.posted_successfully? -%}
+        <p class="newsletter__successfully-message">{{ 'newsletter.successfully' | t }}</p>
+
+      {% elsif form.errors %}
+        <p>{{ 'newsletter.error' | t }}</p>
+      {%- endif -%}
+
+      <div class="newsletter__controls">
+        <label hidden for="NewsletterForm--{{ section.id }}">{{ 'newsletter.your_email' | t }}</label>
+
+        <input
+          id="NewsletterForm--{{ section.id }}"
+          type="email"
+          name="contact[email]"
+          pattern="^[\w]{1,}[\w.+-]{0,}@[\w-]{2,}([.][a-zA-Z]{2,}|[.][\w-]{2,}[.][a-zA-Z]{2,})$"
+          placeholder="{{ 'newsletter.your_email' | t }}"
+        />
+
+        <button type="submit" class="button {{ button_style }}">
+          {{ 'newsletter.subscribe' | t }}
+        </button>
+      </div><!-- /.newsletter__controls -->
+    {% endform %}
+
+    <span data-error class="invalid-email-error hidden">
+      {% render 'icon-info-circle' %}
+
+      {{ 'general.validation.invalid_email' | t }}
+    </span><!-- /.invalid-email-error -->
+
+    {% if show_privacy_note %}
+      <p class="newsletter__policy">{{ 'newsletter.privacy_policy_link_html' | t }}</p><!-- /.newsletter__policy -->
+    {% endif %}
+  </div><!-- /.newsletter -->
+</form-validation>
+

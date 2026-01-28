@@ -1,0 +1,75 @@
+{%- comment -%}
+  Snippet: fabric-family-card
+  Parametreler:
+    fam (fabric_family entry)
+    variants (fabric_variant[] - ürün metafield'ından)
+{%- endcomment -%}
+
+{%- assign fam_name = fam.name | default: '' -%}
+{%- assign fam_desc = fam.description | default: '' -%}
+{%- assign fam_img = fam.cover_image | default: nil -%}
+{%- assign fam_img_url = fam_img | image_url: width: 200, height: 200, crop: "center" -%}
+
+{%- assign has_children = false -%}
+{%- capture variants_html -%}
+  <div class="fabric-variants">
+  {%- if variants != blank -%}
+    {%- for v in variants -%}
+      {%- if v.family and v.family.handle == fam.handle -%}
+        {%- assign has_children = true -%}
+        {%- assign v_name = v.name | default: '' -%}
+        {%- assign v_img = v.large_image -%}
+        {%- assign v_img_sq = v_img | image_url: width: 600, height: 600, crop: "center" -%}
+        <div class="fabric-variant" data-variant data-image="{{ v_img | image_url: width: 1200 }}" data-title="{{ v_name | escape }}">
+          <p class="fabric-variant__name">{{ v_name }}</p>
+          <div class="fabric-variant__tile" aria-label="{{ v_name | escape }}" role="button" tabindex="0">
+            <img src="{{ v_img_sq }}" alt="{{ v_name | escape }}" loading="lazy" width="600" height="600">
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  </div>
+{%- endcapture -%}
+
+{%- assign fam_card_img = fam_img_url -%}
+{%- if fam_card_img == blank and has_children and variants != blank -%}
+  {%- for v in variants -%}
+    {%- if v.family and v.family.handle == fam.handle -%}
+      {%- assign fam_card_img = v.large_image | image_url: width: 200, height: 200, crop: "center" -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+<article class="fabric-family-card" aria-expanded="false">
+  <button class="fabric-family-card__button" type="button" data-family-toggle aria-controls="panel-{{ fam.handle | default: fam_name | handleize }}" aria-expanded="false">
+    <span class="fabric-family-card__thumb">
+      {%- if fam_card_img != blank -%}
+        <img src="{{ fam_card_img }}" alt="{{ fam_name | escape }}" loading="lazy" width="44" height="44">
+      {%- endif -%}
+    </span>
+    <h3 class="fabric-family-card__title">{{ fam_name }}</h3>
+  </button>
+
+  <div id="panel-{{ fam.handle | default: fam_name | handleize }}" class="fabric-family-card__panel">
+    {%- if has_children -%}
+      {{ variants_html }}
+    {%- endif -%}
+    {%- if fam_desc != blank -%}
+      <div class="fabric-family-card__desc">
+        {{ fam_desc }}
+      </div>
+    {%- endif -%}
+    {%- if has_children == false and fam_card_img != blank -%}
+      <div class="fabric-variants">
+        <div class="fabric-variant" data-variant data-image="{{ fam.cover_image | image_url: width: 1200 }}" data-title="{{ fam_name | escape }}">
+          <p class="fabric-variant__name">{{ fam_name }}</p>
+          <div class="fabric-variant__tile" aria-label="{{ fam_name | escape }}" role="button" tabindex="0">
+            <img src="{{ fam_card_img }}" alt="{{ fam_name | escape }}" loading="lazy" width="600" height="600">
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</article>

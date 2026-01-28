@@ -1,0 +1,213 @@
+<link rel="stylesheet" href="{{ 'section-media.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'section-media.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<script src="{{ 'video-media.js' | asset_url }}" defer="defer"></script>
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    .section-media--{{ section.id }} {
+      --background: {{ section.settings.background }};
+    }
+  </style>
+{% endif %}
+
+{%- capture video_button -%}
+  {%- unless section.settings.autoplay -%}
+    <button type="button" class="section__media-button-play">
+      {% render 'icon-play' %}
+    </button><!-- /.section__media-button-play -->
+  {%- endunless -%}
+{%- endcapture -%}
+
+<section class="section-media section-media--{{ section.id }}">
+  <div data-aos="fade-up" class="container container--fullwidth">
+    <div class="
+      section__media
+      media
+      {{ section.settings.aspect_ratio_desktop }}
+      {{ section.settings.aspect_ratio_mobile }}
+    ">
+      {% if  section.settings.video != blank %}
+        <video-media {% if section.settings.video_mobile != blank or section.settings.image_mobile != blank %}class="small-hide"{% endif %}>
+          {{ section.settings.video | video_tag: image_size: '1920x', controls: section.settings.autoplay, autoplay: section.settings.autoplay, loop: section.settings.loop, alt: section.settings.video.alt }}
+
+          {{ video_button }}
+        </video-media>
+      {% endif %}
+
+      {% if section.settings.video_mobile != blank %}
+        <video-media class="section__video-mobile medium-hide medium-up-hide">
+          {{ section.settings.video_mobile | video_tag: image_size: '767x', controls: true, autoplay: section.settings.autoplay, loop: section.settings.loop }}
+
+          {{ video_button }}
+        </video-media>
+      {% endif %}
+
+      {% if section.settings.image_desktop %}
+        <div
+          class="section__image-desktop
+          {% if section.settings.image_mobile != blank or section.settings.video_mobile != blank %}small-hide{% endif %}
+          {% if section.settings.video != blank %}medium-hide medium-up-hide{% endif %}
+        ">
+          {%-
+            liquid
+            assign image = section.settings.image_desktop
+            assign image_src = image | image_url: width: 500
+            capture image_srcset
+              render 'srcset', image: image, widths: '1100,1500,1780,2000,3000,3840'
+            endcapture
+            assign image_alt = image.alt | escape
+
+            render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+          -%}
+        </div><!-- /.section__image-desktop -->
+      {% endif %}
+
+      {% if section.settings.image_mobile %}
+        <div class="section__image-mobile medium-hide medium-up-hide {% if section.settings.video_mobile != blank %}small-hide{% endif %}">
+          {%-
+            liquid
+            assign image = section.settings.image_mobile
+            assign image_src = image | image_url: width: 375
+            capture image_srcset
+              render 'srcset', image: image
+            endcapture
+            assign image_alt = image.alt | escape
+
+            render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+          -%}
+        </div><!-- /.section__image-mobile -->
+      {% endif %}
+      <div class="
+        {% unless section.settings.image_desktop == blank and section.settings.video == blank %}hidden{% endunless %}
+        {% unless section.settings.image_mobile == blank and section.settings.video_mobile == blank %}small-hide{% endunless %}
+      ">
+        {{ 'lifestyle-1' | placeholder_svg_tag }}
+      </div>
+    </div><!-- /.section__media -->
+  </div><!-- /.container -->
+</section><!-- /.section-media -->
+
+{% schema %}
+{
+  "name": "t:sections.media.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_desktop",
+      "label": "t:sections.global.settings.aspect_ratio_desktop.label",
+      "options": [
+        {
+          "value": "media--21-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.21_9.label"
+        },
+        {
+          "value": "media--2-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_1.label"
+        },
+        {
+          "value": "media--16-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.16_9.label"
+        },
+        {
+          "value": "media--3-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_2.label"
+        },
+        {
+          "value": "media--1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        },
+        {
+          "value": "media--viewport",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.viewport.label"
+        }
+      ],
+      "default": "media--2-1"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_mobile",
+      "label": "t:sections.global.settings.aspect_ratio_mobile.label",
+      "options": [
+        {
+          "value": "media--mobile-9-16",
+          "label": "t:sections.global.settings.aspect_ratio_mobile.options.9_16.label"
+        },
+        {
+          "value": "media--mobile-2-3",
+          "label": "t:sections.global.settings.aspect_ratio_mobile.options.2_3.label"
+        },
+        {
+          "value": "media--mobile-4-5",
+          "label": "t:sections.global.settings.aspect_ratio_mobile.options.4_5.label"
+        },
+        {
+          "value": "media--mobile-1-1",
+          "label": "t:sections.global.settings.aspect_ratio_mobile.options.1_1.label"
+        },
+        {
+          "value": "media--mobile-viewport",
+          "label": "t:sections.global.settings.aspect_ratio_mobile.options.viewport.label"
+        }
+      ],
+      "default": "media--mobile-2-3"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "t:sections.global.settings.image.label_desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.global.settings.image.label_mobile"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:sections.media.settings.video.label",
+      "info": "t:sections.media.settings.video.info"
+    },
+    {
+      "type": "video",
+      "id": "video_mobile",
+      "label": "t:sections.media.settings.video_mobile.label",
+      "info": "t:sections.media.settings.video_mobile.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.media.settings.autoplay.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "t:sections.media.settings.loop.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.media.name"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

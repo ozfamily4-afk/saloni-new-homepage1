@@ -1,0 +1,6 @@
+<span class="util-text">{{ 'general.header_utils.cart' | t }}</span>
+
+<i class="icon icon--large {% if cart.item_count > 0 %}has-item-count{% endif %}">
+  {%- render 'icon-cart' -%}
+  <span class="cart-count-badge caption caption--small{% if cart.item_count == 0 %} hidden{% endif %}">{{- cart.item_count -}}</span>
+</i><!-- /.icon -->

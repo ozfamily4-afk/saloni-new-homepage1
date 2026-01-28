@@ -1,0 +1,21 @@
+<modal-dialog
+  id="{{- id -}}"
+  class="modal-dialog {{ modifiers }} {{ class }}"
+>
+  <div class="modal-dialog__container">
+    <button
+      id="ModalClose-Overlay-{{- id -}}"
+      type="button"
+      class="modal-dialog__close"
+      aria-label="{{- 'accessibility.close' | t -}}"
+    >
+      {% render 'icon-close' %}
+    </button>
+
+    <div role="dialog" class="modal-dialog__inner">
+      <div data-content class="modal-dialog__content">
+        {{ content }}
+      </div><!-- /.modal-dialog__content -->
+    </div><!-- /.modal-dialog__inner -->
+  </div><!-- /.modal-dialog__container -->
+</modal-dialog>

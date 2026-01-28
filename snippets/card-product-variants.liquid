@@ -1,0 +1,60 @@
+{%- comment -%}
+  Accepts:
+  - product_ref {Object} Product
+  - modifier {String} Class modifier
+
+  Usage:
+  {% render 'card-product-variants', product_ref: product_ref, modifier: 'mobile' %}
+{%- endcomment -%}
+
+{% if product_ref.options_with_values[0].name != 'Title' and product_ref.options_with_values[0].name != settings.swatches_option %}
+  <div class="card__variant-list {% if modifier != blank %}card__variant-list--{{ modifier }}{% endif %}">
+    {% for option in product_ref.options_with_values %}
+      {% if option.name == settings.size_option_name %}
+        <div class="card__variant card__variant--size">
+          <legend class="card__variant__label">{{- 'products.product.size_option_name' | t -}}</legend>
+
+          {%- for value in option.values -%}
+            <input
+              type="radio"
+              data-size
+              data-position="{{ option.position }}"
+              data-value="{{ value }}"
+              id="{{- section.id -}}-{{- option.position -}}-{{- forloop.index0 -}}-{{- product_ref.id -}}-{{- value | escape -}}"
+              name="size-{{ product_ref.id }}-{{ section.id }}"
+              value="{{- value | escape -}}"
+              class="visually-hidden"
+              {% if option.selected_value == value %}checked{% endif %}
+            >
+            <label
+              for="{{- section.id -}}-{{- option.position -}}-{{- forloop.index0 -}}-{{- product_ref.id -}}-{{- value | escape -}}"
+              class="size-box"
+              title="{{- value -}}"
+            >
+              <span>{{- value -}}</span>
+            </label>
+          {%- endfor -%}
+        </div><!-- /.card__variant -->
+      {% elsif option.name != settings.swatches_option %}
+        <div class="card__variant card__variant--select">
+          <legend class="card__variant__label">{{- option.name -}}</legend>
+
+          {%- capture options -%}
+            {%- for value in option.values -%}
+              <option
+                value="{{- value | escape -}}"
+                data-position="{{ option.position }}"
+                data-value="{{ value }}"
+                {% if option.selected_value == value %}selected="selected"{% endif %}
+              >
+                {{- value -}}
+              </option>
+            {%- endfor -%}
+          {%- endcapture -%}
+
+          {%- render 'select-input', label: label, id: id, name: name, options: options, class: 'card__selector-dropdown' -%}
+        </div><!-- /.card__variant -->
+      {% endif %}
+    {% endfor %}
+  </div><!-- /.card__variant-list -->
+{% endif %}

@@ -1,0 +1,24 @@
+<section class="section-{{ section.id }}">
+  <div class="container container--fullwidth container--margin">
+    {{- section.settings.custom_liquid -}}
+  </div><!-- /.container container--fullwidth -->
+</section><!-- /.section -->
+
+{% schema %}
+{
+  "name": "t:sections.custom-liquid.name",
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "t:sections.custom-liquid.settings.custom_liquid.label",
+      "info": "t:sections.custom-liquid.settings.custom_liquid.info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.custom-liquid.name"
+    }
+  ]
+}
+{% endschema %}

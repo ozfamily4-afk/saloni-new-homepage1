@@ -1,0 +1,24 @@
+.product__gift-card-recipient-form {
+  margin: 1.6rem 0;
+}
+
+.gift-card-recipient__field {
+  display: flex;
+}
+
+.gift-card-recipient__fields {
+  display: none;
+  margin-top: 1.6rem;
+}
+
+.gift-card-recipient-form > input[type='checkbox'] {
+  accent-color: var(--color, var(--color-base));
+}
+
+.gift-card-recipient-form > input[type='checkbox']:checked ~ .gift-card-recipient__fields{
+  display: block;
+}
+
+.gift-card-recipient__row + .gift-card-recipient__row {
+  margin-top: 1.6rem;
+}

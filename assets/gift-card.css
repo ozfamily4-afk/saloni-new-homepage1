@@ -1,0 +1,92 @@
+.gift-card {
+  color: var(--color);
+  background-color: var(--background);
+  padding-bottom: 5rem;
+}
+
+.gift-card__head {
+  padding: 5rem;
+  border-bottom: 1px solid var(--color-form-input-border-light);
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .gift-card__head {
+    padding: 3rem 0;
+  }
+}
+
+.gift-card__logo {
+  font-size: 3rem;
+  text-decoration: none;
+  display: inline-block;
+  width: 100%;
+}
+
+.gift-card__logo img,
+.gift-card__logo svg {
+  object-fit: contain;
+  height: 100%;
+  max-width: var(--logo-width-desktop);
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .gift-card__logo img,
+  .gift-card__logo svg {
+    max-width: var(--logo-width-mobile);
+  }
+}
+
+.gift-card__heading {
+  margin: 2rem 0 0;
+}
+
+.gift-card__price {
+  margin: 2rem 0;
+}
+
+.gift-card__image-wrapper {
+  min-height: 20rem;
+  max-width: 44rem;
+  margin-inline: auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--border-radius);
+}
+
+.gift-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  background-color: var(--background, var(--color-base-background));
+  padding: 2.4rem;
+  border-left: 0.1rem solid var(--color-form-input-border-light);
+  border-bottom: 0.1rem solid var(--color-form-input-border-light);
+  border-bottom-left-radius: 3.2rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.gift-card__field {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.gift-card__qr-code img {
+  margin: 2rem auto;
+}
+
+.gift-card__information {
+  margin-top: 4rem;
+}
+
+.gift_card__apple-wallet {
+  display: inline-block;
+  margin: 1rem 0;
+}
+
+.gift-card__buttons {
+  max-width: 44rem;
+  margin: 4rem auto 0;
+}

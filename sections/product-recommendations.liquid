@@ -1,0 +1,213 @@
+<link rel="stylesheet" href="{{ 'component-products-feed.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'component-products-feed.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<script src="{{- 'products-carousel.js' | asset_url -}}" defer="defer"></script>
+<script src="{{- 'product-recommendations.js' | asset_url -}}" defer="defer"></script>
+
+{% if template == 'cart' and cart.item_count > 0 %}
+  {% assign product = cart.items[0].product %}
+{% endif %}
+
+{% if product != blank %}
+  <product-recommendations data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=10">
+    {% if recommendations.performed and recommendations.products_count > 0 %}
+      {%- render 'products-feed',
+        element: 'products-carousel',
+        type: 'slider',
+        _section: section.settings,
+        resources: recommendations.products
+      -%}
+    {% endif %}
+  </product-recommendations>
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:sections.product-recommendations.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_fullwidth",
+      "label": "t:sections.global.settings.enable_wide.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "focus",
+      "label": "t:sections.featured-products.settings.focus.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.text_content"
+    },
+    {
+      "type": "text_alignment",
+      "id": "horizontal_alignment",
+      "label": "t:sections.global.settings.horizontal_alignment.label",
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "pre_heading",
+      "label": "t:sections.global.settings.subheading.label",
+      "default": "Add a tagline"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "Heading for recommendations products"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.global.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.global.settings.button_link.label"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.global.settings.button_style.label",
+      "options": [
+        {
+          "value": "button--style-1",
+          "label": "t:sections.global.settings.button_style.options.style_one"
+        },
+        {
+          "value": "button--style-2",
+          "label": "t:sections.global.settings.button_style.options.style_two"
+        },
+        {
+          "value": "button--style-3",
+          "label": "t:sections.global.settings.button_style.options.style_three"
+        },
+        {
+          "value": "button--style-4",
+          "label": "t:sections.global.settings.button_style.options.style_four"
+        }
+      ],
+      "default": "button--style-2"
+    },
+    {
+      "type": "text_alignment",
+      "id": "button_position",
+      "label": "t:sections.featured-products.settings.button_position.label",
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.slideshow"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrows",
+      "label": "t:sections.global.settings.arrows.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.global.settings.autoplay.label"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "t:sections.global.settings.autoplay_interval.label",
+      "unit": "s",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "products_count_desktop",
+      "label": "t:sections.featured-products.settings.products_count_desktop.label",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "products_count_tablet",
+      "label": "t:sections.featured-products.settings.products_count_tablet.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "products_count_mobile",
+      "label": "t:sections.featured-products.settings.products_count_mobile.label",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product-recommendations.name"
+    }
+  ],
+  "templates": [
+    "product",
+    "cart"
+  ]
+}
+{% endschema %}

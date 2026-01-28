@@ -1,0 +1,200 @@
+.hotspot {
+  display: block;
+  position: absolute;
+  top: var(--y-position);
+  left: var(--x-position);
+  transform: translate(-50%, -50%);
+  user-select: none;
+  padding: 2rem 1.6rem;
+}
+
+@media (max-width: 767px) {
+  .hotspot {
+    padding: 0;
+  }
+}
+
+.hotspot button {
+  position: relative;
+  width: 2.4rem;
+  height: 2.4rem;
+  background: transparent;
+  background-color: var(--color-pin);
+  border: 0.6rem solid var(--color-pin);
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0rem;
+}
+
+.hotspot:hover button,
+.hotspot:focus-within button {
+  background-color: transparent;
+  transform: scale(1.3);
+}
+
+@media (max-width: 767px) {
+  .hotspot:hover button,
+  .hotspot:focus-within button,
+  .hotspot[active] button {
+    background-color: transparent;
+    transform: scale(1.1);
+  }
+}
+
+.hotspot__content {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  min-width: 27.2rem;
+  width: max-content;
+  padding: 2.4rem;
+  border-radius: var(--border-radius);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  color: var(--color);
+  background-color: var(--background, var(--color-base-background));
+}
+
+@media (max-width: 767px) {
+  .hotspot .hotspot__content {
+    display: none;
+  }
+}
+
+.hotspot[active],
+.hotspot:hover,
+.hotspot:focus-within {
+  z-index: 1;
+}
+
+.hotspot:hover .hotspot__content,
+.hotspot:focus-within .hotspot__content {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 9;
+}
+
+@media (max-width: 767px) {
+  .hotspot[active] .hotspot__content {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 9;
+  }
+}
+
+.hotspot__content .hotspot__close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 1.5rem;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .hotspot__content .hotspot__close-button {
+    display: none;
+  }
+}
+
+.hotspot__content .hotspot__close-button:hover {
+  opacity: 0.6;
+}
+
+.hotspot__inner {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+@media (max-width: 767px) {
+  .hotspot__inner {
+    max-width: 90%;
+  }
+}
+
+.hotspot__inner:hover h6 {
+  text-decoration: underline;
+}
+
+.hotspot__content img,
+html.no-js .hotspot__content img {
+  width: 8rem;
+  height: 8rem;
+  object-fit: cover;
+  border-radius: var(--border-radius);
+  margin-right: 1.6rem;
+}
+
+.hotspot__entry {
+  max-width: 40rem;
+}
+
+@media (max-width: 1023px) {
+  .hotspot__entry {
+    max-width: 24rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .hotspot__entry {
+    max-width: 100%;
+  }
+}
+
+.hotspot__content h6 {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+}
+
+@media (max-width: 767px) {
+  .hotspot__content h6 {
+    font-size: 1.6rem;
+  }
+}
+
+.hotspot__content h6 a,
+.hotspot__content ins {
+  text-decoration: none;
+  color: var(--color);
+}
+
+@media (max-width: 767px) {
+  .hotspot__content ins {
+    font-size: 1.4rem;
+  }
+}
+
+.hotspot__content-mobile {
+  position: relative;
+}
+
+.hotspot__content-mobile .hotspot__content {
+  top: 0.8rem;
+  left: 0;
+  right: 0;
+  transform: none;
+  max-width: 100%;
+  min-width: 100%;
+  z-index: 9;
+  transition: none;
+  padding: 0.8rem;
+  box-shadow: 0 20px 50px 0px rgb(0 0 0 / 16%);
+}
+
+@media (max-width: 767px) {
+  .hotspot__content-mobile .hotspot__content[active] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .section-image-hotspots--flip .hotspot__content {
+    left: unset;
+    right: 100%;
+  }
+}
+

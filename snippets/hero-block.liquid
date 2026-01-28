@@ -1,0 +1,167 @@
+{% comment %}
+  Accepts:
+    color: {String} Text color
+    background: {String} Background
+    image_desktop: {Object} Image desktop
+    image_mobile: {Object} Image mobile
+    video: {Object} Video
+    vertical_align: {String} Vertical align
+    horizontal_alignment: {String} Horizontal alignment
+    heading_size: {String} Heading size
+    heading: {String} Heading
+    subheading: {String} Subheading
+    content_width: {String} Content width
+    button_label_1: {String} Button label 1
+    button_link_1: {String} Button link 1
+    button_style_1: {String} Button style 1
+    button_style_hover_outline_1: {String} Button style hover outline 1
+    button_label_2: {String} Button label 2
+    button_link_2: {String} Button link 2
+    button_style_2: {String} Button style 2
+    button_style_hover_outline_2: {String} Button style hover outline 2
+    is_first_loop: {Boolean} Is first loop
+    aspect_ratio_desktop: {String} Aspect ratio desktop
+    aspect_ratio_mobile: {String} Aspect ratio mobile
+  Usage:
+    {% render 'hero-block' %}
+{% endcomment %}
+
+{%-
+  liquid
+  assign has_buttons = false
+  if button_link_1 != blank and button_label_1 != blank
+    assign has_buttons = true
+  endif
+  if button_link_2 != blank and button_label_2 != blank
+    assign has_buttons = true
+  endif
+-%}
+
+<div class="hero__slide" style="--color: {{ color }};">
+  <div class="hero__image-background" style="--background: {{ background }}"></div><!-- /.hero__background -->
+
+  {% if video_mobile != blank %}
+    <div class="hero__video hero__video--mobile medium-hide medium-up-hide media {{ aspect_ratio_mobile }}">
+      {{ video_mobile | video_tag: controls: false, autoplay: true, muted: true, loop: true, image_size: '767x' }}
+    </div><!-- /.hero__video -->
+  {% endif %}
+
+  {% if video != blank %}
+    <div class="
+      hero__video
+      media
+      {{ aspect_ratio_desktop }}
+      {{ aspect_ratio_mobile }}
+      {% if video_mobile != blank %}small-hide{% endif %}
+      {% if video_mobile == blank and image_mobile != blank %}small-hide{% endif %}
+    ">
+      {% if video != blank %}
+        {{ video | video_tag: controls: false, autoplay: true, muted: true, loop: true, image_size: '1920x' }}
+      {% endif %}
+    </div><!-- /.hero__video -->
+  {% endif %}
+
+  {% if image_desktop or image_mobile %}
+    <div class=" hero__image">
+      <div class="
+        hero__media
+        media
+        {{ aspect_ratio_desktop }}
+        {{ aspect_ratio_mobile }}
+        {% if video != blank %}medium-hide medium-up-hide{% endif %}
+        {% if image_mobile != blank or video_mobile != blank %}small-hide{% endif %}
+        {% if image_mobile == blank and video_mobile == blank and video != blank %}small-hide{% endif %}
+      ">
+        {%-
+          liquid
+          if image_desktop
+            assign image = image_desktop
+            assign image_src = image | image_url: width: 500
+            capture image_srcset
+              render 'srcset', image: image, widths: '767,1100,1500,1780,2000,3000,3840'
+              assign sizes = '(max-width: 480px) 767px,(max-width: 767px) 1100px'
+            endcapture
+            assign image_alt = image.alt | escape
+            assign desktop_lazy = true
+            if image_mobile == blank and is_first_loop
+              assign desktop_lazy = false
+            endif
+
+            render 'image', src: image_src, srcset: image_srcset, sizes: sizes, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point, lazyload: desktop_lazy
+          endif
+        -%}
+      </div><!-- /.media media--16-9 -->
+
+      {% if image_mobile != blank %}
+        <div class="media {{ aspect_ratio_mobile }} medium-hide medium-up-hide {% if video_mobile != blank %}small-hide{% endif %}">
+          {%-
+            liquid
+            assign image = image_mobile
+            assign image_src = image | image_url: width: 375
+            capture image_srcset
+              render 'srcset', image: image, widths: '767'
+              assign sizes = '(max-width: 767px) 767px'
+            endcapture
+            assign image_alt = image.alt | escape
+
+            assign lazyload = true
+            if is_first_loop
+              assign lazyload = false
+            endif
+
+            render 'image', src: image_src, srcset: image_srcset, sizes: sizes, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point, lazyload: lazyload
+          -%}
+        </div><!-- /.media media--9-16 medium-hide medium-up-hide -->
+      {% endif %}
+    </div><!-- /.hero__image -->
+  {% else %}
+    <div class="
+      hero__video
+      media
+      {{ aspect_ratio_desktop }}
+      {{ aspect_ratio_mobile }}
+      {% if video != blank %}hidden{% endif %}
+    ">
+      {{ 'lifestyle-2' | placeholder_svg_tag }}
+    </div>
+  {% endif %}
+
+  <div
+    class="hero__content
+    hero__content--vertical-{{ vertical_align }}
+    hero__content--horizontal-{{ horizontal_alignment }}
+    {% if content_width %}hero__content-width--{{ content_width }}{% endif %}"
+  >
+    <div class="hero__container container {% if enable_header_full_width %}container--fullwidth{% endif %}">
+      <div class="hero__content-inner">
+          {% if heading != blank %}
+            <h2 class="hero__title {{ heading_size }}">
+              {{ heading | newline_to_br }}
+            </h2><!-- /.hero__title -->
+          {% endif %}
+
+          {% if subheading != blank %}
+            <div class="hero__entry">
+              {{ subheading }}
+            </div><!-- /.hero__entry -->
+          {% endif %}
+
+        {% if has_buttons %}
+          <div class="hero__actions">
+            {% if button_label_1 != blank and button_link_1 != blank %}
+              <a class="button {{ button_style_1 }} {% if button_style_hover_outline_1 %}button--outline{% endif %} button--style-1"
+                href="{{	button_link_1 }}">{{ button_label_1 }}
+              </a>
+            {% endif %}
+
+            {% if button_label_2 != blank and button_link_2 != blank %}
+              <a class="button {{ button_style_2 }} {% if button_style_hover_outline_2 %}button--outline{% endif %} button--style-2"
+                href="{{	button_link_2 }}">{{ button_label_2 }}
+              </a>
+            {% endif %}
+          </div><!-- /.hero__actions -->
+        {% endif %}
+      </div><!-- /.hero__content-inner -->
+    </div><!-- /.hero__container -->
+  </div><!-- /.hero__content -->
+</div><!-- /.hero__slide -->

@@ -1,0 +1,26 @@
+.section-not-found {
+  padding: 160px 0;
+}
+
+.section-not-found .section__title {
+  margin: 0;
+}
+
+.section-not-found .section__title p {
+  margin: 0;
+}
+
+.section-not-found .section__actions {
+  margin-top: 2rem;
+}
+
+.section-not-found .section__actions a {
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  color: currentColor;
+}
+
+.section-not-found .section__actions a:hover {
+  text-decoration: none;
+}

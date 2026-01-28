@@ -1,0 +1,122 @@
+.featured-articles slider-blog {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .featured-articles .featured__list {
+    height: auto !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .featured-articles .featured__list {
+    gap: 0 3.2rem;
+  }
+
+  .featured-articles .featured__list--focus {
+    align-items: baseline;
+  }
+
+  .featured-articles .featured__list--focus li:nth-child(2) {
+    flex: 1 0 10%;
+  }
+
+  .featured-articles .featured__list li {
+    flex: 1;
+    width: auto !important;
+    margin: 0 !important;
+  }
+}
+
+.card-article .card__image {
+  border-radius: var(--border-radius);
+}
+
+.card-article .card__image img ~ img {
+  opacity: 0;
+}
+
+.card-article .card__image:hover  img ~ img {
+  opacity: 1;
+}
+
+.card-article .card__image svg {
+  background-color: var(--color-form-input-border-light);
+}
+
+.card-article .card__content {
+  padding: 2.2rem 0 1.5rem;
+}
+
+@media (max-width: 767px) {
+  .card-article .card__content {
+    padding: 2.2rem 1.6rem 1.4rem;
+    min-height: auto;
+  }
+}
+
+.card-article .card__content--center {
+  text-align: center;
+}
+
+.card-article .card__content--right {
+  text-align: right;
+}
+
+.card-article .card__date {
+  font-size: 1.4rem;
+  opacity: 0.4;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 767px) {
+  .card-article .card__date {
+    margin-bottom: 0.3rem;
+  }
+}
+
+.card-article .card__title {
+  margin: 0;
+}
+
+.card-article .card__title a {
+  color: var(--color,currentColor);
+}
+
+.card-article .card__title a:hover {
+  text-decoration: underline;
+}
+
+.card-article .card__entry {
+  word-break: break-word;
+}
+
+.card-article .card__author p {
+  margin: 0.5rem 0;
+}
+
+.card-article .card__entry p {
+  margin: 0;
+}
+
+.card-article .card__actions {
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  margin-top: 1.8rem;
+}
+
+@media (max-width: 767px) {
+  .card-article .card__actions {
+    margin-top: 0.8rem;
+  }
+}
+
+.featured__pagination {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .featured__pagination {
+    display: flex;
+  }
+}

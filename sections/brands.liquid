@@ -1,0 +1,170 @@
+<link rel="stylesheet" href="{{ 'section-brands.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'section-brands.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    .section-brands--{{ section.id }} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};}
+  </style>
+{% endif %}
+
+<section class="section-brands section-brands--{{ section.id }}">
+  <div class="container section-brands__container {% if section.settings.enable_fullwidth %}container--fullwidth{% endif %}">
+    {% if section.settings.heading != blank %}
+      <div data-aos="fade-up" class="section__head">
+        <h2 class="section__title {{ section.settings.heading_size }}">
+          {{ section.settings.heading | newline_to_br }}
+        </h2><!-- /.section__title -->
+      </div><!-- /.section__head -->
+    {% endif %}
+
+    {% if section.blocks != blank %}
+      <div class="section__inner">
+        <ul  class="section__list list-unstyled">
+          {% for block in section.blocks %}
+            {% assign _block = block.settings %}
+
+            <li data-aos="fade-up">
+              {% if _block.link != blank %}
+                <a href="{{ _block.link }}">
+              {% endif %}
+
+                {% if _block.image_svg != blank %}
+                  {{ _block.image_svg }}
+                {% elsif _block.image %}
+                  {%-
+                  liquid
+                  assign image = _block.image
+                  assign image_src = image | image_url: width: 500
+                  capture image_srcset
+                    render 'srcset', image: image, widths: '375,550,750'
+                  endcapture
+                  assign image_alt = image.alt | escape
+
+                  render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+                  -%}
+                {% else %}
+                  {{ 'collection-1' | placeholder_svg_tag }}
+                {% endif %}
+
+                {% if _block.link != blank %}
+                  </a>
+                {% endif %}
+            </li>
+          {% endfor %}
+        </ul><!-- /.section__list -->
+      </div><!-- /.section__inner -->
+    {% endif %}
+  </div><!-- /.container -->
+</section><!-- /.section-brands -->
+
+{% schema %}
+{
+  "name": "t:sections.brands.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_fullwidth",
+      "label": "t:sections.global.settings.enable_wide.label"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "Express your brand"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "t:sections.brands.blocks.logo.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.global.settings.image.label"
+        },
+        {
+          "type": "html",
+          "id": "image_svg",
+          "label": "t:sections.global.settings.image_svg.label",
+          "info": "t:sections.global.settings.image_svg.info"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.global.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.brands.name",
+      "blocks": [
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

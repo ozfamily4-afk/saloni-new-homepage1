@@ -1,0 +1,9 @@
+.related-articles {
+  padding: 1.2rem 0 16rem;
+}
+
+@media (max-width: 767px) {
+  .related-articles {
+    padding: 1.2rem 0 10.4rem;
+  }
+}

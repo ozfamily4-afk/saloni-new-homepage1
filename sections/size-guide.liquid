@@ -1,0 +1,124 @@
+{{- 'size-guide.css' | asset_url | stylesheet_tag -}}
+
+<script src="{{ 'size-guide.js' | asset_url }}" defer="defer"></script>
+
+<section class="section-size-guide-{{ section.id }}">
+  {%-
+    liquid
+    if section.blocks.size > 0
+      capture content
+        render 'size-guide'
+      endcapture
+      assign modifier = 'modal-dialog--narrow'
+      assign id = 'Size-Guide-Calculator-Modal'
+      render 'modal-dialog', content: content, id: id, modifiers: modifier
+    endif
+  -%}
+</section><!-- /.section-size-guide -->
+
+{% schema %}
+{
+  "name": "t:sections.size-guide.name",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.size-guide.settings.heading.label",
+      "default": "Find your size"
+    },
+    {
+      "type": "text",
+      "id": "calculator_heading",
+      "label": "t:sections.size-guide.settings.calculator_heading.label",
+      "default": "Calculate your size"
+    },
+    {
+      "type": "text",
+      "id": "chart_heading",
+      "label": "t:sections.size-guide.settings.chart_heading.label",
+      "default": "Size Chart"
+    },
+    {
+      "type": "text",
+      "id": "result_text",
+      "label": "t:sections.size-guide.settings.result_text.label",
+      "default": "We think you're an"
+    },
+    {
+      "type": "text",
+      "id": "not_find_result",
+      "label": "t:sections.size-guide.settings.not_find_result.label",
+      "default": "We do not have a size that fits these sizes."
+    },
+    {
+      "type": "text",
+      "id": "column_1",
+      "label": "t:sections.size-guide.settings.column_1.label",
+      "default": "Chest"
+    },
+    {
+      "type": "text",
+      "id": "column_2",
+      "label": "t:sections.size-guide.settings.column_2.label",
+      "default": "Waist"
+    },
+    {
+      "type": "text",
+      "id": "column_3",
+      "label": "t:sections.size-guide.settings.column_3.label"
+    },
+    {
+      "type": "text",
+      "id": "column_4",
+      "label": "t:sections.size-guide.settings.column_4.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "size",
+      "name": "t:sections.size-guide.blocks.size.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.size-guide.blocks.size.settings.size.label",
+          "default": "XS"
+        },
+        {
+          "type": "number",
+          "id": "column_1",
+          "label": "t:sections.size-guide.blocks.size.settings.column_cm_1.label",
+          "default": 94
+        },
+        {
+          "type": "number",
+          "id": "column_2",
+          "label": "t:sections.size-guide.blocks.size.settings.column_cm_2.label",
+          "default": 75
+        },
+        {
+          "type": "number",
+          "id": "column_3",
+          "label": "t:sections.size-guide.blocks.size.settings.column_cm_3.label"
+        },
+        {
+          "type": "number",
+          "id": "column_4",
+          "label": "t:sections.size-guide.blocks.size.settings.column_cm_4.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.size-guide.name"
+    }
+  ],
+  "enabled_on": {
+    "templates": [
+      "product"
+    ]
+  }
+}
+{% endschema %}

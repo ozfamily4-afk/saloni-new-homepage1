@@ -1,0 +1,98 @@
+{{- 'header-mobile.css' | asset_url | stylesheet_tag: preload: true -}}
+
+<script src="{{ 'header-mobile-drawer.js' | asset_url }}" defer="defer"></script>
+
+<header-mobile-drawer>
+  <div class="header-mobile">
+    <button aria-label="{{ 'accessibility.menu' | t }}" type="button" class="header-mobile__button header__link-color-change clickable-area js-toggle">
+      {%- render 'icon-hamburger' -%}
+      {%- render 'icon-hamburger-close' -%}
+    </button>
+
+    <nav class="header-mobile__nav">
+      <div class="header-mobile__search">
+        {% render 'predictive-search' addition_class: 'header-mobile__predictive-search', attr: 'disable' %}
+      </div><!-- /.header-mobile__search -->
+
+      <ul data-mobile-navigation-list class="header__mobile-level-one list-unstyled is-current header-mobile__list" data-level="1">
+        {% for link_1 in section.settings.menu.links %}
+          <li>
+            <a href="{{ link_1.url }}">
+              <span>
+                {{ link_1.title }}
+              </span>
+
+              {% if link_1.links != blank %}
+                <button type="button" data-nav-next class="header__mobile-arrow" aria-label="{{ 'accessibility.next' | t }}">{% render 'icon-arrow' %}</button>
+              {% endif %}
+
+              {% if section.settings.products_counter and link_1.object.all_products_count > 0 %}
+                <small class="header-mobile_link_counter">{{ link_1.object.all_products_count }}</small>
+              {% endif %}
+            </a>
+
+            {% if link_1.links != blank %}
+              <ul class="header__mobile-level-two list-unstyled header-mobile__list" data-level="2">
+                <li data-nav-prev class="header__mobile-back">
+                  <span class="header__mobile-arrow header__mobile-icon-back">{% render 'icon-arrow' %}</span>
+                  <button type="button" aria-label="{{ 'general.header_mobile.button_back' | t }}">{{ 'general.header_mobile.button_back' | t }}</button>
+                </li>
+
+                {% for link_2 in link_1.links %}
+                  <li>
+                    <a href="{{ link_2.url }}">
+                      <span>{{ link_2.title }}</span>
+
+                      {% if link_2.links != blank %}
+                        <button type="button" data-nav-next aria-label="{{ 'accessibility.next' | t }}" class="header__mobile-arrow">{% render 'icon-arrow' %}</button>
+                      {% endif %}
+                    </a>
+
+                    {% if link_2.links != blank %}
+                      <ul class="header__mobile-level-three list-unstyled header-mobile__list" data-level="3">
+                        <li data-nav-prev class="header__mobile-back">
+                          <span class="header__mobile-arrow header__mobile-icon-back">{% render 'icon-arrow' %}</span>
+                          <button type="button" aria-label="{{ 'general.header_mobile.button_back' | t }}">{{ 'general.header_mobile.button_back' | t }} to {{ link_1.title }}</button>
+                        </li>
+
+                        {% for link_3 in link_2.links %}
+                          <li>
+                            <a href="{{ link_3.url }}"><span>{{ link_3.title }}</span></a>
+                          </li>
+                        {% endfor %}
+                      </ul><!-- /.header__mobile-level-three -->
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul><!-- /.header__mobile-level-two -->
+            {% endif %}
+          </li>
+        {% endfor %}
+
+        {% if settings.enable_localization %}
+          <li>
+            <div class="header-mobile__currency">
+              <modal-opener class="header__modal-currency no-js-hidden" data-modal="#Modal-Localization">
+                <button type="button" class="header__link-color-change" aria-haspopup="dialog">
+                  {{ cart.currency.iso_code | append: ' ' | append: '(' | append: cart.currency.symbol | append: ')' }}
+                </button>
+              </modal-opener>
+            </div><!-- /.header-mobile__currency -->
+          </li>
+        {% endif %}
+
+        {% if shop.customer_accounts_enabled %}
+          <li>
+            <div class="header__mobile--utils">
+              <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__mobile-account header__utils-link header__account full-unstyled-link focus-inset hover-icon header__link-color-change hover-underline hover-underline--icon" title="{%- if customer -%}{{ 'accessibility.account' | t }}{%- else -%}{{ 'accessibility.sign_in' | t }}{%- endif -%}">
+                <span>{{ 'general.header_utils.account' | t }}</span>
+
+                <span class="header__mobile-account-icon icon icon--large">{%- render 'icon-user' -%}</span><!-- /.icon -->
+              </a>
+            </div><!-- /.header__mobile--utils -->
+          </li>
+        {% endif %}
+      </ul><!-- /.header__mobile-level-one -->
+    </nav>
+  </div><!-- /.header-mobile -->
+</header-mobile-drawer>

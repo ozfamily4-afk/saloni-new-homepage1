@@ -1,0 +1,1 @@
+{"sections":{"banner":{"type":"main-search-banner","settings":{}},"main":{"type":"main-search","settings":{"enable_fullwidth":true,"enable_filters":true,"filters_layout":"vertical","enable_sorting":true,"products_per_row":4,"products_per_row_mobile":"1","products_per_page":16,"infinite_scroll":true}}},"order":["banner","main"]}

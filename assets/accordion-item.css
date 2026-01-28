@@ -1,0 +1,112 @@
+.accordion-item {
+  display: block;
+  border: solid var(--color-form-input-border-light);
+  border-width: 0.1rem 0 0 0;
+  padding-top: 1.6rem;
+  color: var(--color, var(--color-base));
+}
+
+.accordion-item__title {
+  font-size: 1.8rem;
+  position: relative;
+  font-weight: 500;
+  padding-right: 2rem;
+  word-break: break-word;
+  user-select: none;
+}
+
+.accordion-item__title svg {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transition: transform 0.3s ease-in-out;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.accordion-item details[is-open] svg {
+  transform: translateY(-50%) rotate(270deg);
+}
+
+.accordion-item__content {
+  opacity: 0.6;
+  padding-top: 1.6rem;
+}
+
+@media (max-width: 767px) {
+  .accordion-item__content {
+    font-size: 1.4rem;
+  }
+}
+
+.accordion-item__content p {
+  margin: 0;
+}
+
+.accordion-item__content p + p {
+  margin-top: 2rem;
+}
+
+.accordion-item summary + * {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms;
+}
+
+.accordion-item .accordion-item__content > * {
+  overflow: hidden;
+}
+
+.accordion-item details[is-open] summary + * {
+  grid-template-rows: 1fr;
+  margin-bottom: 1.6rem;
+}
+
+/* Accordion FAQ */
+
+.accordion-item--faq {
+  border: solid var(--question-border ,var(--color-form-input-border));
+  border-radius:var(--border-radius);
+  border-width: 0.1rem;
+  background-color: var(--question-background);
+  padding: 3.1rem 3.1rem 1.5rem;
+  margin-top: 1.8rem;
+}
+
+@media (max-width: 767px) {
+  .accordion-item--faq {
+    padding: 2rem 2rem 1rem;
+  }
+}
+
+.accordion-item--faq .accordion-item__title {
+  font-size: 2rem;
+  padding-right: 4rem;
+}
+
+@media (max-width: 767px) {
+  .accordion-item--faq .accordion-item__title {
+    font-size: 1.8rem;
+  }
+}
+
+.accordion-item--faq .accordion-item__title svg {
+  top: 1.8rem;
+  height: 1.2rem;
+}
+
+.accordion-item--faq .accordion-item__content {
+  padding: 0;
+  margin: 1.6rem 0 0;
+}
+
+@media (max-width: 767px) {
+  .accordion-item--faq .accordion-item__content {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .accordion-item--faq details[is-open] summary + * {
+    margin-bottom: 1rem;
+  }
+}

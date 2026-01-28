@@ -1,0 +1,23 @@
+<div class="predictive-search-results__aside-inner">
+  <p class="predictive-search-results__aside-title">
+    {{- title -}}
+  </p><!-- /.predictive-search-results__aside-title -->
+
+  {% for resource in resources limit: 3 %}
+    <div class="predictive-search-results__aside-item">
+      <a href="{{ resource.url }}" class="predictive-search-results__aside-heading">
+        {{- resource.title | default: resource.text -}}
+      </a><!-- /.predictive-search-results__aside-heading -->
+    </div><!-- /.predictive-search-results__aside-item -->
+  {% endfor %}
+
+  {% if type != blank %}
+    <a
+      href="{{ routes.search_url | append: '?q=' | append: predictive_search.terms | append: '&type=' | append: type | downcase | append: '&options[prefix]=last' }}"
+      class="predictive-search-results__aside-link"
+    >
+      <span>{{ 'predictive_search.all_results' | t }}</span>
+      {% render 'icon-plus' %}
+    </a>
+  {% endif %}
+</div><!-- /.predictive-search-results__aside-inner -->

@@ -1,0 +1,277 @@
+{%- layout none -%}
+{%- assign sales_reps = "Muaz,Ahmet,Ayse,Mehmet" | split: "," -%}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SALES CONTRACT - Saloni Furniture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    @page { size: A4; margin: 8mm 4mm; }
+    :root {
+      --brand-primary: #BCCF11;
+      --brand-dark: #8A990C;
+      --brand-soft: #fbfdf0;
+      --text-main: #1a1a1a;
+      --border-subtle: #e5e5e5;
+      --bordo: #800000;
+      --error-red: #ff3b30;
+    }
+
+    body { font-family: 'Inter', sans-serif; color: var(--text-main); margin: 0; padding: 0; line-height: 1; -webkit-print-color-adjust: exact; background: #fff; }
+    .wrapper { padding: 0; }
+
+    @keyframes shake-flash {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); box-shadow: 0 0 12px rgba(255, 59, 48, 0.5); }
+      40%, 80% { transform: translateX(4px); box-shadow: 0 0 12px rgba(255, 59, 48, 0.5); }
+    }
+    .error-flash { animation: shake-flash 0.4s cubic-bezier(.36,.07,.19,.97) both; border: 2px solid var(--error-red) !important; background: rgba(255, 59, 48, 0.05) !important; }
+
+    #success-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(8px); z-index: 20000;
+    }
+    .success-card {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: #000; color: #fff; padding: 40px 60px; border-radius: 30px; text-align: center;
+    }
+
+    #loading-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.9); z-index: 20000;
+      justify-content: center; align-items: center;
+    }
+    #loading-overlay.show { display: flex; }
+    .loading-spinner {
+      width: 50px; height: 50px; border: 4px solid #eee;
+      border-top-color: var(--brand-primary); border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .view-mode-banner {
+      display: none; background: #000; color: #fff; padding: 15px 40px;
+      font-weight: 600; text-align: center;
+    }
+    .view-mode-banner.show { display: block; }
+    .view-mode-banner a { color: var(--brand-primary); margin-left: 15px; }
+
+    .floating-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 10000; align-items: center; }
+    .approve-bar { position: fixed !important; bottom: 30px !important; right: 30px !important; left: auto !important; width: auto !important; transform: none !important; z-index: 10001; }
+    .action-btn { padding: 10px 20px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 12px; display: flex; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.2); transition: 0.3s ease; }
+    .rep-select { padding: 10px 18px; border-radius: 50px; border: 2px solid var(--brand-primary); background: white; font-weight: 600; font-size: 12px; outline: none; cursor: pointer; }
+    .btn-print { background: var(--text-main); color: #fff; }
+    .btn-back { background: #fff; color: #555; border: 1px solid #ddd; }
+    .btn-approve { background: var(--brand-primary); color: #000; padding: 10px 22px; font-size: 11px; letter-spacing: 0.5px; }
+    .btn-approve:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    input[type="text"], textarea, #delivery-week-selector { border: none; border-bottom: 1px solid transparent; background: transparent; width: 100%; font-family: inherit; font-size: inherit; padding: 0; outline: none; color: #000; }
+    .no-print { display: flex; gap: 3px; margin-top: auto; flex-wrap: nowrap; width: 100%; align-items: center; padding-top: 3px; }
+    .chip { background: #fff; color: #333; border: 1px solid #ddd; padding: 2px 5px; border-radius: 6px; font-size: 8px; font-weight: bold; cursor: pointer; }
+    .chip.reset-btn { background: #333; color: #fff; border: none; margin-left: auto; }
+    .custom-disc, .custom-fixed { border: 1px solid #ddd !important; border-radius: 6px; font-size: 9px !important; text-align: center; background: #fff !important; height: 18px; }
+
+    .discount-label { background: var(--brand-soft); font-size: 8.5px; font-weight: 600; display: none; margin-top: 2px; padding: 2px 6px; border-left: 3px solid var(--brand-primary); border-radius: 2px; }
+    .value-text { color: var(--bordo); font-weight: bold; }
+    del { color: #aaa; font-size: 9px; margin-right: 4px; }
+
+    .read-only input, .read-only textarea, .read-only select { pointer-events: none; background: #f9f9f9 !important; }
+    .read-only .no-print { display: none !important; }
+    .read-only .chip { display: none !important; }
+
+    @media print {
+      .no-print, .floating-bar, .approve-bar, #success-overlay, #loading-overlay, .view-mode-banner { display: none !important; }
+      input::placeholder, textarea::placeholder { color: transparent !important; opacity: 0 !important; }
+      input, textarea { color: #000 !important; -webkit-text-fill-color: #000 !important; visibility: visible !important; }
+      .val-input { border-bottom: 1px solid #eee !important; }
+      .price-display { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-end !important; white-space: nowrap !important; }
+      .final-price { font-size: 14px !important; margin-left: 5px; display: inline-block !important; white-space: nowrap !important; }
+      .footer-break { page-break-before: always; margin-top: 20px; }
+      .footer-section:not(.footer-break) { page-break-before: avoid !important; page-break-inside: avoid !important; }
+      .product-card { page-break-inside: avoid; }
+    }
+
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 3.5px solid var(--brand-primary); }
+    .logo-container { display: flex; align-items: center; gap: 10px; }
+    .logo-container img { max-height: 65px; width: auto; object-fit: contain; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 26px; color: #000; font-weight: 700; letter-spacing: -0.5px; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+    .info-box { border: 1px solid var(--border-subtle); padding: 8px 15px; border-radius: 12px; }
+    .box-header { font-size: 9px; font-weight: 800; text-transform: uppercase; color: var(--brand-dark); margin-bottom: 5px; border-bottom: 2px solid var(--brand-primary); width: fit-content; }
+    .row { display: flex; margin-bottom: 2px; font-size: 10.5px; }
+    .label { width: 100px; font-weight: 600; color: #666; }
+    .val-input { flex: 1; border-bottom: 1px solid #f9f9f9; min-height: 16px; font-weight: 600; }
+
+    .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .product-card { display: flex; border: 1.8px solid #222; border-radius: 18px; overflow: hidden; background: #fff; height: 158px; }
+    .img-area { width: 170px; height: 158px; background: #fff; border-right: 1.5px solid #f0f0f0; display: flex; align-items: center; justify-content: center; padding: 5px; }
+    .img-area img { width: 100%; height: 100%; object-fit: contain; }
+    .details-area { padding: 8px 12px; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .item-name { font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 700; color: #000; margin-bottom: 2px; }
+
+    .variant-tag { display: inline-block; align-self: flex-start; width: fit-content; font-size: 8px; color: var(--brand-dark); background: var(--brand-soft); padding: 3px 8px; border-radius: 6px; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; border: 1px solid var(--brand-primary); white-space: nowrap; }
+
+    .writing-lines { flex-grow: 1; margin-top: 1px; background-image: linear-gradient(to bottom, transparent 18px, var(--brand-primary) 18px, var(--brand-primary) 19px, transparent 19px); background-size: 100% 19px; }
+    .writing-lines textarea { height: 100%; line-height: 19px; resize: none; overflow: hidden; font-size: 11px; padding: 0; margin-top: -2px; }
+    .price-tag { margin-top: 3px; border-top: 1px solid #eee; padding-top: 3px; }
+    .final-price { font-size: 15px; font-weight: 800; color: #000; white-space: nowrap; }
+
+    .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 0; align-items: stretch; }
+    .footer-grid .info-box { height: 100%; margin-bottom: 0; display: flex; flex-direction: column; box-sizing: border-box; }
+    .total-card { background: #000; color: #fff; padding: 15px 25px; border-radius: 15px; text-align: right; border: 2px solid var(--brand-primary); display: flex; flex-direction: column; justify-content: space-between; height: 100%; box-sizing: border-box; }
+    .total-amount { font-size: 30px; font-weight: 700; color: var(--brand-primary); line-height: 1; }
+
+    .legal { font-size: 7.2px; color: #666; text-align: justify; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+    .signature-area { display: flex; justify-content: space-between; margin-top: 25px; }
+    .sig-box { width: 45%; border-top: 2.5px solid #000; text-align: center; padding-top: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+<div id="loading-overlay"><div class="loading-spinner"></div></div>
+<div id="success-overlay" class="no-print"><div class="success-card"><h2>Sales is Approved!</h2></div></div>
+<div class="view-mode-banner" id="view-mode-banner">
+  This contract is APPROVED and cannot be edited. <a href="/cart?view=contracts">Back to Contracts</a>
+</div>
+
+<div class="floating-bar no-print">
+    <a href="#" id="back-btn" class="action-btn btn-back">BACK</a>
+    <select id="sales-rep-select" class="rep-select">
+        <option value="">Select Sales Rep</option>
+        {%- for rep in sales_reps -%}<option value="{{ rep }}">{{ rep }}</option>{%- endfor -%}
+    </select>
+    <button onclick="window.print()" class="action-btn btn-print">PRINT QUOTE</button>
+    <button onclick="saveContractDraft()" class="action-btn btn-print" id="save-btn">SAVE</button>
+</div>
+
+<div class="approve-bar no-print" id="approve-bar">
+    <button onclick="handleSaleApproval()" class="action-btn btn-approve">APPROVE THE SALE</button>
+</div>
+
+<div class="wrapper" id="contract-wrapper">
+  <div class="header">
+    <div class="logo-container">
+      <img src="https://cdn.shopify.com/s/files/1/0647/6231/4950/files/images.png?v=1768320909" alt="Saloni" width="165" height="55">
+      <div class="logo-text">SALONI</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Playfair Display'; font-size:22px; text-transform:uppercase; font-weight: 700;">SALES CONTRACT</div>
+      <div class="val-input" style="font-size:10px; margin-top:5px; color:#999; border:none; text-align:right;">
+        Ref ID: <input type="text" id="contract-ref-id" style="width: 80px; border-bottom: 1px solid #ddd;" placeholder="Manual ID">
+      </div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box">
+      <div class="box-header">Customer Details</div>
+      <div class="row"><span class="label">Full Name:</span><div class="val-input"><input type="text" id="client-name" placeholder="Client Name..."></div></div>
+      <div class="row"><span class="label">Phone:</span><div class="val-input" id="phone-container"><input type="text" id="client-phone" placeholder="5XX XXX XX XX"></div></div>
+      <div class="row"><span class="label">Address:</span><div class="val-input"><textarea id="client-address" rows="1" placeholder="Delivery Address..."></textarea></div></div>
+    </div>
+    
+    <div class="info-box">
+      <div class="box-header">Contract & Delivery</div>
+      <div class="row"><span class="label">Delivery Week:</span><div class="val-input"><select id="delivery-week-selector" style="font-weight: 700;"><option value="">Choose...</option></select></div></div>
+      <div class="row"><span class="label">Tax ID / Notes:</span><div class="val-input"><input type="text" id="tax-notes" placeholder="..."></div></div>
+      <div class="row"><span class="label">Order Date:</span><div class="val-input"><input type="text" id="order-date" value="{{ 'now' | date: '%d.%m.%Y' }}"></div></div>
+    </div>
+  </div>
+
+  <div class="product-grid" id="product-grid">
+    <!-- Urunler buraya JavaScript ile yuklenecek -->
+    {%- for item in cart.items -%}
+    <div class="product-card js-product-item" data-base-price="{{ item.price }}" data-qty="{{ item.quantity }}" data-variant-id="{{ item.variant.id }}" data-product-name="{{ item.product.title | escape }}" data-product-image="{{ item.image | image_url: width: 400 }}">
+      <div class="img-area">
+        {%- if item.image -%}<img src="{{ item.image | image_url: width: 400 }}" alt="{{ item.product.title | escape }}">{%- endif -%}
+      </div>
+      <div class="details-area">
+        <div class="item-name">{{ item.product.title | truncate: 45 }}</div>
+        {%- unless item.variant.title contains 'Default' -%}<div class="variant-tag">{{ item.variant.title }}</div>{%- endunless -%}
+        <div class="writing-lines"><textarea class="item-notes" placeholder="Item Details..."></textarea></div>
+        <div class="price-tag">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <span style="font-size:10px; color:#999;">QTY: {{ item.quantity }}</span>
+            <div class="price-display">
+              <del class="js-old-price" style="display:none;"></del>
+              <span class="final-price js-cur-price">{{ item.final_line_price | money }}</span>
+            </div>
+          </div>
+          <div class="discount-label js-discount-applied"></div>
+        </div>
+        <div class="no-print">
+          <div class="chip js-discount-10">%10</div>
+          <div class="chip js-discount-20">%20</div>
+          <input type="number" class="chip custom-disc js-item-pct" placeholder="%">
+          <input type="number" class="chip custom-fixed js-item-fixed" placeholder="USD">
+          <div class="chip reset-btn js-reset-item">Reset</div>
+        </div>
+      </div>
+    </div>
+    {%- endfor -%}
+  </div>
+
+  <div class="footer-section" id="footer-section">
+      <div class="footer-grid">
+        <div class="info-box" style="border-style:dashed; background: #fafafa; border-color: #ccc;">
+          <div class="box-header">Payment Terms & Notes</div>
+          <textarea id="payment-notes" style="flex:1; min-height:40px; resize:none;" placeholder="Payment schedule, deposit details..."></textarea>
+        </div>
+        
+        <div class="total-card js-total-area" data-base-total="{{ cart.total_price }}">
+          <div style="display:flex; justify-content:space-between;">
+            <div style="font-size:9px; opacity:0.7; font-weight:800; letter-spacing:1px;">GRAND TOTAL</div>
+            <del class="js-old-total" style="display:none; font-size: 15px; opacity: 0.5;"></del>
+          </div>
+          <div class="total-amount js-final-total">{{ cart.total_price | money }}</div>
+          <div class="discount-label js-total-discount-label" style="background: rgba(255,255,255,0.1); border-color: var(--brand-primary); margin-top: 5px;"></div>
+          <div class="total-controls-row no-print" style="display:flex; justify-content:space-between; margin-top:5px; border-top:1px solid #333; padding-top:5px;">
+            <div style="display:flex; gap:3px;">
+              <div class="chip js-total-10">%10</div>
+              <input type="number" class="chip custom-disc js-total-pct" placeholder="%">
+            </div>
+            <div class="chip reset-btn js-reset-total">Reset</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legal">
+        Custom Production: Manufactured specifically to buyer choices. No changes allowed after 3 business days. 30% withdrawal fee applies.
+        Quality: Minor shade differences (5%) are natural. Buyer must inspect goods upon delivery.
+        CONTRACT HAS BEEN READ AND AGREED UPON BY BOTH PARTIES.
+      </div>
+
+      <div class="signature-area">
+        <div class="sig-box">Buyer Signature</div>
+        <div class="sig-box">Authorized Saloni Signature</div>
+      </div>
+  </div>
+</div>
+
+<script src="{{ 'contract-script.js' | asset_url }}" defer></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Back button logic
+    var backBtn = document.getElementById("back-btn");
+    if (backBtn) {
+      var urlParams = new URLSearchParams(window.location.search);
+      var fromContracts = urlParams.get("from") === "contracts";
+      
+      if (fromContracts) {
+        backBtn.href = "/cart?view=contracts";
+        backBtn.innerHTML = "← CONTRACTS";
+      } else {
+        backBtn.href = "/cart";
+        backBtn.innerHTML = "← CART";
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

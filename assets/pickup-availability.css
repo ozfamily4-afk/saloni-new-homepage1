@@ -1,0 +1,45 @@
+.pickup-availability {
+  display: block;
+  margin: 2rem 0;
+}
+
+.pickup-availability__button {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  color: currentColor;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.pickup-availability__button svg {
+  margin-right: 0.8rem;
+}
+
+.pickup-availability__button:hover u {
+  text-decoration: none;
+}
+
+.pickup-availability__content {
+  padding: 3.2rem 6.4rem;
+}
+
+@media (max-width: 767px) {
+  .pickup-availability__content {
+    padding: 3rem;
+  }
+}
+
+.pickup-availability__content h3 {
+  margin: 0;
+}
+
+.pickup-availability__time {
+  display: flex;
+  align-items: center;
+}
+
+.pickup-availability__time svg {
+  margin-right: 0.4rem;
+}

@@ -1,0 +1,348 @@
+<link rel="stylesheet" href="{{ 'section-featured-image-with-slideshow.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'section-featured-image-with-slideshow.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<script src="{{ 'products-carousel.js' | asset_url }}" defer="defer"></script>
+
+<style>
+  {% if section.settings.overwrite_colors %}
+    .section-featured-image-with-slideshow--{{ section.id }} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    }
+  {% endif %}
+
+  .section-featured-image-with-slideshow .swiper-pagination-bullet path {
+    animation-duration: {{ section.settings.autoplay_interval }}s;
+  }
+</style>
+
+<section class="section-featured-image-with-slideshow section-featured-image-with-slideshow--{{ section.id }}">
+  <div data-aos="fade-up" class="container {% if section.settings.enable_wide %}container--fullwidth{% endif %}">
+    <div class="section__inner">
+      <div class="section__image-item">
+        <div class="
+          section__image
+          media
+          {{ section.settings.aspect_ratio_mobile }}
+          {% if section.settings.image_mobile != blank %}section__image--mobile-hidden{% endif %}
+        ">
+          {% if section.settings.image_desktop != blank %}
+           {%-
+            liquid
+            assign image = section.settings.image_desktop
+            assign image_src = image | image_url: width: 500
+            capture image_srcset
+              render 'srcset', image: image, widths: '750,1100,1500,1780,2000,3000,3840'
+              assign sizes = '(max-width: 480px) 767px,(max-width: 767px) 1100px'
+            endcapture
+            assign image_alt = image.alt | escape
+
+            render 'image', src: image_src, srcset: image_srcset, sizes: sizes, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+           -%}
+          {% else %}
+            {{ 'image' | placeholder_svg_tag }}
+          {% endif %}
+        </div><!-- /.section__image -->
+
+        {% if section.settings.image_mobile != blank %}
+          <div class="
+            section__image
+            section__image--mobile
+            media
+            {{ section.settings.aspect_ratio_mobile }}
+            media--mobile
+          ">
+            {%-
+              liquid
+              assign image = section.settings.image_mobile
+              assign image_src = image | image_url: width: 375
+              capture image_srcset
+                render 'srcset', image: image
+              endcapture
+              assign image_alt = image.alt | escape
+
+              render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+            -%}
+          </div><!-- /.media media--9-16 media--mobile -->
+        {% endif %}
+      </div><!-- /.section__image-item -->
+
+      {% if section.settings.heading != blank or section.settings.pre_heading != blank or section.settings.subheading != blank or section.settings.collection != blank %}
+        <div class="
+          section__content
+          {% if section.settings.flip %}section__content--flip{% endif %}
+        ">
+          <h2 class="section__title {{ section.settings.heading_size }}">
+            {{ section.settings.heading | newline_to_br }}
+          </h2><!-- /.section__title -->
+
+          {% if section.settings.subheading != blank %}
+            <div class="section__entry">
+              {{ section.settings.subheading }}
+            </div><!-- /.section__entry -->
+          {% endif %}
+
+          {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+            <div class="section__actions">
+              <a href="{{	section.settings.button_link }}" class="button {{ section.settings.button_style }} {% if section.settings.button_style_hover_outline %}button--outline{% endif %}">{{ section.settings.button_label }}</a>
+            </div><!-- /.section__actions -->
+          {% endif %}
+
+          <div class="section__slider">
+            <div class="section__arrows swiper-arrows swiper-arrows--border">
+              <button data-arrow-prev class="swiper-arrow swiper-arrow--prev" prev aria-label="{{ 'accessibility.previous' | t }}">
+                {% render 'icon-arrow-slider' %}
+              </button>
+
+              <button data-arrow-next class="swiper-arrow swiper-arrow--next" next aria-label="{{ 'accessibility.next' | t }}">
+                {% render 'icon-arrow-slider' %}
+              </button>
+            </div><!-- /.section__arrows -->
+
+            <products-carousel
+              data-carousel-mini
+              class="swiper"
+              data-autoplay="{{- section.settings.autoplay -}}"
+              data-autoplay-speed="{{- section.settings.autoplay_interval | times: 1000 -}}"
+            >
+              <ul class="swiper-wrapper list-unstyled">
+                {% for product in section.settings.collection.products limit: section.settings.products_limit %}
+                  <li class="swiper-slide">
+                    {%- render 'card-product' product_ref: product -%}
+                  </li><!-- /.swiper-slide -->
+                {% endfor %}
+
+                {% if section.settings.collection == blank %}
+                  {% for i in (1..4) %}
+                    <li class="swiper-slide">
+                      {% assign placeholder_image_handle = 'product-' | append: i %}
+                      {%- render 'card-product', placeholder_image: placeholder_image_handle -%}
+                    </li><!-- /.swiper-slide -->
+                  {% endfor %}
+                {% endif %}
+              </ul><!-- /.swiper-wrapper -->
+
+              <div data-pagination class="section__pagination swiper-pagination">
+              </div><!-- /.swiper-pagination -->
+            </products-carousel><!-- /.swiper -->
+          </div><!-- /.section__slider -->
+        </div><!-- /.section__content -->
+      {% endif %}
+    </div><!-- /.section__inner -->
+  </div><!-- /.container -->
+</section><!-- /.section-featured-image-with-slideshow -->
+
+{% schema %}
+{
+  "name": "t:sections.featured-image-with-slideshow.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_wide",
+      "label": "t:sections.global.settings.enable_wide.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "flip",
+      "label": "t:sections.global.settings.flip.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.media"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_mobile",
+      "label": "t:sections.global.settings.aspect_ratio_mobile.label",
+      "options": [
+        {
+          "value": "media--mobile-1-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_2.label"
+        },
+        {
+          "value": "media--mobile-2-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_3.label"
+        },
+        {
+          "value": "media--mobile-3-4",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_4.label"
+        },
+        {
+          "value": "media--mobile-1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        },
+        {
+          "value": "media--mobile-4-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.4_3.label"
+        },
+        {
+          "value": "media--mobile-3-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_2.label"
+        },
+        {
+          "value": "media--mobile-16-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.16_9.label"
+        }
+      ],
+      "default": "media--mobile-1-1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "t:sections.global.settings.image.label_desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.global.settings.image.label_mobile"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.text_content"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "Section Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:sections.global.settings.description.label",
+      "default": "<p>Use this text to share information about your store with your customers. Describe products, share announcements, or welcome customers to your store.</p>"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.global.settings.button_label.label",
+      "default": "Click me"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.global.settings.button_link.label",
+      "default": "/collections"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.global.settings.button_style.label",
+      "options": [
+        {
+          "value": "button--style-1",
+          "label": "t:sections.global.settings.button_style.options.style_one"
+        },
+        {
+          "value": "button--style-2",
+          "label": "t:sections.global.settings.button_style.options.style_two"
+        },
+        {
+          "value": "button--style-3",
+          "label": "t:sections.global.settings.button_style.options.style_three"
+        },
+        {
+          "value": "button--style-4",
+          "label": "t:sections.global.settings.button_style.options.style_four"
+        }
+      ],
+      "default": "button--style-2"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_style_hover_outline",
+      "label": "t:sections.global.settings.button_style_hover_outline.label"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.featured-image-with-slideshow.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "t:sections.featured-image-with-slideshow.settings.products_limit.label",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.slideshow"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.global.settings.autoplay.label",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "t:sections.global.settings.autoplay_interval.unit",
+      "label": "t:sections.global.settings.autoplay_interval.label",
+      "default": 5
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured-image-with-slideshow.name"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

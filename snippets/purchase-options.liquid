@@ -1,0 +1,115 @@
+<script src="{{ 'purchase-options.js' | asset_url }}" defer="defer"></script>
+
+{% if product.selling_plan_groups != blank %}
+  {% assign current_variant = product.selected_or_first_available_variant %}
+
+  <purchase-options>
+    {%- if block.title != blank -%}
+      <h6 class="product__plans-title caption-ffb">
+        {{- block.title | escape -}}
+      </h6><!-- /.product__plans-title -->
+    {%- endif -%}
+
+    <div class="product__plans-body">
+      <div class="product__plan-group product__plan-group--default">
+        <div class="product__plan-group-inner">
+          <div class="product__plan">
+            <div class="product__plan-inner">
+              <div class="product__plans-group-selector">
+                <input
+                  class="visually-hidden selling_default"
+                  type="radio"
+                  id="{{ section.id }}-Product-Selling-Plan-Group--One-Time"
+                  name="selling_plan_group"
+                  data-selling-plan-default
+                  checked
+                  value="one-time"
+                  {% if current_variant.compare_at_price > current_variant.price %}data-price-del="{{ current_variant.compare_at_price | money }}"{% endif %}
+                  data-price-ins="{{ current_variant.price | money }}"
+                >
+                <label for="{{ section.id }}-Product-Selling-Plan-Group--One-Time">
+                  <span class="product__plan-radio-icon">
+                    {%- render 'icon-dot' -%}
+                  </span>
+
+                  {{ 'products.product.selling_plans.groups.one_time' | t }}
+                </label>
+              </div><!-- /.product__plans-group-selector -->
+
+              <div class="product__plan-price">
+                {% if current_variant.compare_at_price > current_variant.price %}
+                  <del>{{ current_variant.compare_at_price | money }}</del>
+                {% endif %}
+
+                <ins>{{ current_variant.price | money }}</ins>
+              </div><!-- /.product__plan-price -->
+            </div><!-- /.product__plan-inner -->
+          </div><!-- /.product__plan -->
+        </div><!-- /.product__plan-group-inner -->
+      </div><!-- /.product__plan-group product__plan-group--default -->
+
+      {% for selling_plan_group in product.selling_plan_groups %}
+        <div class="product__plan-group" data-selling-plan-group>
+          <div class="product__plans-group-selector">
+            <input class="visually-hidden" type="radio" id="{{ section.id }}-Product-Selling-Plan-Group--{{ selling_plan_group.id }}" name="selling_plan_group" value="{{ selling_plan_group.id }}">
+            <label for="{{ section.id }}-Product-Selling-Plan-Group--{{ selling_plan_group.id }}">
+              <span class="product__plan-radio-icon">
+                {%- render 'icon-dot' -%}
+              </span>
+
+              {{ selling_plan_group.name }}
+            </label>
+          </div><!-- /.product__plans-group-selector -->
+
+          {% for group_option in selling_plan_group.options %}
+            <div class="product__plans-group-options">
+              <h6 class="caption-ffb">{{ group_option.name }}</h6>
+
+              <div class="product__plan-group-inner">
+                {% for selling_plan in selling_plan_group.selling_plans %}
+                  {%- assign current_variant_selling_plan_allocation = current_variant.selling_plan_allocations | where: 'selling_plan', selling_plan | first -%}
+
+                  <div class="product__plan">
+                    <div class="product__plan-inner">
+                      <div class="product__plan-info">
+                        <input
+                          class="visually-hidden"
+                          type="radio" id="{{ section.id }}-Product-Selling-Plan--{{ selling_plan.id }}"
+                          name="selling_plan"
+                          value="{{ selling_plan.id }}"
+                          {% if current_variant.price > current_variant_selling_plan_allocation.per_delivery_price %}data-price-del="{{ current_variant.compare_at_price | money }}"{% endif %}
+                          data-price-ins="{{ current_variant_selling_plan_allocation.per_delivery_price | money }}"
+                        >
+                        <label for="{{ section.id }}-Product-Selling-Plan--{{ selling_plan.id }}">
+                          <span class="product__plan-radio-icon">
+                            {%- render 'icon-dot' -%}
+                          </span>
+
+                          {{ selling_plan.name }}
+                        </label>
+
+                        {%- if selling_plan.description -%}
+                          <p class="product__plan-description">
+                            {{- selling_plan.description | escape -}}
+                          </p><!-- /.product__plan-description -->
+                        {%- endif -%}
+                      </div><!-- /.product__plan-info -->
+
+                      <div class="product__plan-price">
+                        {% if current_variant.price > current_variant_selling_plan_allocation.per_delivery_price %}
+                          <del>{{ current_variant.compare_at_price | money }}</del>
+                        {% endif %}
+
+                        <ins>{{ current_variant_selling_plan_allocation.per_delivery_price | money }}</ins>
+                      </div><!-- /.product__plan-price -->
+                    </div><!-- /.product__plan-inner -->
+                  </div><!-- /.product__plan -->
+                {% endfor %}
+              </div><!-- /.product__plan-group-inner -->
+            </div><!-- /.product__plans-group-options -->
+          {% endfor %}
+        </div><!-- /.product__plan-group -->
+      {% endfor %}
+    </div><!-- /.product__plans-body -->
+  </purchase-options>
+{% endif %}

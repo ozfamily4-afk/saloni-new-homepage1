@@ -1,0 +1,204 @@
+<style>
+  {% if section.settings.overwrite_colors %}
+    .gift-card {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    }
+  {% endif %}
+
+  .gift-card {
+    --logo-width-desktop: {{ section.settings.logo_width_desktop }}px;
+    --logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
+  }
+</style>
+
+<div class="container">
+  <header class="gift-card__head">
+    <a href="{{ routes.root_url }}" class="gift-card__logo" aria-label="{{ 'accessibility.logo' | t }}">
+      {% if section.settings.logo %}
+        <img
+          src="{{- section.settings.logo | image_url: width: 355 -}}"
+          alt="{{- section.settings.logo.alt -}}"
+          width="auto"
+          height="auto"
+          loading="lazy"
+          style="object-position: {{ section.settings.logo.presentation.focal_point }}"
+        >
+        {% elsif section.settings.logo_svg != blank %}
+          {{ section.settings.logo_svg }}
+        {% else %}
+          <span>{{ shop.name }}</span>
+      {% endif %}
+    </a><!-- /.gift-card__logo -->
+
+  </header><!-- /.gift-card__head -->
+
+  <body class="gift-card__body">
+    <h1 class="gift-card__heading caption-ffb h3">{{ 'gift_cards.issued.subtext' | t }}</h1>
+
+    <div class="gift-card__price">
+      <p>
+        {% if settings.currency_code_enabled %}
+          {{ gift_card.initial_value | money_with_currency }}
+        {% else %}
+          {{ gift_card.initial_value | money }}
+        {% endif %}
+      </p>
+      {%- if gift_card.enabled == false or gift_card.expired -%}
+        <p class="gift-card__label badge badge--{{ settings.sold_out_badge_color_scheme }}">{{ 'gift_cards.issued.expired' | t }}</p>
+      {%- endif -%}
+    </div>
+
+    {% if settings.currency_code_enabled %}
+      {%- assign gift_card_balance = gift_card.balance | money_with_currency -%}
+    {% else %}
+      {%- assign gift_card_balance = gift_card.balance | money -%}
+    {% endif %}
+    {%- if gift_card.balance != gift_card.initial_value -%}
+      <p class="gift-card__label caption-large">{{ 'gift_cards.issued.remaining_html' | t: balance: gift_card_balance }}</p>
+    {%- endif -%}
+
+    <div class="gift-card__image-wrapper">
+      {%- if section.settings.image != blank -%}
+        <img
+          src="{{ section.settings.image | image_url: width: 880 }}"
+          alt="{{- section.settings.image.alt -}}"
+          class="gift-card__background-image"
+          loading="lazy"
+          width="auto"
+          height="auto"
+          style="object-position: {{ section.settings.image.presentation.focal_point }}"
+        >
+      {%- else -%}
+        <img src="{{ 'gift-card/card.svg' | shopify_asset_url }}" alt="" class="gift-card__image" loading="lazy" width="auto" height="auto">
+      {%- endif -%}
+
+      <p class="gift_cards-info">{{ 'gift_cards.info' | t }}</p><!-- /.gift_cards-info -->
+
+      <span class="gift-card__value">
+        {% if settings.show_currency_codes %}
+          {{ gift_card.initial_value | money_with_currency }}
+        {% else %}
+          {{ gift_card.initial_value | money }}
+        {% endif %}
+      </span><!-- /.gift-card__value -->
+    </div>
+  </body><!-- /.gift-card__body -->
+
+  <footer class="gift-card__footer">
+    <div class="gift-card__qr-code" data-identifier="{{ gift_card.qr_identifier }}"></div>
+
+    <div class="gift-card__information">
+      <div class="gift-card__field">
+        <input
+          type="text"
+          class="gift-card__number field__input center"
+          value="{{ gift_card.code | format_code }}"
+          aria-label="{{ 'gift_cards.issued.gift_card_code' | t }}"
+          readonly
+        >
+      </div>
+
+      {%- if gift_card.pass_url -%}
+        <a href="{{ gift_card.pass_url }}" class="gift_card__apple-wallet">
+          <img src="{{ 'gift-card/add-to-apple-wallet.svg' | shopify_asset_url }}" width="120" height="40" alt="{{ 'gift_cards.issued.add_to_apple_wallet' | t }}" loading="lazy">
+        </a>
+      {%- endif -%}
+
+      <div class="gift-card__buttons no-print">
+        <div class="form-row">
+          {%-
+            liquid
+            assign value = 'gift_cards.issued.shop_link' | t
+            capture attr
+              echo 'target="_blank"'
+              echo 'rel="noopener"'
+              echo 'aria-describedby="a11y-new-window-message"'
+            endcapture
+            render 'button', type: 'link', href: request.origin, value: value, attr: attr, style: 'button button--style-2'
+            assign value = nil
+            assign attr = nil
+          -%}
+        </div>
+
+        <div class="form-row">
+          {%-
+            liquid
+            assign value = 'gift_cards.issued.print_gift_card' | t
+            capture attr
+              echo 'onclick="window.print();"'
+            endcapture
+            render 'button', value: value, attr: attr, style: 'button--style-3'
+            assign value = nil
+            assign attr = nil
+          -%}
+        </div>
+      </div>
+    </div>
+  </footer><!-- /.gift-card__footer -->
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.gift-card.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.header.settings.logo.label"
+    },
+    {
+      "type": "html",
+      "id": "logo_svg",
+      "label": "t:sections.header.settings.logo_svg.label"
+    },
+    {
+      "type": "range",
+      "id": "logo_width_desktop",
+      "min": 50,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "t:sections.global.settings.logo_width_desktop.label",
+      "default": 150
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "t:sections.global.settings.logo_width_mobile.label",
+      "default": 150
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.global.settings.image.label"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

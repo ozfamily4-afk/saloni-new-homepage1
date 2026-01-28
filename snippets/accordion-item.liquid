@@ -1,0 +1,26 @@
+{% comment %}
+  Accepts:
+    modifier?: {String} Accordion modifier class
+    title: {String}
+    content: {String} - Richtext
+    open: {Boolean} Open
+
+  Usage:
+  render 'accordion-item', title: _block.title, content: _block.description, open: true
+{% endcomment %}
+
+<accordion-item class="accordion-item {% if modifier %}accordion-item--{{ modifier }}{% endif %}">
+  <details open {% if open %}is-open{% endif %}>
+    <summary class="accordion-item__title">
+      {{- title | escape -}}
+
+      {% render 'icon-arrow' %}
+    </summary>
+
+    <div class="accordion-item__content">
+      <div class="accordion-item__content-inner">
+        {{- content -}}
+      </div><!-- /.accordion-item__content-inner -->
+    </div><!-- /.accordion-item__content -->
+  </details>
+</accordion-item>

@@ -1,0 +1,70 @@
+.menu-mega {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background-color: var(--background-header, var(--color-base-background));
+  padding: 1.5rem 0 4rem;
+  overflow: hidden;
+  display: none;
+  justify-content: space-between;
+  overflow: auto;
+  max-height: calc(100vh - 8rem);
+  transform: scaleY(1) translateY(8rem);
+  transform-origin: top;
+}
+
+.menu-mega .menu__inner {
+  display: flex;
+  margin-top: 2.5rem;
+}
+
+.menu-mega .menu__list {
+  display: flex;
+  flex: auto;
+}
+
+.menu-mega .menu__nav {
+  position: relative;
+  flex: 1;
+  margin-right: 4.4rem;
+  padding-right: 1rem;
+}
+
+.menu-mega .menu__nav + .menu__nav:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -4.4rem;
+  width: 0.1rem;
+  height: 100%;
+  background-color: var(--color-header);
+  opacity: 0.1;
+}
+
+.menu-mega .menu__nav h5 {
+  font-family: var(--font-navigation);
+  font-size: 1.8rem;
+  line-height: 1;
+  margin: 0;
+  color: var(--color-header);
+}
+
+.menu-mega .menu__links {
+  font-size: 1.2rem;
+  display: block;
+  margin-top: 4.1rem;
+}
+
+.menu-mega a {
+  color: var(--color-header);
+}
+
+.menu-mega a:hover {
+  text-decoration: underline;
+}
+
+.menu-mega li + li {
+  margin-top: 2rem;
+}

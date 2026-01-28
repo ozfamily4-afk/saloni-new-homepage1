@@ -1,0 +1,273 @@
+{% schema %}
+{
+  "name": "Saloni Curtain Hero",
+  "class": "section-curtain-hero",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "✅ LOGO DOSTU VERSİYON: Bu slider yapışkan (sticky) mantığıyla çalışır. Logonun altında kalır, bozulma yapmaz."
+    },
+    {
+      "type": "range",
+      "id": "slide_duration",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Resim Geçiş Süresi",
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slayt",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Medya"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Masaüstü Görsel"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Mobil Görsel"
+        },
+        {
+          "type": "header",
+          "content": "İçerik"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Yazı Rengi",
+          "default": "#ffffff"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Başlık",
+          "default": "OLAF"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Alt Başlık",
+          "default": "Armchair"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Buton Yazısı",
+          "default": "Discover"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Saloni Curtain Hero"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="saloni-sticky-wrapper">
+  
+  <div class="saloni-hero-container" data-image-duration="{{ section.settings.slide_duration | times: 1000 }}">
+    
+    {% for block in section.blocks %}
+      <div class="saloni-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" style="color: {{ block.settings.text_color }};">
+        
+        <div class="saloni-media-wrapper">
+          <a href="{{ block.settings.link }}" class="media-link">
+            {% if block.settings.video != blank %}
+              {{ block.settings.video | video_tag: autoplay: false, loop: false, muted: true, playsinline: true, class: 'hero-media hero-video', controls: false }}
+            {% else %}
+              <picture>
+                {% if block.settings.mobile_image %}
+                  <source media="(max-width: 767px)" srcset="{{ block.settings.mobile_image | image_url: width: 800 }}">
+                {% endif %}
+                <img 
+                  src="{{ block.settings.image | image_url: width: 2000 }}" 
+                  width="{{ block.settings.image.width }}" 
+                  height="{{ block.settings.image.height }}" 
+                  alt="{{ block.settings.title | escape }}"
+                  class="hero-media hero-img"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                >
+              </picture>
+            {% endif %}
+          </a>
+        </div>
+
+        <div class="saloni-info-left">
+          <h2 class="hero-title">{{ block.settings.title }}</h2>
+          <p class="hero-subtitle">{{ block.settings.subtitle }}</p>
+        </div>
+
+        <div class="saloni-info-right">
+          <a href="{{ block.settings.link }}" class="hero-discover" style="color: {{ block.settings.text_color }}; border-color: {{ block.settings.text_color }};">
+            {{ block.settings.btn_text }} <span class="arrow-icon">→</span>
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+
+    <button class="nav-btn prev-btn"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+    <button class="nav-btn next-btn"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+    
+    <div class="scroll-indicator" onclick="window.scrollBy({top: window.innerHeight, behavior: 'smooth'})">
+      <span class="scroll-text">SCROLL</span>
+      <span class="scroll-arrow">↓</span>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* --- 1. STICKY YAPISI (Logoyu bozmayan yöntem) --- */
+  .saloni-sticky-wrapper {
+    /* Safari ve Chrome için yapışkan özellik */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    
+    /* Yükseklik tam ekran */
+    height: 100vh;
+    width: 100%;
+    
+    /* Z-Index ayarı: Header'ın (genelde 10-100 arasıdır) altında kalsın */
+    z-index: 1; 
+  }
+
+  /* Bu kod, Slider'ın bulunduğu bölümün kutusunu ayarlar */
+  .section-curtain-hero {
+    /* Eğer tema padding veriyorsa sıfırla */
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none;
+    
+    /* Slider'ın yüksekliğini koru */
+    height: 100vh;
+    display: block;
+  }
+
+  /* --- 2. STANDART GÖRSEL TASARIM --- */
+  .saloni-hero-container { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; }
+  .saloni-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; visibility: hidden; transition: opacity 1s, visibility 1s; z-index: 1; }
+  .saloni-slide.active { opacity: 1; visibility: visible; z-index: 2; }
+  .hero-media { width: 100%; height: 100%; object-fit: cover; }
+  
+  .saloni-info-left { position: absolute; bottom: 80px; left: 80px; z-index: 10; pointer-events: none; }
+  .hero-title { font-size: 5rem; font-weight: 800; margin: 0; text-transform: uppercase; color: inherit; line-height: 0.9; pointer-events: auto; }
+  .hero-subtitle { font-size: 1.8rem; font-weight: 300; margin: 10px 0 0; color: inherit; pointer-events: auto; }
+  .saloni-info-right { position: absolute; bottom: 80px; right: 80px; z-index: 10; pointer-events: none; }
+  .hero-discover { font-size: 1.2rem; font-weight: 600; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 12px; pointer-events: auto; }
+  
+  .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; z-index: 20; color: white; opacity: 0.5; padding: 20px;}
+  .nav-btn:hover { opacity: 1; } .prev-btn { left: 20px; } .next-btn { right: 20px; }
+  .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 20; text-align: center; cursor: pointer; color: white; opacity: 0.6; animation: bounce 2s infinite; }
+  .scroll-text { display: block; font-size: 11px; margin-bottom: 5px; letter-spacing: 2px; } .scroll-arrow { font-size: 20px; }
+  @keyframes bounce { 0%, 100% {transform: translateX(-50%) translateY(0);} 50% {transform: translateX(-50%) translateY(-6px);} }
+
+  @media (max-width: 768px) {
+    .hero-title { font-size: 3rem; }
+    .saloni-info-left { left: 30px; bottom: 100px; }
+    .saloni-info-right { right: 30px; bottom: 40px; }
+    .nav-btn { display: none; }
+  }
+</style>
+
+<script>
+  // --- 1. STICKY FIX (ÇOK ÖNEMLİ) ---
+  // Shopify temalarının bazılarında 'overflow: hidden' ayarı sticky'i bozar.
+  // Bu script, sticky'nin çalışması için o engeli kaldırır.
+  document.addEventListener("DOMContentLoaded", function() {
+    // Engeli kaldır
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+    
+    // Eğer overflow-y hidden ise onu auto yap
+    var bodyStyle = window.getComputedStyle(document.body);
+    if(bodyStyle.overflowY === 'hidden') {
+       document.body.style.overflowY = 'auto';
+    }
+  });
+
+  // --- 2. SLIDER MANTIĞI ---
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.saloni-sticky-wrapper .saloni-hero-container');
+    if(!container) return;
+
+    const slides = container.querySelectorAll('.saloni-slide');
+    const prevBtn = container.querySelector('.prev-btn');
+    const nextBtn = container.querySelector('.next-btn');
+    const scrollInd = container.querySelector('.scroll-indicator');
+    const imageDuration = parseInt(container.dataset.imageDuration) || 5000;
+    
+    let currentIndex = 0;
+    let timer = null;
+
+    function clearAutoSlide() {
+      if (timer) clearTimeout(timer);
+      slides.forEach(slide => {
+        const vid = slide.querySelector('video');
+        if (vid) {
+          vid.removeEventListener('ended', handleVideoEnd);
+          vid.pause(); vid.currentTime = 0; 
+        }
+      });
+    }
+    function handleVideoEnd() { nextSlide(); }
+    function scheduleNextSlide() {
+      const activeSlide = slides[currentIndex];
+      const video = activeSlide.querySelector('video');
+      if (video) {
+        video.play().catch(e => console.log('Oynatma hatası:', e));
+        video.addEventListener('ended', handleVideoEnd);
+      } else {
+        timer = setTimeout(nextSlide, imageDuration);
+      }
+    }
+    function updateSlideVisuals() {
+      slides.forEach((slide, idx) => {
+        if(idx === currentIndex) {
+          slide.classList.add('active');
+          const color = slide.style.color || '#fff';
+          if(prevBtn) prevBtn.style.color = color;
+          if(nextBtn) nextBtn.style.color = color;
+          if(scrollInd) scrollInd.style.color = color;
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+    }
+    function goToSlide(index) {
+      clearAutoSlide(); 
+      currentIndex = (index + slides.length) % slides.length;
+      updateSlideVisuals();
+      scheduleNextSlide(); 
+    }
+    function nextSlide() { goToSlide(currentIndex + 1); }
+    function prevSlide() { goToSlide(currentIndex - 1); }
+    if(nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if(prevBtn) prevBtn.addEventListener('click', prevSlide);
+    updateSlideVisuals();
+    scheduleNextSlide();
+  });
+</script>

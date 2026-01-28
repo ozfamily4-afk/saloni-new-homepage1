@@ -1,0 +1,235 @@
+<link rel="stylesheet" href="{{ 'section-instagram.css' | asset_url }}" media="print" onload="this.media='all'">
+<script src="{{ 'slider-instagram.js' | asset_url }}" defer="defer"></script>
+
+<noscript>
+  {{- 'section-instagram.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    .section-instagram--{{ section.id }} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    }
+  </style>
+{% endif %}
+
+<section class="section-instagram section-instagram--{{ section.id }} section">
+  <div data-aos="fade-up" class="container {% if section.settings.enable_fullwidth %}container--fullwidth{% endif %}">
+    {% if section.settings.heading != blank %}
+      <div class="section__head section__head--{{ section.settings.horizontal_alignment }}">
+        {% if section.settings.pre_heading != blank %}
+          <h6 class="section__pre-heading">
+            {{ section.settings.pre_heading | escape }}
+          </h6><!-- /.section__pre-heading -->
+        {% endif %}
+
+        <h2 class="section__heading {{ section.settings.heading_size }}">
+          {{ section.settings.heading | newline_to_br }}
+        </h2><!-- /.section__heading -->
+      </div><!-- /.section__head -->
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="section__body">
+        <slider-instagram
+          class="swiper section-instagram__slider"
+          data-enabled="{{ section.settings.slideshow_mobile }}"
+        >
+          <div class="swiper-wrapper section-instagram__slider-wrapper">
+            {% for block in section.blocks %}
+              {% assign _block = block.settings %}
+
+              <div class="swiper-slide {% if section.settings.slideshow_mobile == false and forloop.index > section.settings.images_count_mobile %}is-hidden-mobile{% endif %}">
+                <div class="section__image media media--1-1">
+                  {% if _block.image != blank %}
+                    {% if _block.link != blank %}
+                      <a href="{{ _block.link }}" aria-label="{{ 'accessibility.media' | t }}">
+                    {% endif %}
+
+                    {%-
+                      liquid
+                      assign image = _block.image
+                      assign image_src = image | image_url: width: 500
+                      capture image_srcset
+                        render 'srcset', image: image, widths: '320,550'
+                        assign sizes = '(max-width: 480px) 320px,(max-width: 767px) 550px'
+                      endcapture
+                      assign image_alt = image.alt | escape
+
+                      render 'image', src: image_src, srcset: image_srcset, sizes: sizes, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+                    -%}
+
+                    {% if _block.link != blank %}
+                      </a>
+                    {% endif %}
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag }}
+                  {% endif %}
+                </div><!-- /.section__image -->
+
+                {% if _block.heading != blank or _block.subheading != blank %}
+                  <div class="section__content">
+                    {% if _block.heading != blank %}
+                      <h6 class="section__title h5">
+                        {{ _block.heading | escape }}
+                      </h6><!-- /.section__title -->
+                    {% endif %}
+
+                    {% if _block.subheading != blank %}
+                      <h6 class="section__subheading">
+                        {{ _block.subheading | escape }}
+                      </h6><!-- /.section__subheading -->
+                    {% endif %}
+                  </div><!-- /.section__content -->
+                {% endif %}
+              </div><!-- /.swiper-slide -->
+            {% endfor %}
+          </div><!-- /.swiper-wrapper -->
+        </slider-instagram><!-- /.swiper -->
+      </div><!-- /.section__body -->
+    {% endif %}
+  </div><!-- /.container -->
+</section><!-- /.section-instagram -->
+
+{% schema %}
+{
+  "name": "t:sections.instagram.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_fullwidth",
+      "label": "t:sections.global.settings.enable_wide.label"
+    },
+    {
+      "type": "text_alignment",
+      "id": "horizontal_alignment",
+      "label": "t:sections.global.settings.horizontal_alignment.label",
+      "info": "t:sections.global.settings.horizontal_alignment.info",
+      "default": "center"
+    },
+    {
+      "type": "text",
+      "id": "pre_heading",
+      "label": "t:sections.global.settings.subheading.label",
+      "default": "Add a nice subtitle here"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "Heading for Socials Images"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.instagram.headers.mobile"
+    },
+    {
+      "type": "checkbox",
+      "id": "slideshow_mobile",
+      "label": "t:sections.instagram.settings.slideshow_mobile.label"
+    },
+    {
+      "type": "range",
+      "id": "images_count_mobile",
+      "min": 2,
+      "max": 10,
+      "step": 2,
+      "label": "t:sections.instagram.settings.images_count_mobile.label",
+      "default": 2
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "t:sections.instagram.blocks.image.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.instagram.blocks.image.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.instagram.blocks.image.settings.heading.label"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "t:sections.instagram.blocks.image.settings.subheading.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.instagram.blocks.image.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.instagram.name",
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header"
+    ]
+  }
+}
+{% endschema %}

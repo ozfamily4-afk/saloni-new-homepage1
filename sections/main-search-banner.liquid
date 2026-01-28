@@ -1,0 +1,31 @@
+{{- 'component-collection-hero.css' | asset_url | stylesheet_tag -}}
+
+<div class="collection-hero">
+  <div class="container">
+    <h1 class="collection-hero__title h2">
+      {{- 'search.title' | t -}}
+    </h1><!-- /.collection-hero__title h2 -->
+
+    <form action="{{- routes.search_url -}}" class="collection-hero__search-form search-page-form">
+      <div class="form-row">
+        {%-
+          liquid
+          assign placeholder = 'search.placeholder' | t
+          render 'text-input', type: 'search', value: search.terms, name: 'q', placeholder: placeholder
+          assign placeholder = nil
+        -%}
+      </div><!-- /.form-row form-row--double -->
+
+      <div class="form-row">
+        <div>
+          {%-
+            liquid
+            assign value = 'search.submit' | t
+            render 'button', type: 'submit', value: value
+            assign value = nil
+          -%}
+        </div>
+      </div><!-- /.form-row -->
+    </form>
+  </div><!-- /.container -->
+</div><!-- /.collection-hero -->

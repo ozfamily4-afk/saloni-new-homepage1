@@ -1,0 +1,25 @@
+{% if page.content != blank or section.settings.hide_heading == false %}
+  <div class="page">
+    <div class="container">
+      {% unless section.settings.hide_heading %}
+        <h1>{{ page.title }}</h1>
+      {% endunless %}
+
+      {{ page.content }}
+    </div><!-- /.container -->
+  </div><!-- /.page -->
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:sections.page-content.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "hide_heading",
+      "label": "t:sections.page-content.settings.hide_heading.label",
+      "default": false
+    }
+  ]
+}
+{% endschema %}

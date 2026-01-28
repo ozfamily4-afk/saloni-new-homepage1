@@ -1,0 +1,22 @@
+{{- 'cart-drawer-upsell.css' | asset_url | stylesheet_tag -}}
+
+<cart-drawer-upsell
+  class="cart-drawer-upsell"
+  data-url="{{ routes.product_recommendations_url }}?section_id=cart-drawer-upsell&product_id={{ upsell_product.id }}&limit=4"
+>
+  {% if recommendations.performed and recommendations.products_count > 0 %}
+    {% if settings.cart_upsell_products_title != blank %}
+      <div class="cart-drawer-upsell__head">
+        <h4 class="caption-ffb">{{ settings.cart_upsell_products_title }}</h4>
+      </div><!-- /.cart-drawer-upsell__head -->
+    {% endif %}
+
+    <div class="cart-drawer-upsell__body">
+      {% for product in recommendations.products %}
+        <div class="cart-drawer-upsell__item">
+          {%- render 'card-product' product_ref: product, in_cart_drawer: true -%}
+        </div><!-- /.cart-drawer-upsell__item -->
+      {% endfor %}
+    </div><!-- /.cart-drawer-upsell__body -->
+  {% endif %}
+</cart-drawer-upsell>

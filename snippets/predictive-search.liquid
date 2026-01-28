@@ -1,0 +1,28 @@
+{{- 'predictive-search.css' | asset_url | stylesheet_tag: preload: true -}}
+
+{% if settings.enable_search_suggestion %}
+  <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
+{% endif %}
+
+<predictive-search section-id="{{ section.id }}" class="{{ class }}" {{ attr }}>
+  <div data-predictive-search class="predictive-search {{ addition_class }} predictive-search--{{ section.settings.layout_search }} {% if section.settings.layout_search == 'icon' %}predictive-search--absolute{% endif %}">
+    <div data-predictive-search-control class="predictive-search__controls">
+      <div class="predictive-search__icon-search predictive-search__icon">
+        {% render 'icon-search' %}
+      </div><!-- /.predictive-search__icon-search -->
+
+      <form action="{{- routes.search_url -}}">
+        <label hidden for="PredictiveSearch-{{ addition_class | handle }}--{{ section.id }}">{{ 'search.placeholder' | t }}</label>
+        <input id="PredictiveSearch-{{ addition_class | handle }}--{{ section.id }}" class="caption-ffb" type="search" name="q" placeholder="{{ 'search.placeholder' | t }}">
+      </form>
+
+      <div class="predictive-search__icon-close predictive-search__icon">
+        <button type="button" data-button-close aria-label="{{ 'accessibility.close' | t }}">
+          {% render 'icon-close' %}
+        </button>
+      </div><!-- /.predictive-search__icon-close -->
+    </div><!-- /.predictive-search__controls -->
+
+    <div data-result class="predictive-search__result {% if section.settings.layout_search == 'bar' %}predictive-search--absolute is-visible{% endif %}"></div><!-- /.predictive-search__result -->
+  </div><!-- /.predictive-search -->
+</predictive-search>

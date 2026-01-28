@@ -1,0 +1,30 @@
+.section-collection-list {
+  padding: 8rem 0 16rem;
+  color: var(--color);
+  background-color: var(--background);
+}
+
+@media (max-width: 767px) {
+  .section-collection-list {
+    padding: 3.5rem 0 10.4rem;
+  }
+}
+
+.section-collection-list .section__head {
+  text-align: center;
+  margin-bottom: 11.1rem
+}
+
+@media (max-width: 767px) {
+  .section-collection-list .section__head {
+    margin-bottom: 7rem;
+  }
+}
+
+.section-collection-list .section__head p {
+  margin: 0;
+}
+
+.section-collection-list .section__title {
+  margin: 0 0 1rem;
+}

@@ -1,0 +1,54 @@
+{% comment %}
+  Accepts:
+    section_id: {String} Section id
+    enable_arrows: {Boolean} Enable arrows
+    fade: {Boolean} Fade
+    loop: {Boolean} Loop
+    slides_size: {Number}: Slides size
+    enable_pagination: {Boolean} Enable pagination
+    pagination_position: {String} Pagination position
+    autoplay: {Boolean} Autoplay
+    autoplay_interval: {Number} autoplay_interval
+    enable_header_full_width: {Boolean} Enable header full width
+    slide_list: {String} Capture with hero slides
+
+  slide_list Example:
+    <li class="swiper-slide">{{ content }}</li>
+
+  Usage:
+    {% render 'hero-slider' slide_list: slides_desktop %}
+{% endcomment %}
+
+<hero-slider
+  id="slider-{{- section_id -}}"
+  class="swiper"
+  data-arrows="{{- enable_arrows -}}"
+  data-fade="{{ fade }}"
+  data-loop="{{ loop }}"
+  data-slides="{{ slides_size }}"
+  data-pagination="{{- enable_pagination -}}"
+  data-pagination-position="{{- pagination_position -}}"
+  data-autoplay="{{- autoplay -}}"
+  data-autoplay-interval="{{- autoplay_interval | times: 1000 -}}"
+>
+  {% if enable_arrows %}
+    <div class="hero__arrows swiper-arrows {% if arrows_border == 'has-border' %}swiper-arrows--border{% endif %}">
+      <button data-arrow-prev class="swiper-arrow swiper-arrow--prev {% if slides_size == 1 %}swiper-button-lock{% endif %}" prev aria-label="{{ 'accessibility.previous' | t }}">
+        {% render 'icon-arrow-slider' %}
+      </button>
+
+      <button
+        data-arrow-next
+        class="swiper-arrow swiper-arrow--next {% if slides_size == 1 %}swiper-button-lock{% endif %}" next aria-label="{{ 'accessibility.next' | t }}">
+        {% render 'icon-arrow-slider' %}
+      </button>
+    </div><!-- /.hero__arrows -->
+  {% endif %}
+
+  <ul class="swiper-wrapper list-unstyled">
+    {{ slide_list }}
+  </ul><!-- /.swiper-wrapper -->
+
+  <div data-pagination class="swiper-pagination {% if enable_header_full_width %}swiper-pagination__narrow{% endif %}">
+  </div><!-- /.swiper-pagination -->
+</hero-slider>

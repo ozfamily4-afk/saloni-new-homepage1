@@ -1,0 +1,106 @@
+{% comment %} {%- comment -%} Snippet: family card + taşınabilir detay panel (fixed: .value kullanımları) {%- endcomment -%}
+
+{%- assign fam_name   = fam.name.value | default: '' -%}
+{%- assign fam_handle = fam.handle | default: fam_name | handleize -%}
+{%- assign fam_key    = fam_name | handleize -%}
+{%- assign fam_id     = fam.id | default: fam.system.id | default: '' -%}
+{%- assign fam_desc   = fam.description -%}
+{%- assign fam_img    = fam.cover_image.value -%}
+{%- assign fam_img_sq = fam_img | image_url: width: 600, height: 600, crop: "center" -%}
+{%- assign fam_img_sm = fam_img | image_url: width: 360, height: 360, crop: "center" -%}
+
+<!-- GRID KARTI -->
+<article class="f2-card"
+         role="button"
+         tabindex="0"
+         aria-selected="false"
+         aria-expanded="false"
+         data-target="f2-detail-{{ fam_handle }}"
+         data-key="{{ fam_key }}"
+         data-id="{{ fam_id }}">
+  <div class="f2-card__thumb">
+    {%- if fam_img -%}
+      <img src="{{ fam_img_sm }}" alt="{{ fam_name | escape }}" loading="lazy" width="360" height="360">
+    {%- endif -%}
+  </div>
+  <div class="f2-card__row">
+    <h3 class="f2-card__name">{{ fam_name }}</h3>
+    <button class="f2-card__toggle" type="button" aria-label="Show {{ fam_name }}">+</button>
+  </div>
+</article>
+
+<!-- DETAY PANEL (üst alana taşınır) -->
+<div id="f2-detail-{{ fam_handle }}" class="f2-detail" hidden data-family-key="{{ fam_key }}" data-family-id="{{ fam_id }}">
+  <h4 class="f2-detail__title">{{ fam_name }}</h4>
+
+  <div class="f2-variants">
+    {%- assign has_variants = false -%}
+    {%- if variants != blank -%}
+      {%- for v in variants -%}
+        {%- comment -%} Family referansı (metaobject reference) - .value ile gerçek metaobject {%- endcomment -%}
+        {%- assign vf = v.family.value -%}
+
+        {%- if vf -%}
+          {%- assign vf_id = vf.id | default: vf.system.id | default: '' -%}
+          {%- assign vf_name = vf.name.value | default: '' -%}
+          {%- assign vf_handle = vf.handle | default: vf_name | handleize -%}
+
+          {%- assign is_match = false -%}
+
+          {%- if vf_id != blank and fam_id != blank and vf_id == fam_id -%}
+            {%- assign is_match = true -%}
+          {%- endif -%}
+
+          {%- unless is_match -%}
+            {%- if vf_handle == fam_key or vf_name == fam_name -%}
+              {%- assign is_match = true -%}
+            {%- endif -%}
+          {%- endunless -%}
+
+          {%- if is_match -%}
+            {%- assign has_variants = true -%}
+            {%- assign v_name = v.name.value | default: '' -%}
+            {%- assign v_img  = v.large_image.value -%}
+
+            <div class="f2-variant"
+                 data-variant
+                 data-fkey="{{ fam_key }}"
+                 data-fid="{{ fam_id }}"
+                 data-image="{{ v_img | image_url: width: 1400 }}"
+                 data-title="{{ v_name | escape }}">
+              <div class="f2-variant__tile">
+                <img src="{{ v_img | image_url: width: 600, height: 600, crop: 'center' }}"
+                     alt="{{ v_name | escape }}" loading="lazy" width="600" height="600">
+              </div>
+              <p class="f2-variant__name">{{ v_name }}</p>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    {%- comment -%} Hiç varyant bulunamadıysa fallback göster {%- endcomment -%}
+    {%- unless has_variants -%}
+      {%- if fam_img -%}
+        <div class="f2-variant f2-variant--fallback"
+          data-fallback
+          data-fkey="{{ fam_key }}"
+          data-fid="{{ fam_id }}"
+          data-image="{{ fam_img | image_url: width: 1400 }}"
+          data-title="{{ fam_name | escape }}"
+          role="button" tabindex="0">
+        <div class="f2-variant__tile">
+          <img src="{{ fam_img_sq }}" alt="{{ fam_name | escape }}" loading="lazy" width="600" height="600">
+        </div>
+        <p class="f2-variant__name">{{ fam_name }}</p>
+      </div>
+      {%- endif -%}
+    {%- endunless -%}
+  </div>
+
+  {%- if fam_desc != blank -%}
+    <div class="f2-detail__desc">
+      {{ fam_desc | metafield_tag }}
+    </div>
+  {%- endif -%}
+</div> {% endcomment %}

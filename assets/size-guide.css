@@ -1,0 +1,191 @@
+.size-guide-content {
+  padding: 1.6rem 7rem;
+}
+
+@media (max-width: 767px) {
+  .size-guide-content {
+    padding: 2rem 0;
+  }
+}
+
+.size-guide__choice {
+  text-align: center;
+}
+
+.size-guide__choice h4 {
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 2rem;
+}
+
+.size-guide__choice-options {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-form-input-border-light);
+  width: 18rem;
+  height: 3.5rem;
+  margin: 0 auto 2rem;
+  border-radius: var(--border-radius);
+}
+
+.size-guide__choice-options span {
+  flex: 1;
+  z-index: 1;
+  user-select: none;
+  cursor: pointer;
+  transition: color 0.6s;
+}
+
+.size-guide__choice-options span[active] {
+  color: var(--color-base-background);
+}
+
+.size-guide__choice-options span:nth-child(1):after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: -1;
+  width: 50%;
+  height: 100%;
+  background-color: var(--color-base);
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease-in 0s;
+}
+
+.size-guide__choice-options span:nth-child(1)[active]::after {
+  left: 0%;
+}
+
+.size-guide__calculate {
+  text-align: center;
+  padding: 4rem 8rem;
+  border-radius: var(--border-radius);
+}
+
+@media (max-width: 767px) {
+  .size-guide__calculate {
+    padding: 2rem 0;
+  }
+}
+
+.size-guide__calculate h5 {
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 2rem;
+}
+
+.size-guide__calculate .size-guide__button-calculate {
+  height: 5rem;
+}
+
+.size-guide__calculate-result,
+.size-guide__calculate-no-result {
+  margin-top: 2rem;
+}
+
+.size-guide__result-size {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.size-guide__calculate-options {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 767px) {
+  .size-guide__calculate-options {
+    flex-wrap: wrap;
+  }
+
+  .size-guide__calculate-field {
+    width: calc(50% - 0.8rem);
+  }
+}
+
+.size-guide__calculate-controls {
+  position: relative;
+}
+
+.size-guide__calculate-field label {
+  text-transform: uppercase;
+  display: block;
+}
+
+.size-guide__calculate-field input {
+  padding-right: 4rem;
+}
+
+.size-guide__calculate-field input:focus-visible {
+  outline: none;
+  border-color: var(--color-base);
+}
+
+.size-guide__calculate-field span {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 1.5rem;
+  user-select: none;
+  color: rgb(187, 188, 188);
+  text-transform: uppercase;
+}
+
+.size-guide__chart {
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.size-guide__chart h5 {
+  font-weight: 700;
+}
+
+.size-guide__table-head,
+.size-guide__table-body {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.size-guide__table-head {
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.size-guide__table-head li {
+  flex: 1;
+}
+
+.size-guide__table-body li {
+  display: flex;
+  align-items: center;
+  height: 4.5rem;
+  border-radius: var(--border-radius);
+}
+
+.size-guide__table-body li:nth-child(odd) {
+  background: rgb(241 241 241 / 50%);
+}
+
+.size-guide__table-body li span {
+  flex: 1;
+}
+
+.size-guide__table-body li span:nth-child(1) {
+  font-weight: 700;
+}
+
+.size-guide__table-body li[active] {
+  background-color: var(--color-base);
+  color: var(--color-base-background);
+}

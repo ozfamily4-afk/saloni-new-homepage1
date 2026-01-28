@@ -1,0 +1,120 @@
+{%- comment -%}
+  Accepts:
+  - expiration_date {String} Format: YYYY-MM-DD HH:MM
+
+  Usage:
+  {% render 'countdown-timer' expiration_date: section.settings.expiration_date %}
+{%- endcomment -%}
+
+<link rel="stylesheet" href="{{ 'countdown-timer.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'countdown-timer.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<script src="{{ 'countdown-timer.js' | asset_url }}" defer="defer"></script>
+
+<countdown-timer data-current-time="{{ 'now' | date: '%s' | times: 1000 }}">
+  {%-
+    liquid
+    assign now_date = 'now' | date: '%s'
+    assign end_date = expiration_date | date: '%s'
+    assign date_diff = end_date | minus: now_date
+  -%}
+
+  <time
+    datetime="{{- expiration_date | date: '%s' | times: 1000 -}}"
+    class="countdown__counter"
+    {% if date_diff > 0 %}data-expire-date{% endif %}
+  >
+    <span class="countdown__counter-item">
+      <span class="countdown__counter-value" data-counter-days>
+        {%-
+          liquid
+          if date_diff > 0
+            assign days = date_diff | divided_by: 60 | divided_by: 60 | divided_by: 24
+            if days < 10
+              echo days | prepend: '0'
+            else
+              echo days
+            endif
+          else
+            echo '00'
+          endif
+        -%}
+      </span>
+
+      <span class="countdown__counter-unit">
+        {{- 'date.days' | t -}}
+      </span>
+    </span>
+
+    <span class="countdown__counter-item">
+      <span class="countdown__counter-value" data-counter-hours>
+        {%-
+          liquid
+          if date_diff > 0
+            assign days_timestamp = 60 | times: 60 | times: 24
+            assign hours_timestamp = 60 | times: 60
+            assign hours = date_diff | modulo: days_timestamp | divided_by: hours_timestamp
+            if hours < 10
+              echo hours | prepend: '0'
+            else
+              echo hours
+            endif
+          else
+            echo '00'
+          endif
+        -%}
+      </span>
+
+      <span class="countdown__counter-unit">
+        {{- 'date.hours' | t -}}
+      </span>
+    </span>
+
+    <span class="countdown__counter-item">
+      <span class="countdown__counter-value" data-counter-minutes>
+        {%-
+          liquid
+          if date_diff > 0
+            assign minutes = date_diff | modulo: hours_timestamp | divided_by: 60
+            if minutes < 10
+              echo minutes | prepend: '0'
+            else
+              echo minutes
+            endif
+          else
+            echo '00'
+          endif
+        -%}
+      </span>
+
+      <span class="countdown__counter-unit">
+        {{- 'date.minutes' | t -}}
+      </span>
+    </span>
+
+    <span class="countdown__counter-item">
+      <span class="countdown__counter-value" data-counter-seconds>
+        {%-
+          liquid
+          if date_diff > 0
+            assign seconds = date_diff | modulo: 60
+            if seconds < 10
+              echo seconds | prepend: '0'
+            else
+              echo seconds
+            endif
+          else
+            echo '00'
+          endif
+        -%}
+      </span>
+
+      <span class="countdown__counter-unit">
+        {{- 'date.seconds' | t -}}
+      </span>
+    </span>
+  </time>
+</countdown-timer>

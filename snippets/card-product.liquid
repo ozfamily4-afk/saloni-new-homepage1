@@ -1,0 +1,262 @@
+{% comment %}
+    Renders a product card
+    Accepts:
+    - product_ref: {Object} Product Liquid object
+    - collection_ref: {Object} Collection Liquid object
+    - class: {String} CSS class to apply to the card
+    - show_variants: {Boolean} Show product variants like size
+    - in_cart_drawer: {Boolean} In cart drawer
+    - placeholder: {Boolean} If it is a placeholder
+    Usage:
+    {%- render 'card-product', product_ref: product_ref, show_variants: true -%}
+{% endcomment %}
+
+{%- assign divide_image_by = divide_image_by | default: 1 -%}
+
+<style>
+  .card-product {
+    --font-title: {% if settings.card_product_heading_font == 'heading-font' %} var(--font-heading-family){% else %} var(--font-body-family){% endif %};
+    --title-font-weight: {{ settings.card_product_heading_font_weight }};
+    --border-color: {{ settings.card_product_price_border_color }};
+  }
+</style>
+
+<card-product {% if product_ref == blank %}data-placeholder{% endif %} section-id="{{ section.id }}" id="{{ product_ref.handle }}">
+  <div data-card-product class="card-product {{ class }} {% if product_ref.available == false %}card-product--sold{% endif %}">
+    <div class="card__image {% if settings.card_product_swap_image %}card__image--swap{% endif %}">
+      <a
+        data-url
+        data-media
+        href="{{- product_ref.url | within: collection_ref -}}"
+        class="
+        card__link
+        media
+        media--crop-{{ settings.card_product_image_alignment }}
+        {{ settings.card_product_aspect_ratio_desktop }}
+        {{ settings.card_product_aspect_ratio_mobile }}
+        {% if product_ref.images[1] and settings.card_product_swap_image %}transform-none{% endif %}
+        {% if product_ref.featured_media == blank %}media--default{% endif %}"
+        {% if product_ref.featured_media != blank and settings.card_product_aspect_ratio_desktop == 'media--original' or settings.card_product_aspect_ratio_mobile == 'media--mobile-original' %}
+          style="
+            --aspect-ratio-original-desktop: {%- render 'aspect-ratio', aspect_ratio: product_ref.featured_image.aspect_ratio -%}%;
+            --aspect-ratio-original-mobile: {%- render 'aspect-ratio', aspect_ratio: product_ref.featured_image.aspect_ratio -%}%;
+          "
+        {% endif %}
+      >
+        {%- if product_ref and product_ref != empty -%}
+          <span class="visually-hidden">{{- product_ref.title | escape -}}</span>
+        {%- endif -%}
+
+        {%-
+          liquid
+          if product_ref.featured_media
+            assign image = product_ref.featured_media
+            assign image_width = 500 | divided_by: divide_image_by
+            assign image_src = image | image_url: width: image_width
+            capture image_srcset
+              render 'srcset', image: image
+            endcapture
+            assign image_alt = product_ref.featured_media.alt | escape
+            render 'image', src: image_src, srcset: image_srcset, sizes: sizes, alt: image_alt, attr: 'data-image-primary', focal_point: product_ref.featured_media.presentation.focal_point
+          else
+          if placeholder_image != blank
+            echo placeholder_image | placeholder_svg_tag
+          else
+            echo 'image' | placeholder_svg_tag
+          endif
+          endif
+        -%}
+
+        {%-
+          liquid
+          if product_ref.featured_image and product_ref.images[1]
+            assign image_width = 500 | divided_by: divide_image_by
+            assign image_hover_src = product_ref.images[1] | image_url: width: image_width
+            capture image_srcset
+              render 'srcset' image: product_ref.images[1]
+            endcapture
+            render 'image', src: image_hover_src, srcset: image_srcset, sizes: sizes, alt: product_ref.images[1].alt, focal_point: product_ref.images[1].presentation.focal_point, class: "card__hover-image"
+          endif
+        -%}
+      </a>
+
+      {% if settings.enable_quickview and show_variants == blank and product_ref != blank %}
+        <div class="card__quickview">
+          <quickview-opener data-modal="#Product-Quickview-Modal" class="no-js-hidden">
+            <button
+              type="button"
+              class="button {{ settings.card_product_button_style }} card__quickview-button-open clickable-area"
+              data-url="{{- product_ref.selected_or_first_available_variant.url -}}"
+              {% if in_cart_drawer %}data-in-cart-drawer{% endif %}
+              aria-haspopup="dialog"
+              aria-label="{{ 'products.product.quickview.button' | t }}"
+            >
+              <span>{{ 'products.product.quickview.button' | t }}</span>
+
+              {% render 'icon-quick-view' %}
+            </button>
+          </quickview-opener>
+        </div><!-- /.card__quickview -->
+      {% endif %}
+
+      {% if show_variants %}
+        <div class="card__content-head card__content-head--mobile">
+          <h4 class="card__title caption-ffb">
+            {%- if product_ref != blank -%}
+              <a href="{{ product_ref.url }}">{{- product_ref.title | escape -}}</a>
+            {%- else -%}
+              {{- 'products.product.title' | t -}}
+            {%- endif -%}
+          </h4><!-- /.card__title -->
+
+          <div class="card__price price">
+          
+{% render 'price', product_ref: product_ref %}
+          </div><!-- /.card__price -->
+        </div><!-- /.card__content-head -->
+      {% endif %}
+
+      {% if show_variants and product_ref != blank %}
+        {% render 'card-product-variants', product_ref: product_ref %}
+      {% endif %}
+    </div><!-- /.card__image -->
+
+    {% if settings.badges and product_ref != blank %}
+      <div data-badges class="card__badge-list">
+        <span
+          data-badge-sold
+          {% if product_ref.available %}hidden{% endif %}
+          class="badge badge--sold-out">
+          {{- 'products.product.badges.sold_out' | t -}}
+        </span><!-- /.card__badge -->
+
+        <span
+          data-badge-sale
+          {% if product_ref.available == false
+            or product_ref.compare_at_price == blank
+            or product_ref.compare_at_price < product_ref.price
+          %}
+            hidden
+          {% endif %}
+          class="badge badge--sale">
+          {{- 'products.product.badges.sale' | t -}}
+        </span>
+
+        {% for tag in product_ref.tags %}
+          {% if tag contains 'badge:' %}
+            <span class="badge badge--custom">
+              {{- tag | remove: 'badge:' | strip -}}
+            </span>
+          {% endif %}
+        {% endfor %}
+      </div><!-- /.card__badge-list -->
+    {% endif %}
+
+    <div class="
+      card__content
+      card__content--alignment-{{ settings.card_product_content_alignment }}"
+    >
+      {% if product_ref != blank %}
+        {%- assign product_form_id = 'product-form-' | append: section.id -%}
+        {%- form 'product', product_ref, id: product_form_id, class: 'card__product-form', novalidate: 'novalidate' -%}
+          <input type="hidden" name="id" value="{{- product_ref.selected_or_first_available_variant.id -}}">
+
+          <div class="card__content-inner">
+            {% if settings.custom_liquid != blank %}
+              <div class="card__content-custom">
+                {{ settings.custom_liquid }}
+              </div><!-- /.card__content-custom -->
+            {% endif %}
+
+            <div class="card__content-head {% if show_variants %}card__content-head--hidden-mobile{% endif %}">
+              <h4 class="card__title caption-ffb">
+                {%- if product_ref != blank -%}
+                  <a href="{{ product_ref.url }}">{{- product_ref.title | escape -}}</a>
+                {%- else -%}
+                  {{- 'products.product.title' | t -}}
+                {%- endif -%}
+              </h4><!-- /.card__title -->
+
+              <div class="card__price price {% if settings.card_product_enable_price_border %}card__price--border{% endif %} {% if settings.card_product_make_price_bold %}card__price--bold{% endif %}">
+               {% render 'price', product_ref: product_ref %}
+              </div><!-- /.card__price -->
+            </div><!-- /.card__content-head -->
+
+            {% if settings.swatches and product_ref != blank %}
+              <div class="card__swatches swatches">
+                {% for option in product_ref.options_with_values %}
+                  {% if option.name == settings.swatches_option or option.values[0].swatch != blank %}
+                    {% render 'color-swatches'
+                      product: product_ref,
+                      option: option
+                    %}
+                  {% endif %}
+                {% endfor %}
+              </div><!-- /.card__swatches -->
+            {% endif %}
+
+            {% if show_variants and product_ref != blank %}
+              <div class="card__actions">
+                {%-
+                  liquid
+                  assign style = 'button--style-2 card__add-button'
+                  assign value = 'products.product.sold_out' | t
+                  assign disabled = true
+                  if product_ref.selected_or_first_available_variant.available
+                    assign value = 'products.product.add_to_cart' | t
+                    assign disabled = false
+                  endif
+                  render 'button', type: 'submit', name: 'add', value: value, style: style, disabled: disabled
+                  assign value = nil
+                  assign disabled = nil
+                -%}
+              </div><!-- /.card__actions -->
+            {% endif %}
+          </div><!-- /.card__content-inner -->
+        {%- endform -%}
+      {% else %}
+        <div class="card__content-head">
+          <h4 class="card__title caption-ffb">
+            {{- 'products.product.title' | t -}}
+          </h4><!-- /.card__title -->
+
+          <div class="card__price price">
+           {% render 'price' %}
+          </div><!-- /.card__price -->
+        </div><!-- /.card__content-head -->
+      {% endif %}
+    </div><!-- /.card__content -->
+  </div><!-- /.card-product -->
+
+  <script type="application/json" data-variants>
+    {{- product_ref.variants | json -}}
+  </script>
+
+  <script type="application/json" data-variants-url>
+    [
+      {%- for variant in product_ref.variants -%}
+        {%- unless forloop.first -%},{%- endunless -%}
+        {
+          "id": {{ variant.id | json }},
+          "url": {{ variant.url | json }}
+        }
+      {%- endfor -%}
+    ]
+  </script>
+
+  <script type="application/json" data-variants-images>
+    [
+    {%- for variant in product_ref.variants -%}
+      {%- unless forloop.first -%},{%- endunless -%}
+      {%- assign variant_image = variant.image | default: product_ref.featured_image -%}
+      {
+        "id": {{ variant.id | json }},
+        "image": {
+          "src": "{{ variant_image | image_url: width: 500 }}",
+          "srcset": "{%- render 'srcset', image: variant_image -%}"
+        }
+      }
+    {%- endfor -%}
+    ]
+  </script>
+</card-product>

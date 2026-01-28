@@ -1,0 +1,35 @@
+.collection {
+  padding: 2.4rem 0 16rem;
+}
+
+@media (max-width: 767px) {
+  .collection {
+    padding: 2.4rem 0 6.4rem;
+  }
+}
+
+.collection .collection__grid {
+  flex: 1;
+}
+
+.collection__not-found {
+  width: 100%;
+}
+
+.collection__not-found a {
+  text-decoration: underline;
+}
+
+.collection__not-found a:hover {
+  text-decoration: none;
+}
+
+@media (max-width: 480px) {
+  .collection--mobile-grid-1 .collection__grid[role="list"] {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .collection--mobile-grid-2 .collection__grid[role="list"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,475 @@
+
+
+{{- 'localization.css' | asset_url | stylesheet_tag: preload: true -}}
+{{- 'section-header.css' | asset_url | stylesheet_tag: preload: true -}}
+{{- 'menu-mega.css' | asset_url | stylesheet_tag: preload: true -}}
+{{- 'header-navigation.css' | asset_url | stylesheet_tag: preload: true -}}
+
+<script src="{{ 'component-sticky-header.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'search-popup.js' | asset_url }}" defer="defer"></script>
+
+<style>
+  .header {
+    --font-navigation: {% if settings.navigation_font == 'heading-font' %} var(--font-heading-family){% else %} var(--font-body-family){% endif %};
+    --uppercase: {% if settings.navigation_font == 'heading-font' and settings.headings_uppercase %}uppercase {% else %} none {% endif %};
+    --logo-width-desktop: {{ section.settings.logo_width_desktop }}px;
+    --logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
+    --logo-text-scale-desktop: {{ section.settings.logo_width_desktop | divided_by: 4.375 }}px;
+    --logo-text-scale-mobile: {{ section.settings.logo_width_mobile | divided_by: 4.375 }}px;
+    --background-header: {{ section.settings.background_header }};
+    --color-header: {{ section.settings.color_header }};
+    --color-header-border: {{ section.settings.color_header | color_modify: 'alpha', 0.10 }};
+    --color-header-transparent: {{ section.settings.color_header_transparent }};
+    --color-products-counter: {{ section.settings.products_counter_color }};
+    --background-products-counter: {{ section.settings.products_counter_background }};
+  }
+</style>
+
+<sticky-header {% if section.settings.enable_scroll %}enable-sticky{% endif %}>
+  <header
+    data-header
+    class="header
+    {% if section.settings.layout_search == 'bar' %}header--layout-search-bar{% endif %}
+    {% if section.settings.enable_transparent and template.name == 'index' %}header--transparent{% endif %}
+    header--logo-{{ section.settings.logo_position }} {% if section.settings.menu != blank %}header--has-menu{% endif %}"
+    {% if section.settings.enable_transparent and template.name == 'index' %}transparent{% endif %}
+  >
+    <div class="container {% if section.settings.enable_header_full_width %}container--fullwidth{% endif %}">
+      <div class="header__inner">
+        <div class="header__nav header__column">
+          {% if section.settings.logo_position != 'center-menu-bellow' %}
+            {% render 'header-navigation' menu: section.settings.menu %}
+          {% elsif section.settings.logo_position == 'center-menu-bellow' %}
+            {% render 'header-navigation' menu: section.settings.menu_secondary %}
+          {% endif %}
+
+          {% render 'navigation-mobile' %}
+        </div><!-- /.header__nav -->
+
+        <div class="header__logo header__column">
+          <a
+            href="{{ routes.root_url }}"
+            aria-label="{{ 'accessibility.logo' | t }}"
+            class="
+            header__link-color-change
+            {% if section.settings.enable_transparent and section.settings.logo_transparent or section.settings.logo_svg_transparent != blank %}header__with-transparent-image{% endif %}"
+          >
+            {% if section.settings.logo != blank %}
+              {%-
+                liquid
+                assign image = section.settings.logo
+                assign image_src = image | image_url: width: 375
+                capture image_srcset
+                  render 'srcset', image: image, widths: '375,550'
+                endcapture
+                assign image_alt = image.alt | escape
+
+                render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point, class: 'header__logo-base', lazyload: false
+              -%}
+            {% elsif section.settings.logo_svg != blank %}
+              {{ section.settings.logo_svg }}
+            {% elsif section.settings.logo_transparent == blank and section.settings.logo_svg_transparent == blank or section.settings.enable_transparent == false %}
+              <span>{{ shop.name }}</span>
+            {% endif %}
+
+            {% if section.settings.enable_transparent %}
+              {% if section.settings.logo_transparent %}
+                {%-
+                  liquid
+                  assign image = section.settings.logo_transparent
+                  assign image_src = image | image_url: width: 375
+                  capture image_srcset
+                    render 'srcset', image: image, widths: '375,550'
+                  endcapture
+                  assign image_alt = image.alt | escape
+
+                  render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point, class: 'header__logo-transparent'
+                -%}
+              {% elsif section.settings.logo_svg_transparent != blank %}
+                <div class="header__logo-transparent">
+                  {{ section.settings.logo_svg_transparent }}
+                </div><!-- /.header__logo-transparent -->
+              {% endif %}
+            {% endif %}
+          </a>
+        </div><!-- /.header__logo -->
+     
+{% comment %} {%- form 'localization', class: 'language-selector-form' -%}
+  <div class="language-links" style="position: absolute; top: 10px; right: 20px; display: flex; gap: 10px;">
+    {% for locale in form.available_locales %}
+      <button
+        type="submit"
+        name="locale_code"
+        value="{{ locale.iso_code }}"
+        style="
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 11px;
+          text-transform: uppercase;
+          color: black;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          transition: color 0.2s;
+          {% if locale.iso_code == form.current_locale.iso_code %}
+            font-weight: bold;
+            border-bottom: 1px solid black;
+          {% endif %}
+        "
+        onmouseover="this.style.color='#bccf11';"
+        onmouseout="this.style.color='black';"
+      >
+        <img 
+          src="{{ 'flag-' | append: locale.iso_code | append: '.png' | asset_url }}" 
+          alt="{{ locale.iso_code }}" 
+          style="width: 16px; height: 12px;">
+        {{ locale.iso_code }}
+      </button>
+    {% endfor %}
+  </div>
+{%- endform -%} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+        <div class="header__utils {% if section.settings.enable_separator_dots %}header__utils--separator{% endif %} header__column"> 
+  
+          <ul
+            {% if section.settings.layout_search == 'bar' %}data-utils-layout-search-bar{% endif %}
+            class="header__utils-items list-unstyled
+            {% if section.settings.enable_utils_text == false %}header__utils-items--without-text{% endif %}
+            {% if settings.enable_localization == false and section.settings.enable_utils_text == false %}header__utils-items--only-icons{% endif %}"
+          >
+            <li>
+              <search-popup class="header__search-popup">
+                <a href="{{- routes.search_url -}}" aria-label="{{ 'accessibility.search' | t }}" class="header__utils-link header__search-icon hover-icon header__link-color-change hover-icon js-open">
+                  <span class="icon icon--large">{%- render 'icon-search' -%}</span><!-- /.icon -->
+
+                  {% if section.settings.layout_search == 'bar' %}<span class="header__search-text">{{ 'search.placeholder' | t }}</span>{% endif %}
+                </a>
+
+                {% render 'predictive-search' class: 'predictive-search--header' %}
+              </search-popup>
+            </li>
+
+            {% if settings.enable_localization and section.settings.enable_currencies %}
+              <li class="hidden-tablet">
+                <modal-opener class="header__modal-currency no-js-hidden" data-modal="#Modal-Localization">
+                  <button type="button" class="header__link-color-change" aria-haspopup="dialog">
+                    <span class="header__utils-item-text hover-underline">
+                      {{ cart.currency.iso_code | append: ' ' | append: '(' | append: cart.currency.symbol | append: ')' }}
+                    </span>
+                  </button>
+                </modal-opener>
+              </li>
+            {% endif %}
+
+            {%- if shop.customer_accounts_enabled -%}
+              <li class="hidden-tablet">
+                <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__utils-link header__account full-unstyled-link focus-inset hover-icon header__link-color-change hover-underline hover-underline--icon" title="{%- if customer -%}{{ 'accessibility.account' | t }}{%- else -%}{{ 'accessibility.sign_in' | t }}{%- endif -%}">
+                  <span class='header__utils-item-text util-text'>{{ 'general.header_utils.account' | t }}</span>
+
+                  <span class="icon icon--large">{%- render 'icon-user' -%}</span><!-- /.icon -->
+                </a>
+              </li><!-- /.header__utils-item -->
+            {%- endif -%}
+
+            <li>
+              <a href="{{- routes.cart_url -}}" class="header__utils-item-text header__utils-link header__cart hover-icon header__link-color-change hover-underline hover-underline--icon" title="{{- 'accessibility.cart' | t -}}" id="cart-counter" data-cart-link>
+                {%- render 'cart-counter' -%}
+              </a>
+            </li><!-- /.header__utils-item -->
+          </ul><!-- /.header__utils-items list-unstyled -->
+        </div><!-- /.header__utils -->
+      </div><!-- /.header__inner -->
+
+      {% if section.settings.logo_position == 'center-menu-bellow' %}
+        <div class="header__nav header__nav--center">
+          {% render 'header-navigation' menu: section.settings.menu %}
+        </div><!-- /.header__nav -->
+      {% endif %}
+    </div><!-- /.container -->
+  </header><!-- /.header -->
+</sticky-header>
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "tag": "section",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_header",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "color_header",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "products_counter_color",
+      "label": "t:sections.header.settings.products_counter_color.label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "products_counter_background",
+      "label": "t:sections.header.settings.products_counter_background.label",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_header_full_width",
+      "label": "t:sections.global.settings.enable_wide.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mega_menu_full_width",
+      "label": "t:sections.header.settings.enable_mega_menu_full_width.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_scroll",
+      "label": "t:sections.header.settings.enable_scroll.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "products_counter",
+      "label": "t:sections.header.settings.products_counter.label",
+      "info": "t:sections.header.settings.products_counter.info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_utils_text",
+      "label": "t:sections.header.settings.enable_utils_text.label",
+      "info": "t:sections.header.settings.enable_utils_text.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_currencies",
+      "label": "t:sections.header.settings.enable_currencies.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_separator_dots",
+      "label": "t:sections.header.settings.enable_separator_dots.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "layout_search",
+      "label": "t:sections.header.settings.layout_search.label",
+      "options": [
+        {
+          "value": "icon",
+          "label": "t:sections.header.settings.layout_search.options.icon"
+        },
+        {
+          "value": "bar",
+          "label": "t:sections.header.settings.layout_search.options.bar"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.header.settings.logo.label"
+    },
+    {
+      "type": "html",
+      "id": "logo_svg",
+      "label": "t:sections.header.settings.logo_svg.label"
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.header.settings.logo_position.options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.header.settings.logo_position.options.center"
+        },
+        {
+          "value": "center-menu-bellow",
+          "label": "t:sections.header.settings.logo_position.options.center_menu_bellow"
+        }
+      ],
+      "default": "center",
+      "label": "t:sections.header.settings.logo_position.label"
+    },
+    {
+      "type": "range",
+      "id": "logo_width_desktop",
+      "min": 50,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "t:sections.global.settings.logo_width_desktop.label",
+      "default": 150
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "t:sections.global.settings.logo_width_mobile.label",
+      "default": 150
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_secondary",
+      "label": "t:sections.header.settings.menu_secondary.label",
+      "info": "t:sections.header.settings.menu_secondary.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.header_transparent.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_transparent",
+      "label": "t:sections.header.settings.enable_transparent.label",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "color_header_transparent",
+      "label": "t:sections.header.settings.header_color_transparent.label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_transparent",
+      "label": "t:sections.header.settings.logo_transparent.label"
+    },
+    {
+      "type": "html",
+      "id": "logo_svg_transparent",
+      "label": "t:sections.header.settings.logo_svg_transparent.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "t:sections.header.blocks.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "handle",
+          "label": "t:sections.header.blocks.settings.title.label",
+          "info": "t:sections.header.blocks.settings.title.info"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.header.blocks.settings.featured_item_1.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "t:sections.global.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "card_title_1",
+          "label": "t:sections.global.settings.heading.label",
+          "default": "Title"
+        },
+        {
+          "type": "text",
+          "id": "card_subtitle_1",
+          "label": "t:sections.global.settings.subheading.label",
+          "default": "Subtitle"
+        },
+        {
+          "type": "url",
+          "id": "link_1",
+          "label": "t:sections.global.settings.link.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.header.blocks.settings.featured_item_2.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "t:sections.global.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "card_title_2",
+          "label": "t:sections.global.settings.heading.label",
+          "default": "Title"
+        },
+        {
+          "type": "text",
+          "id": "card_subtitle_2",
+          "label": "t:sections.global.settings.subheading.label",
+          "default": "Subtitle"
+        },
+        {
+          "type": "url",
+          "id": "link_2",
+          "label": "t:sections.global.settings.link.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.header.blocks.settings.featured_item_3.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_3",
+          "label": "t:sections.global.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "card_title_3",
+          "label": "t:sections.global.settings.heading.label",
+          "default": "Title"
+        },
+        {
+          "type": "text",
+          "id": "card_subtitle_3",
+          "label": "t:sections.global.settings.subheading.label",
+          "default": "Subtitle"
+        },
+        {
+          "type": "url",
+          "id": "link_3",
+          "label": "t:sections.global.settings.link.label"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,180 @@
+{{- 'customer.css' | asset_url | stylesheet_tag -}}
+
+<div class="page-customer">
+  {% if section.settings.image %}
+    <div class="page-customer__image media {% if section.settings.image_mobile %}page-customer__image--mobile-hidden{% endif %}">
+      {%-
+          liquid
+          assign image = section.settings.image
+          assign image_src = image | image_url: width: 500
+          capture image_srcset
+            render 'srcset', image: image
+          endcapture
+          assign image_alt = image.alt | escape
+
+          render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point, lazyload: false
+        -%}
+    </div><!-- /.page-customer__image -->
+  {% endif %}
+
+  {% if section.settings.image_mobile %}
+    <div class="page-customer__image page-customer__image--mobile media">
+      {%-
+          liquid
+          assign image = section.settings.image_mobile
+          assign image_src = image | image_url: width: 375
+          capture image_srcset
+            render 'srcset', image: image
+          endcapture
+          assign image_alt = image.alt | escape
+
+          render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point, lazyload: false
+        -%}
+    </div><!-- /.page-customer__image -->
+  {% endif %}
+
+  <div class="form-customer form-customer--register">
+    <div class="container">
+      <div class="form__inner form__inner--{{ section.settings.horizontal_alignment }}">
+        <div class="form__head center">
+          <h1 class="h3 form__title">
+            {{- 'customer.register.title' | t -}}
+          </h1><!-- /.h3 form__title -->
+
+          <p class="form__subtitle color-subdued">
+            {{- 'customer.register.subtitle' | t -}}
+          </p><!-- /.form__subtitle color-subdued -->
+        </div><!-- /.form__head center -->
+
+        <div class="form__body">
+          <form-validation>
+            {%- form 'create_customer', novalidate: 'novalidate' -%}
+              {%- if form.errors -%}
+                <div class="color-red">
+                  {{- form.errors | default_errors -}}
+                </div><!-- /.color-red -->
+              {%- endif -%}
+
+              <div class="form-row">
+                {%-
+                  liquid
+                  assign label = 'customer.register.first_name' | t
+                  assign attr = 'autocomplete="given-name"'
+                  assign value = ''
+                  if form.first_name
+                    assign value = form.first_name
+                  endif
+                  render 'text-input', id: 'RegisterForm-FirstName', label: label, type: 'text', name: 'customer[first_name]', attr: attr, value: value
+                  assign label = nil
+                  assign attr = nil
+                  assign value = nil
+                -%}
+              </div><!-- /.form-row -->
+
+              <div class="form-row">
+                {%-
+                  liquid
+                  assign label = 'customer.register.last_name' | t
+                  assign attr = 'autocomplete="family-name"'
+                  assign value = ''
+                  if form.last_name
+                    assign value = form.last_name
+                  endif
+                  render 'text-input', id: 'RegisterForm-LastName', label: label, type: 'text', name: 'customer[last_name]', attr: attr, value: value
+                  assign label = nil
+                  assign attr = nil
+                  assign value = nil
+                -%}
+              </div><!-- /.form-row -->
+
+              <div class="form-row">
+                {%-
+                  liquid
+                  assign label = 'customer.register.email' | t
+                  assign error = ''
+                  assign has_error = false
+                  capture attr
+                    echo 'spellcheck="false"'
+                    echo 'autocapitalize="off"'
+                    echo 'autocomplete="email"'
+                    echo 'aria-required="true"'
+                  endcapture
+                  assign value = ''
+                  if form.email
+                    assign value = form.email
+                  endif
+                  if form.errors contains 'email'
+                    assign error = form.errors.translated_fields['email'] | capitalize | append: ' ' | append: form.errors.messages['email']
+                    assign has_error = true
+                  endif
+                  render 'text-input', id: 'RegisterForm-email', label: label, type: 'email', name: 'customer[email]', attr: attr, value: value, message: error, has_error: has_error
+                  assign label = nil
+                  assign attr = nil
+                  assign value = nil
+                  assign error = nil
+                  assign has_error = nil
+                -%}
+              </div><!-- /.form-row -->
+
+              <div class="form-row">
+                {%-
+                  liquid
+                  assign label = 'customer.register.password' | t
+                  assign attr = 'aria-required="true"'
+                  assign error = ''
+                  assign has_error = false
+                  if form.errors contains 'password'
+                    assign error = form.errors.translated_fields['password'] | capitalize | append: ' ' | append: form.errors.messages['password']
+                    assign has_error = true
+                  endif
+                  render 'text-input', id: 'RegisterForm-password', label: label, type: 'password', name: 'customer[password]', attr: attr, message: error, has_error: has_error
+                  assign label = nil
+                  assign attr = nil
+                  assign error = nil
+                  assign has_error = nil
+                -%}
+              </div><!-- /.form-row -->
+
+              <div class="form-row center">
+                <div>
+                  {%- assign value = 'customer.register.submit' | t -%}
+                  {%- render 'button', type: 'submit', value: value -%}
+                  {%- assign value = nil -%}
+                </div>
+              </div><!-- /.form-row center -->
+
+              <div class="form-row center">
+                <a href="{{- routes.account_login_url -}}" class="link">{{- 'customer.register.have_account' | t -}}</a>
+              </div><!-- /.form-row center -->
+            {%- endform -%}
+          </form-validation>
+        </div><!-- /.form__body -->
+      </div><!-- /.form__inner -->
+    </div><!-- /.container -->
+  </div><!-- /.form-customer form-customer--register -->
+</div><!-- /.page-customer -->
+
+{% schema %}
+{
+  "name": "t:sections.register.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text_alignment",
+      "id": "horizontal_alignment",
+      "label": "t:sections.global.settings.horizontal_alignment.label",
+      "default": "center"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.global.settings.image.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.global.settings.image.label_mobile"
+    }
+  ]
+}
+{% endschema %}

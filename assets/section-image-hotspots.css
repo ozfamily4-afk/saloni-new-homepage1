@@ -1,0 +1,114 @@
+.section-image-hotspots {
+  position: relative;
+  z-index: 1;
+  background-color: var(--background);
+  color: var(--color);
+  padding: 8rem 0;
+}
+
+@media (max-width: 767px) {
+  .section-image-hotspots {
+    padding: 4rem 0;
+  }
+}
+
+.section-image-hotspots .section__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (max-width: 767px) {
+  .section-image-hotspots .section__inner {
+    flex-direction: column;
+  }
+}
+
+.section-image-hotspots .section__holder {
+  position: relative;
+  width: 50%;
+}
+
+@media (max-width: 767px) {
+  .section-image-hotspots .section__holder {
+    width: 100%;
+  }
+}
+
+.section-image-hotspots .section__image {
+  border-radius: var(--border-radius);
+}
+
+.section-image-hotspots .section__hotspots-holders {
+  position: absolute;
+  inset: 1.2rem;
+  z-index: 1;
+}
+
+.section-image-hotspots .section__content {
+  width: 50%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1.6rem;
+}
+
+@media (max-width: 767px) {
+  .section-image-hotspots .section__content {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.section-image-hotspots .section__content--left {
+  margin-right: 0;
+}
+
+.section-image-hotspots .section__content--center {
+  text-align: center;
+}
+
+.section-image-hotspots .section__content--right {
+  text-align: right;
+  margin-right: 0;
+}
+
+.section-image-hotspots .section__content--flip {
+  order: -1;
+  padding-top: 0;
+}
+
+@media (min-width: 1024px) {
+  .section-image-hotspots .section__content.section__content--large-gap {
+    padding: 0 0 0 7rem;
+  }
+
+  .section-image-hotspots .section__content--flip.section__content--large-gap {
+    padding: 0 7rem 0 0
+  }
+}
+
+@media (min-width: 1200px) {
+  .section-image-hotspots .section__content.section__content--large-gap {
+    padding: 0 0 0 13.3rem;
+  }
+
+  .section-image-hotspots .section__content--flip.section__content--large-gap {
+    padding: 0 13.3rem 0 0
+  }
+}
+
+.section-image-hotspots .section__content p {
+  margin: 0;
+}
+
+.section-image-hotspots .section__content p + p {
+  margin-top: 1rem;
+}
+
+.section-image-hotspots .section__title {
+  margin: 0 0 1.1rem;
+}
+
+.section-image-hotspots .section__actions {
+  margin-top: 3.4rem;
+}

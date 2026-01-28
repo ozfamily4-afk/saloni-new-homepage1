@@ -1,0 +1,27 @@
+<div class="product__thumbnail">
+  <div
+    class="media {{ aspect_ratio_desktop }} {{ aspect_ratio_mobile }} transform-none"
+    {% if aspect_ratio_desktop == 'media--original' or aspect_ratio_mobile == 'media--mobile-original' %}
+      style="
+      --aspect-ratio-original-desktop: {%- render 'aspect-ratio', aspect_ratio: media.preview_image.aspect_ratio -%}%;
+      --aspect-ratio-original-mobile: {%- render 'aspect-ratio', aspect_ratio: media.preview_image.aspect_ratio -%}%;
+      "
+    {% endif %}
+  >
+    {%-
+      liquid
+      assign image = media.preview_image
+      assign image_src = image | image_url: width: 500
+      capture image_srcset
+        render 'srcset', image: image, widths: '375,550'
+      endcapture
+      assign image_alt = image.alt | escape
+
+      render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+    -%}
+  </div><!-- /.media -->
+
+  {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+    <span class="product__thumbnail-video-play-icon">{%- render 'icon-play' -%}</span>
+  {%- endif -%}
+</div><!-- /.product__thumbnail -->

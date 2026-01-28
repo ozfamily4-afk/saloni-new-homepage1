@@ -1,0 +1,125 @@
+{% comment %}
+    Renders single product media
+    Accepts:
+    - media: {Object} Liquid media object
+    - is_gallery_media: {Boolean} True if media is modal gallery media
+    - autoplay_first_video: {Boolean} Autoplay first video
+    - enable_zoom_gallery: {Boolean} Enable image zoom gallery
+    Usage:
+    {%- render 'card-result', result: result, class: 'grid__item' aspect_ratio_desktop: section.settings.aspect_ratio_desktop, aspect_ratio_mobile: section.settings.aspect_ratio_desktop-%}
+{% endcomment %}
+
+{%-
+  liquid
+  if enable_zoom_gallery
+    assign media_tag = 'a'
+  else
+    assign media_tag = 'div'
+  endif
+-%}
+
+<div class="product__image{% if is_gallery_media %} product__image--gallery{% endif %}">
+  {% if media == blank %}
+    <div class="media media--portrait">
+      {{ 'product-1' | placeholder_svg_tag }}
+    </div><!-- /.media -->
+  {% endif %}
+
+  {%- capture media_image -%}
+    {%-
+      liquid
+      assign image_src = media.preview_image | image_url: width: 500
+      capture image_srcset
+        render 'srcset', image: media.preview_image
+      endcapture
+      assign image_alt = media.alt | escape
+      if preload_media
+        echo media.preview_image | image_url: width: 500 | image_tag: preload: true, srcset: image_srcset, alt: image_alt, class: 'visually-hidden'
+      endif
+      render 'image', src: image_src, srcset: image_srcset, sizes: sizes, alt: image_alt, lazyload: lazyload
+    -%}
+  {%- endcapture -%}
+
+  {%- if media.media_type == 'image' -%}
+
+    <{{ media_tag }}
+      class="media {{ aspect_ratio_desktop }} {{ aspect_ratio_mobile }} transform-none"
+      {% if aspect_ratio_desktop == 'media--original' or aspect_ratio_mobile == 'media--mobile-original' %}
+        style="
+          --aspect-ratio-original-desktop: {%- render 'aspect-ratio', aspect_ratio: media.preview_image.aspect_ratio -%}%;
+          --aspect-ratio-original-mobile:{%- render 'aspect-ratio', aspect_ratio: media.preview_image.aspect_ratio -%}%;
+        "
+      {% endif %}
+      href="{{- media.preview_image | image_url: width: media.preview_image.width -}}"
+      data-media-id="{{- media.id -}}"
+      {% if enable_zoom_gallery %}
+        data-pswp-image
+        data-pswp-src="{{- media.preview_image | image_url: width: media.preview_image.width -}}"
+        data-pswp-srcset="{{- image_srcset -}}"
+        data-pswp-width="{{- media.preview_image.width -}}"
+        data-pswp-height="{{- media.preview_image.height -}}"
+      {% endif %}
+      target="_blank"
+      aria-label="{{ 'accessibility.media' | t }}"
+
+    >
+      {{- media_image -}}
+
+      {% if enable_zoom_gallery %}
+        <span class="product__gallery-opener__icon motion-reduce">
+          {%- render 'icon-plus-large' -%}
+        </span>
+      {% endif %}
+    </{{ media_tag }}><!-- /.media -->
+  {%- elsif media.media_type == 'video' or media.media_type == 'external_video' -%}
+    <deferred-media class="deferred-media" {% if autoplay_first_video %}data-autoplay{% endif %}>
+      <button class="deferred-media__button" id="Deferred-Poster-Modal-{{- media.id -}}--{{ section.id }}" type="button" aria-label="{{ media.media_type }}">
+        <span class="media {{ aspect_ratio_desktop }} {{ aspect_ratio_mobile }}"
+          {% if aspect_ratio_desktop == 'media--original' or aspect_ratio_mobile == 'media--mobile-original' %}
+            style="
+              --aspect-ratio-original-desktop: {%- render 'aspect-ratio', aspect_ratio: media.preview_image.aspect_ratio -%}%;
+              --aspect-ratio-original-mobile:{%- render 'aspect-ratio', aspect_ratio: media.preview_image.aspect_ratio -%}%;
+            "
+          {% endif %}
+        >
+          {{- media_image -}}
+        </span>
+
+        {%- render 'icon-play' -%}
+      </button>
+
+      <template>
+        <div class="deferred-media__wrapper media {{ aspect_ratio_desktop }} {{ aspect_ratio_mobile }}"
+          {% if aspect_ratio_desktop == 'media--original' or aspect_ratio_mobile == 'media--mobile-original' %}
+            style="
+              --aspect-ratio-original-desktop: {%- render 'aspect-ratio', aspect_ratio: media.preview_image.aspect_ratio -%}%;
+              --aspect-ratio-original-mobile:{%- render 'aspect-ratio', aspect_ratio: media.preview_image.aspect_ratio -%}%;
+            "
+          {% endif %}
+        >
+          {%- case media.media_type -%}
+            {%- when 'external_video' -%}
+              {%- assign video_class = 'js-' | append: media.host -%}
+              {{- media | external_video_url: autoplay: false, mute: '1', muted: true , loop: true | external_video_tag: class: video_class, loading: 'lazy' -}}
+            {%- when 'video' -%}
+              {{- media | media_tag: image_size: '2048x', autoplay: true, muted: true, loop: true, controls: true, preload: 'none' -}}
+          {%- endcase -%}
+        </div><!-- /.deferred-media__wrapper -->
+      </template>
+    </deferred-media><!-- /.deferred-media -->
+  {% elsif media.media_type == 'model' %}
+    <div class="media media--portrait">
+      {{ media | model_viewer_tag }}
+
+      {%- assign xr_button_value = 'products.product.media.xr_button' | t -%}
+      {%- capture xr_button_attr -%}
+        aria-label="{{- 'products.product.media.xr_button_label' | t -}}"
+        data-shopify-xr
+        data-shopify-model3d-id="{{- media.id -}}"
+        data-shopify-title="{{- product_ref.title | escape -}}"
+        data-shopify-xr-hidden
+      {%- endcapture -%}
+      {%- render 'button', type: 'button', value: xr_button_value, style: 'product__xr-button', icon_type: '3d', attr: xr_button_attr -%}
+    </div><!-- /.media media--portrait -->
+  {%- endif -%}
+</div><!-- /.product__image -->

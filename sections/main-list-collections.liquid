@@ -1,0 +1,222 @@
+{{- 'section-collection-list.css' | asset_url | stylesheet_tag -}}
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    .section-collection-list--{{ section.id }} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    }
+  </style>
+{% endif %}
+
+<section class="section-collection-list section-collection-list--{{ section.id }}">
+  <div class="container {% if section.settings.enable_full_width %}container--fullwidth{% endif %}">
+    {% if section.settings.heading != blank or section.settings.description != blank %}
+      <div class="section__head">
+        {% if section.settings.heading != blank %}
+          <h1 class="section__title {{ section.settings.heading_size }}">{{ section.settings.heading }}</h1><!-- /.h2 center -->
+        {% endif %}
+
+        {% if section.settings.description != blank %}
+          <p>{{ section.settings.description | strip }}</p>
+        {% endif %}
+      </div><!-- /.section__head -->
+    {% endif %}
+
+    {%- paginate collections by 12 -%}
+      <ul class="grid grid--4 grid--mobile-{{ section.settings.cards_per_row_mobile }} list-unstyled" role="list">
+        {%- for collection in collections -%}
+          <li class="grid__item collection-item">
+            <a href="{{- collection.url -}}" class="collection__media media {{ section.settings.aspect_ratio_desktop }} {{ section.settings.aspect_ratio_mobile }}">
+              <span class="visually-hidden">{{- collection.title | escape -}}</span>
+
+              {%-
+                liquid
+                assign image = collection.featured_image
+                if image
+                  assign image_src = image | image_url: width: 500
+                  capture image_srcset
+                    render 'srcset', image: image, widths: '750,1100,1500,1780,2000,3000,3840'
+                  endcapture
+                  assign image_alt = image.alt | escape
+                  render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+                else
+                  echo 'collection-6' | placeholder_svg_tag
+                endif
+              -%}
+            </a>
+
+            <h2 class="h4 center caption-ffb">
+              <a href="{{- collection.url -}}" class="full-unstyled-link">{{- collection.title | escape -}}</a>
+            </h2><!-- /.h4 -->
+
+            <div class="collection__entry center">
+              {{ collection.description | truncatewords: 5 }}
+            </div><!-- /.collection__entry -->
+
+          </li><!-- /.grid__item -->
+        {%- else -%}
+          <li class="grid__item">
+            <p>{{- 'list_collections.empty' | t -}}</p>
+          </li><!-- /.grid__item -->
+        {%- endfor -%}
+      </ul><!-- /.grid list-unstyled -->
+
+      {%- if paginate.pages > 1 -%}
+        <div class="pagination">
+          {%- render 'pagination', paginate: paginate, anchor: '' -%}
+        </div><!-- /.spacer -->
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div><!-- /.container container--fullwidth -->
+</section><!-- /.section -->
+
+{% schema %}
+{
+  "name": "t:sections.main-list-collection.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_desktop",
+      "label": "t:sections.global.settings.aspect_ratio_desktop.label",
+      "options": [
+        {
+          "value": "media--1-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_2.label"
+        },
+        {
+          "value": "media--2-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_3.label"
+        },
+        {
+          "value": "media--3-4",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_4.label"
+        },
+        {
+          "value": "media--1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        },
+        {
+          "value": "media--4-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.4_3.label"
+        },
+        {
+          "value": "media--3-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_2.label"
+        },
+        {
+          "value": "media--16-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.16_9.label"
+        }
+      ],
+      "default": "media--2-3"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_mobile",
+      "label": "t:sections.global.settings.aspect_ratio_mobile.label",
+      "options": [
+        {
+          "value": "media--mobile-1-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_2.label"
+        },
+        {
+          "value": "media--mobile-2-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_3.label"
+        },
+        {
+          "value": "media--mobile-3-4",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_4.label"
+        },
+        {
+          "value": "media--mobile-1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        },
+        {
+          "value": "media--mobile-4-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.4_3.label"
+        },
+        {
+          "value": "media--mobile-3-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_2.label"
+        },
+        {
+          "value": "media--mobile-16-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.16_9.label"
+        }
+      ],
+      "default": "media--mobile-2-3"
+    },
+    {
+      "type": "select",
+      "id": "cards_per_row_mobile",
+      "label": "t:sections.main-list-collection.settings.cards_per_row_mobile.label",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_full_width",
+      "label": "t:sections.global.settings.enable_wide.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.main-list-collection.settings.heading.label",
+      "default": "Collections"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:sections.main-list-collection.settings.description.label"
+    }
+  ]
+}
+{% endschema %}

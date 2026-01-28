@@ -1,0 +1,340 @@
+<link rel="stylesheet" href="{{ 'section-image-hotspots.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'hotspot.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'section-image-hotspots.css' | asset_url | stylesheet_tag -}}
+  {{- 'hotspot.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<script src="{{ 'hotspot-module.js' | asset_url }}" defer="defer"></script>
+
+<style>
+  {% if section.settings.overwrite_colors %}
+    .section-image-hotspots--{{ section.id }} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    }
+  {% endif %}
+
+  .section-image-hotspots--{{ section.id }} {
+    --color-pin: {{ section.settings.color_pin }};
+  }
+</style>
+
+<section data-aos="fade-zoom-in" class="
+  section-image-hotspots
+  section-image-hotspots--{{ section.id }}
+  {% if section.settings.flip %}section-image-hotspots--flip{% endif %}
+">
+  <div class="container {% if section.settings.enable_wide %}container--fullwidth{% endif %}">
+    <div class="section__inner">
+      <div class="section__holder">
+        <div class="section__image media media--1-1">
+          {% if section.settings.image %}
+            {%-
+              liquid
+              assign image = section.settings.image
+              assign image_src = image | image_url: width: 500
+              capture image_srcset
+                render 'srcset', image: image, widths: '750,1100,1500,1780,2000,3000,3840'
+              endcapture
+              assign image_alt = image.alt | escape
+
+              render 'image', src: image_src, srcset: image_srcset, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+            -%}
+          {% else %}
+            {{ 'image' | placeholder_svg_tag }}
+          {% endif %}
+        </div><!-- /.section__image -->
+
+        {% if section.blocks.size > 0 %}
+          <div class="section__hotspots-holders">
+            {% for block in section.blocks %}
+              {% assign _block = block.settings %}
+              {% assign hotspot_id = section.id | append: '-' | append: forloop.index %}
+
+              <hotspot-module
+                id="{{ hotspot_id }}"
+                class="hotspot hotspot--{{ forloop.index }}"
+                style="
+                --x-position: {{ block.settings.x_position }}%;
+                --y-position: {{ block.settings.y_position }}%;
+                --color: {{ _block.color }};
+                --background: {{ _block.background }};
+                "
+              >
+                <button aria-label="{{ 'accessibility.pin' | t }}"></button>
+
+                {% capture hotspot_content_mobile %}
+                  {{ hotspot_content_mobile }}
+                  <div class="hotspot__content-mobile">
+                    {% render 'hotspot-content' block: _block, id: hotspot_id %}
+                  </div><!-- /.hotspot__content-mobile -->
+                {% endcapture %}
+
+                {% render 'hotspot-content' block: _block %}
+              </hotspot-module><!-- /.hotspot -->
+            {% endfor %}
+          </div><!-- /.section__hotspots-holders -->
+
+          <div class="section__hotspots-holders-mobile">
+            {{ hotspot_content_mobile }}
+          </div><!-- /.section__hotspots-holders-mobile -->
+        {% endif %}
+      </div><!-- /.section__holder -->
+
+      <div class="
+        section__content
+        section__content--{{ section.settings.horizontal_alignment }}
+        {% if section.settings.flip %}section__content--flip{% endif %}
+        {% if section.settings.content_large_gap %}section__content--large-gap{% endif %}
+      ">
+        {% if section.settings.heading != blank %}
+          <h2 class="section__title {{ section.settings.heading_size }}">
+            {{ section.settings.heading | newline_to_br }}
+          </h2><!-- /.section__title -->
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <div class="section__entry">
+            {{ section.settings.subheading }}
+          </div><!-- /.section__entry -->
+        {% endif %}
+
+        {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+          <div class="section__actions">
+            <a
+              href="{{	section.settings.button_link }}"
+              class="button {{ section.settings.button_style }}
+              {% if section.settings.button_style_hover_outline %}button--outline{% endif %}"
+            >
+              {{ section.settings.button_label }}
+            </a>
+          </div><!-- /.section__actions -->
+        {% endif %}
+      </div><!-- /.section__content -->
+    </div><!-- /.section__inner -->
+  </div><!-- /.container -->
+</section><!-- /.section-image-hotspots -->
+
+{% schema %}
+{
+  "name": "t:sections.image-hotspots.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "color_pin",
+      "label": "t:sections.image-hotspots.settings.color_pin.label",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_wide",
+      "label": "t:sections.global.settings.enable_wide.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "flip",
+      "label": "t:sections.global.settings.flip.label",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.global.settings.image.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.text_content"
+    },
+    {
+      "type": "text_alignment",
+      "id": "horizontal_alignment",
+      "label": "t:sections.global.settings.horizontal_alignment.label",
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "content_large_gap",
+      "label": "t:sections.image-hotspots.settings.content_large_gap.label"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "Hotspots title goes here"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:sections.global.settings.description.label",
+      "default": "<p>Use this text to share information about your store with your customers. Describe products, share announcements, or welcome customers to your store.</p>"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.global.settings.button_label.label",
+      "default": "Click me"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.global.settings.button_link.label",
+      "default": "/collections"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.global.settings.button_style.label",
+      "options": [
+        {
+          "value": "button--style-1",
+          "label": "t:sections.global.settings.button_style.options.style_one"
+        },
+        {
+          "value": "button--style-2",
+          "label": "t:sections.global.settings.button_style.options.style_two"
+        },
+        {
+          "value": "button--style-3",
+          "label": "t:sections.global.settings.button_style.options.style_three"
+        },
+        {
+          "value": "button--style-4",
+          "label": "t:sections.global.settings.button_style.options.style_four"
+        }
+      ],
+      "default": "button--style-2"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_style_hover_outline",
+      "label": "t:sections.global.settings.button_style_hover_outline.label"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "t:sections.image-hotspots.blocks.hotspot.name",
+      "type": "hotspot",
+      "settings": [
+        {
+          "type": "color",
+          "id": "color",
+          "label": "t:sections.global.settings.colors.text",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "background",
+          "label": "t:sections.global.settings.colors.background",
+          "default": "#ffffff"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.image-hotspots.blocks.hotspot.settings.product.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.image-hotspots.blocks.hotspot.settings.header_hotspot.content"
+        },
+        {
+          "type": "range",
+          "id": "x_position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:sections.image-hotspots.blocks.hotspot.settings.x_position.label",
+          "default": 25
+        },
+        {
+          "type": "range",
+          "id": "y_position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "t:sections.image-hotspots.blocks.hotspot.settings.y_position.label",
+          "default": 25
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.image-hotspots.name",
+      "blocks": [
+        {
+          "type": "hotspot",
+          "settings": {
+            "x_position": 22,
+            "y_position": 41
+          }
+        },
+        {
+          "type": "hotspot",
+          "settings": {
+            "x_position": 51,
+            "y_position": 65
+          }
+        },
+        {
+          "type": "hotspot",
+          "settings": {
+            "x_position": 75,
+            "y_position": 40
+          }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

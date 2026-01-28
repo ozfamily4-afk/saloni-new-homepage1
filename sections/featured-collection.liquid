@@ -1,0 +1,437 @@
+<link rel="stylesheet" href="{{ 'section-card-collection.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'section-featured-collection.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'section-card-collection.css' | asset_url | stylesheet_tag -}}
+  {{- 'section-featured-collection.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+<style>
+  .featured-collection--{{ section.id }} {
+    {% if section.settings.overwrite_colors %}
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+    {% endif %}
+    --cards-heading-font: {% if section.settings.cards_heading_font == 'heading-font' %}var(--font-heading-family){% else %}var(--font-body-family){% endif %};
+  }
+</style>
+
+<section class="featured-collection featured-collection--{{ section.id }} section">
+  <div class="container {% if section.settings.enable_full_width %}container--fullwidth{% endif %}">
+    <div class="featured__head section__head section__head--{{ section.settings.header_position }}">
+      {% if section.settings.pre_heading != blank %}
+        <h6
+          data-aos="fade-up"
+          class="featured__pre-heading section__pre-heading"
+        >
+          {{ section.settings.pre_heading }}
+        </h6><!-- /.featured__pre-heading -->
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h2 data-aos="fade-up" class="featured__title section__heading {{ section.settings.heading_size }}">
+          {{ section.settings.heading | newline_to_br }}
+        </h2><!-- /.featured__title -->
+      {% endif %}
+    </div><!-- /.featured__head -->
+
+    <div class="featured__body">
+      <ul class="featured__list featured__list--row-{{ section.settings.cards_per_row }} list-unstyled section__list-row">
+        {% for block in section.blocks %}
+          {%-
+            liquid
+            assign _block = block.settings
+            assign collection = _block.collection
+            assign url = _block.link | default: collection.url
+            assign featured_image = _block.image | default: collection.featured_image
+            assign featured_image_mobile = _block.image_mobile
+            assign title = _block.heading | default: collection.title
+            assign description = _block.description | default: collection.description
+          -%}
+
+          <li data-aos="fade-up">
+            <div class="card-collection">
+              <a href="{{ url }}"
+                aria-label="{{ 'accessibility.collection_card' | t }}"
+                class="
+                card__image media
+                {{ section.settings.aspect_ratio_desktop }}
+                {{ section.settings.aspect_ratio_mobile }}
+              ">
+                {% if featured_image != blank or featured_image_mobile != blank %}
+                  {%-
+                    liquid
+                    assign image = featured_image
+                    assign image_src = image | image_url: width: 500
+                    capture image_srcset
+                      render 'srcset', image: image, widths: '750,1100,1500,1780,2000,3000,3840'
+                      assign sizes = '(max-width: 480px) 767px,(max-width: 767px) 1100px'
+                    endcapture
+                    assign image_alt = image.alt | escape
+                    assign class = ''
+                    if featured_image_mobile != blank
+                      assign class = 'card__image-hidden-mobile'
+                    endif
+
+                    render 'image', src: image_src, srcset: image_srcset, class: class, sizes: sizes, alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+                  -%}
+
+                  {% if featured_image_mobile %}
+                    {%-
+                      liquid
+                      assign image = featured_image_mobile
+                      assign image_src = image | image_url: width: 375
+                      capture image_srcset
+                        render 'srcset', image: image, widths: '750'
+                        assign sizes = '(max-width: 480px)'
+                      endcapture
+                      assign image_alt = image.alt | escape
+
+                      render 'image', src: image_src, srcset: image_srcset, sizes: sizes, class: 'card__image-mobile', alt: image_alt, width: image.width, height: image.height, focal_point: image.presentation.focal_point
+                    -%}
+                  {% endif %}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag }}
+                {% endif %}
+              </a>
+
+              <div class="card__content card__content--{{ section.settings.horizontal_alignment }}">
+                <h5 class="card__title caption-ffb {{ section.settings.cards_font_size }}">
+                  {% if url != blank %}
+                    <a href="{{ url }}">
+                  {% endif %}
+
+                  {{ title }}
+
+                  {% if url != blank %}
+                    </a>
+                  {% endif %}
+                </h5><!-- /.card__title -->
+
+                {% if description != blank %}
+                  <div class="card__entry {% if section.settings.cards_font_size == 'h5' %}card__entry--small{% endif %} {% if section.settings.cards_font_size == 'h3' %}card__entry--large{% endif %}">
+                    {{ description }}
+                  </div><!-- /.card__entry -->
+                {% endif %}
+              </div><!-- /.card__content -->
+            </div><!-- /.card-collection -->
+          </li>
+        {% endfor %}
+      </ul><!-- /.featured__list -->
+    </div><!-- /.featured__body -->
+
+    {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+      <div class="featured__actions featured__actions--{{ section.settings.header_position }}">
+        <a href="{{	section.settings.button_link }}" class="button {{ section.settings.button_style }}">{{ section.settings.button_label }}</a>
+      </div><!-- /.featured__actions -->
+    {% endif %}
+  </div><!-- /.container -->
+</section><!-- /.featured-collection -->
+
+{% schema %}
+{
+  "name": "t:sections.featured-collection.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_full_width",
+      "label": "t:sections.global.settings.enable_wide.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.media"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_desktop",
+      "label": "t:sections.global.settings.aspect_ratio_desktop.label",
+      "options": [
+        {
+          "value": "media--1-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_2.label"
+        },
+        {
+          "value": "media--2-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_3.label"
+        },
+        {
+          "value": "media--3-4",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_4.label"
+        },
+        {
+          "value": "media--1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        },
+        {
+          "value": "media--4-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.4_3.label"
+        },
+        {
+          "value": "media--3-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_2.label"
+        },
+        {
+          "value": "media--16-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.16_9.label"
+        }
+      ],
+      "default": "media--4-3"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_mobile",
+      "label": "t:sections.global.settings.aspect_ratio_mobile.label",
+      "options": [
+        {
+          "value": "media--mobile-1-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_2.label"
+        },
+        {
+          "value": "media--mobile-2-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.2_3.label"
+        },
+        {
+          "value": "media--mobile-3-4",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_4.label"
+        },
+        {
+          "value": "media--mobile-1-1",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.1_1.label"
+        },
+        {
+          "value": "media--mobile-4-3",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.4_3.label"
+        },
+        {
+          "value": "media--mobile-3-2",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.3_2.label"
+        },
+        {
+          "value": "media--mobile-16-9",
+          "label": "t:sections.global.settings.aspect_ratio_desktop.options.16_9.label"
+        }
+      ],
+      "default": "media--mobile-1-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.text_content"
+    },
+    {
+      "type": "text_alignment",
+      "id": "header_position",
+      "label": "t:sections.featured-collection.settings.header_position.label",
+      "info": "t:sections.global.settings.horizontal_alignment.info",
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "pre_heading",
+      "label": "t:sections.global.settings.subheading.label",
+      "default": "Your subtitle goes here"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "Add descriptive section title"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:sections.global.settings.heading_size.label",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.global.settings.heading_size.options.small"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.global.settings.heading_size.options.medium"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.global.settings.heading_size.options.large"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.featured-collection.settings.headers.cards"
+    },
+    {
+      "type": "select",
+      "id": "cards_heading_font",
+      "label": "t:sections.featured-collection.settings.font_cards.label",
+      "options": [
+        {
+          "value": "heading-font",
+          "label": "t:sections.featured-collection.settings.font_cards.options.heading-font"
+        },
+        {
+          "value": "body-font",
+          "label": "t:sections.featured-collection.settings.font_cards.options.body-font"
+        }
+      ],
+      "default": "body-font"
+    },
+    {
+      "type": "select",
+      "id": "cards_font_size",
+      "label": "t:sections.featured-collection.settings.cards_font_size.label",
+      "options": [
+        {
+          "value": "h5",
+          "label": "t:sections.featured-collection.settings.headings_size.options.small"
+        },
+        {
+          "value": "h4",
+          "label": "t:sections.featured-collection.settings.headings_size.options.medium"
+        },
+        {
+          "value": "h3",
+          "label": "t:sections.featured-collection.settings.headings_size.options.large"
+        }
+      ],
+      "default": "h4"
+    },
+    {
+      "type": "text_alignment",
+      "id": "horizontal_alignment",
+      "label": "t:sections.featured-collection.settings.horizontal_alignment.label",
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "cards_per_row",
+      "label": "t:sections.featured-collection.settings.cards_per_row.label",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.section_headers.button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.global.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.global.settings.button_link.label"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.global.settings.button_style.label",
+      "options": [
+        {
+          "value": "button--style-1",
+          "label": "t:sections.global.settings.button_style.options.style_one"
+        },
+        {
+          "value": "button--style-2",
+          "label": "t:sections.global.settings.button_style.options.style_two"
+        },
+        {
+          "value": "button--style-3",
+          "label": "t:sections.global.settings.button_style.options.style_three"
+        },
+        {
+          "value": "button--style-4",
+          "label": "t:sections.global.settings.button_style.options.style_four"
+        }
+      ],
+      "default": "button--style-2"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "t:sections.featured-collection.blocks.collection_name",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:sections.featured-collection.blocks.settings.collection.label",
+          "info": "t:sections.featured-collection.blocks.settings.collection.info"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.global.settings.image.label_desktop"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "t:sections.global.settings.image.label_mobile"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.global.settings.heading.label",
+          "default": "Collection title"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "t:sections.global.settings.description.label",
+          "default": "<p>Description goes here</p>"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.global.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured-collection.name",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "*"
+    ]
+  }
+}
+{% endschema %}

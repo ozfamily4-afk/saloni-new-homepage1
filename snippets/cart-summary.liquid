@@ -1,0 +1,79 @@
+{%- comment -%}
+  Renders cart summary
+
+  Accepts:
+  - show_cart_link {Boolean} Show the view cart link
+  - show_note_field {Boolean} Show note field
+  - show_checkout_buttons {Boolean} Show dynamic checkout buttons
+
+  Usage:
+  {%- render 'cart-summary' -%}
+{%- endcomment -%}
+
+<div class="cart-summary {% if template == 'cart' %}cart-summary--in-page{% endif %}" id="cart-summary">
+  <div class="cart-summary__inner">
+    {%-
+      liquid
+      if settings.enable_message and show_note_field
+        assign cart_message_label = 'cart.message_label' | t
+        render 'textarea-input', id: 'Cart-Note', label: cart_message_label, class: 'cart-summary__note', name: 'note', body: cart.note
+      endif
+    -%}
+
+    <div class="cart-summary__content">
+      <p class="cart-summary__error caption color-red" data-cart-error-wrapper hidden></p>
+
+      <div class="cart-summary__total">
+        <p><span>{{- 'cart.subtotal' | t -}}</span> <span>{{ cart.total_price | money }}</span></p>
+      </div><!-- /.cart-summary__total -->
+
+      {%- if cart.cart_level_discount_applications.size > 0 -%}
+        <ul class="list-unstyled caption" role="list" aria-label="{{- 'customer.order.discount' | t -}}">
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <li>
+              {{ discount.title }}
+              (-{{ discount.total_allocated_amount | money }})
+            </li>
+          {%- endfor -%}
+        </ul><!-- /.list-unstyled caption -->
+      {%- endif -%}
+
+      <p class="caption color-subdued">
+        {%- if cart.taxes_included and shop.shipping_policy.body != blank -%}
+          {{ 'cart.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+        {%- elsif cart.taxes_included -%}
+          {{ 'cart.taxes_included_but_shipping_at_checkout' | t }}
+        {%- elsif shop.shipping_policy.body != blank -%}
+          {{ 'cart.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+        {%- else -%}
+          {{ 'cart.taxes_and_shipping_at_checkout' | t }}
+        {%- endif -%}
+      </p>
+
+      {{ form | payment_terms }}
+
+      <div class="cart-summary__actions">
+        {%-
+          liquid
+
+          assign class = settings.cart_buttons_style | append: ' button'
+
+          if show_cart_link
+            assign value = 'cart.view_cart' | t
+            render 'button', type: 'link', value: value, style: class, href: routes.cart_url
+          endif
+
+          assign value = 'cart.checkout' | t
+          render 'button', type: 'submit', name: 'checkout', value: value, style: class
+          assign value = nil
+        -%}
+
+        {%- if settings.additional_checkout_buttons and additional_checkout_buttons and show_checkout_buttons -%}
+          <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+            {{- content_for_additional_checkout_buttons -}}
+          </div>
+        {%- endif -%}
+      </div><!-- /.cart-summary__actions -->
+    </div><!-- /.cart-summary__content -->
+  </div><!-- /.cart-summary__inner -->
+</div><!-- /.cart-summary -->

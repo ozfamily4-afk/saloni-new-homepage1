@@ -1,0 +1,595 @@
+{% schema %}
+{
+  "name": "Saloni Trends Gallery",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "small_label",
+      "label": "Small Label",
+      "default": "SALONI COLLECTION"
+    },
+    {
+      "type": "text",
+      "id": "main_heading",
+      "label": "Main Heading",
+      "default": "2025 FURNITURE TRENDS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image_slide",
+      "name": "Slide",
+      "limit": 30,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "Alt Text",
+          "info": "Leave blank to use image default alt text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Saloni Trends Gallery",
+      "blocks": [
+        { "type": "image_slide" },
+        { "type": "image_slide" },
+        { "type": "image_slide" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<div class="saloni-trends-section">
+  <div class="page-width">
+    <header class="saloni-trends-header">
+      {% if section.settings.small_label != blank %}
+        <span class="saloni-label">{{ section.settings.small_label }}</span>
+      {% endif %}
+      {% if section.settings.main_heading != blank %}
+        <h2 class="saloni-heading">{{ section.settings.main_heading }}</h2>
+      {% endif %}
+    </header>
+
+    <div class="saloni-trends-gallery" id="SaloniGallery-{{ section.id }}">
+      {% for block in section.blocks %}
+        {%- liquid
+          assign image = block.settings.image
+          assign alt = block.settings.alt_text | default: image.alt | default: 'Saloni Furniture'
+        -%}
+        
+        <div class="saloni-trends-slide" 
+             data-index="{{ forloop.index0 }}" 
+             {{ block.shopify_attributes }}>
+          
+          <div class="saloni-slide-inner">
+            {% if image != blank %}
+              {{ image | image_url: width: 1600 | image_tag: 
+                loading: 'lazy', 
+                class: 'saloni-img', 
+                alt: alt,
+                widths: '550, 750, 1100, 1500, 2000'
+              }}
+            {% else %}
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'saloni-img placeholder' }}
+            {% endif %}
+
+            <div class="saloni-slide-overlay">
+              <div class="saloni-overlay-content saloni-overlay-left">
+                <div class="saloni-arrow-box">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </div>
+              </div>
+              <div class="saloni-overlay-content saloni-overlay-right">
+                <div class="saloni-arrow-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+              </div>
+              <div class="saloni-overlay-content saloni-overlay-center">
+                 </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="saloni-trends-lightbox" id="SaloniLightbox-{{ section.id }}" aria-hidden="true">
+    
+    <button type="button" class="saloni-lb-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    
+    <button type="button" class="saloni-lb-nav saloni-lb-prev" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+
+    <button type="button" class="saloni-lb-nav saloni-lb-next" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+
+    <div class="saloni-lb-content">
+      <div class="saloni-lb-image-wrapper">
+        <img src="" alt="" class="saloni-lb-img" id="SaloniLightboxImg-{{ section.id }}">
+      </div>
+    </div>
+    
+    <div class="saloni-lb-counter">
+      <span id="SaloniLbCurrent-{{ section.id }}">1</span> / <span id="SaloniLbTotal-{{ section.id }}">{{ section.blocks.size }}</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* --- GENEL AYARLAR --- */
+  .saloni-trends-section {
+    padding: 60px 0;
+    background-color: #ffffff !important; 
+    font-family: var(--font-body-family);
+    overflow: hidden; 
+  }
+
+  .saloni-trends-header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding: 0 20px;
+  }
+
+  /* Shimmer Efekti */
+  .saloni-label {
+    display: inline-block;
+    font-size: 1.5rem !important; 
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 800 !important; 
+    line-height: 1.2;
+    margin-bottom: 15px;
+    background: linear-gradient(110deg, #666666 30%, #a0a0a0 45%, #666666 60%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: shine-text 5s linear infinite;
+  }
+
+  @keyframes shine-text {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .saloni-heading {
+    margin: 0;
+    font-size: 3rem !important; 
+    font-weight: 900 !important; 
+    color: #000000 !important;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+
+  /* --- GALERİ --- */
+  .saloni-trends-gallery {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9; 
+    max-height: 80vh; 
+  }
+
+  .saloni-trends-slide {
+    position: absolute;
+    height: 100%;
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 1; 
+    z-index: 1;
+    width: 65%; 
+    left: 17.5%; 
+    transform: scale(0.85); 
+    cursor: pointer; /* Tıklanabilir imleci */
+  }
+
+  .saloni-slide-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    background: #f4f4f4;
+  }
+
+  .saloni-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+  
+  /* Hover zoom effect (Optional) */
+  .saloni-trends-slide:hover .saloni-img {
+      transform: scale(1.02);
+  }
+
+  .saloni-slide-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.3); /* Biraz daha şeffaf */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none; 
+  }
+  
+  .saloni-overlay-content {
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .saloni-arrow-box {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(4px);
+  }
+  
+  .saloni-arrow-box svg { width: 30px; height: 30px; color: #fff; }
+
+  /* State Classes */
+  .saloni-trends-slide.is-center { 
+      opacity: 1; 
+      z-index: 10; 
+      transform: translateX(0) scale(1); 
+      cursor: zoom-in; /* Büyütme imleci */
+  }
+  .saloni-trends-slide.is-center .saloni-slide-overlay { opacity: 0; }
+
+  .saloni-trends-slide.is-left { opacity: 1; z-index: 5; transform: translateX(-65%) scale(0.9); }
+  .saloni-trends-slide.is-left .saloni-slide-overlay { opacity: 1; }
+  .saloni-trends-slide.is-left .saloni-overlay-left { display: flex; }
+
+  .saloni-trends-slide.is-right { opacity: 1; z-index: 5; transform: translateX(65%) scale(0.9); }
+  .saloni-trends-slide.is-right .saloni-slide-overlay { opacity: 1; }
+  .saloni-trends-slide.is-right .saloni-overlay-right { display: flex; }
+
+  .saloni-trends-slide:not(.is-center):not(.is-left):not(.is-right) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* --- LIGHTBOX (BÜYÜTME EKRANI) --- */
+  .saloni-trends-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(5px);
+    z-index: 2147483647; /* En üst katman */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .saloni-trends-lightbox.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .saloni-lb-close {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: transparent; 
+    border: none;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    z-index: 2000000002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .saloni-lb-close:hover { transform: rotate(90deg); transition: transform 0.3s; }
+  .saloni-lb-close svg { stroke: #fff; width: 40px; height: 40px; }
+
+  .saloni-lb-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    padding: 0 80px;
+  }
+
+  .saloni-lb-image-wrapper {
+    position: relative;
+    max-width: 100%;
+    max-height: 85vh;
+    pointer-events: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .saloni-lb-img {
+    max-width: 100%;
+    max-height: 85vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.4s ease;
+  }
+  
+  .saloni-trends-lightbox.is-open .saloni-lb-img {
+      opacity: 1;
+      transform: scale(1);
+  }
+
+  /* LIGHTBOX OKLARI */
+  .saloni-lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #ffffff !important; 
+    color: #000000 !important;
+    border: 2px solid #ffffff !important; 
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2000000002;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    transition: all 0.3s ease; 
+  }
+
+  .saloni-lb-nav:hover {
+    transform: translateY(-50%) scale(1.1);
+    border-color: #BCCF12 !important; 
+  }
+  
+  .saloni-lb-nav:hover svg {
+    stroke: #BCCF12 !important; 
+  }
+  
+  .saloni-lb-nav svg { 
+    width: 24px; 
+    height: 24px; 
+    stroke: #000 !important; 
+    transition: stroke 0.3s ease; 
+  }
+
+  .saloni-lb-prev { left: 30px; }
+  .saloni-lb-next { right: 30px; }
+
+  .saloni-lb-counter {
+    position: absolute;
+    bottom: 30px;
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    z-index: 2000000001;
+  }
+
+  @media screen and (max-width: 768px) {
+    .saloni-heading { font-size: 2rem !important; }
+    .saloni-label { font-size: 1.1rem !important; }
+    
+    .saloni-trends-gallery {
+      aspect-ratio: auto;
+      height: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      justify-content: flex-start;
+      gap: 15px;
+      padding: 0 20px 30px 20px;
+      width: 100%;
+    }
+    .saloni-trends-slide {
+      position: relative;
+      width: 85vw; 
+      height: 65vw;
+      flex: 0 0 auto;
+      opacity: 1 !important;
+      transform: none !important;
+      left: auto;
+      scroll-snap-align: center;
+      pointer-events: auto;
+      cursor: zoom-in; /* Mobilde de büyüteç imleci */
+    }
+    .saloni-slide-overlay { display: none; }
+    .saloni-lb-content { padding: 0; }
+    .saloni-lb-prev { left: 10px; width: 44px; height: 44px; }
+    .saloni-lb-next { right: 10px; width: 44px; height: 44px; }
+  }
+</style>
+
+<script>
+  (function() {
+    function initSaloniGallery(sectionId) {
+      const container = document.getElementById(`SaloniGallery-${sectionId}`);
+      if (!container) return;
+
+      const slides = Array.from(container.querySelectorAll('.saloni-trends-slide'));
+      const totalSlides = slides.length;
+      if (totalSlides === 0) return;
+
+      let currentIndex = 0; 
+
+      // Lightbox Elements
+      const lightbox = document.getElementById(`SaloniLightbox-${sectionId}`);
+      const lbImg = document.getElementById(`SaloniLightboxImg-${sectionId}`);
+      const lbCurrent = document.getElementById(`SaloniLbCurrent-${sectionId}`);
+      const lbClose = lightbox ? lightbox.querySelector('.saloni-lb-close') : null;
+      const lbPrev = lightbox ? lightbox.querySelector('.saloni-lb-prev') : null;
+      const lbNext = lightbox ? lightbox.querySelector('.saloni-lb-next') : null;
+
+      function updateGallery() {
+        slides.forEach(slide => {
+          slide.classList.remove('is-center', 'is-left', 'is-right');
+        });
+
+        if (window.innerWidth > 768) {
+          const prevIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+          const nextIndex = (currentIndex + 1) % totalSlides;
+
+          slides[currentIndex].classList.add('is-center');
+          slides[prevIndex].classList.add('is-left');
+          slides[nextIndex].classList.add('is-right');
+        } else {
+          slides.forEach(slide => slide.style.opacity = '1');
+        }
+      }
+
+      updateGallery();
+      window.addEventListener('resize', updateGallery);
+
+      // --- TIKLAMA MANTIĞI ---
+      slides.forEach((slide, index) => {
+        slide.onclick = function(e) {
+          if (window.innerWidth > 768) {
+             // MASAÜSTÜ: Merkezdekine tıklarsan aç, yanlara tıklarsan kaydır
+             if (slide.classList.contains('is-center')) {
+                 openLightbox(index);
+             } else if (slide.classList.contains('is-left')) {
+                 currentIndex = (currentIndex - 1 + totalSlides) % totalSlides; 
+                 updateGallery();
+             } else if (slide.classList.contains('is-right')) {
+                 currentIndex = (currentIndex + 1) % totalSlides; 
+                 updateGallery();
+             }
+          } else {
+             // MOBİL: Hepsine tıklarsan aç
+             openLightbox(index);
+          }
+        };
+      });
+
+      function openLightbox(index) {
+        if (!lightbox) return;
+        currentIndex = index; // Lightbox'ı tıklanan fotodan başlat
+        updateLightboxContent();
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        if (!lightbox) return;
+        lightbox.classList.remove('is-open');
+        document.body.style.overflow = '';
+        updateGallery(); // Galeriyi lightbox'ta kalınan yerden güncelle
+      }
+
+      function updateLightboxContent() {
+        if (!lbImg) return;
+        const activeSlide = slides[currentIndex];
+        const img = activeSlide.querySelector('img');
+        
+        // Yüksek çözünürlüklü halini bulmaya çalış, yoksa mevcut src'yi al
+        const imgSrc = img.getAttribute('src') || img.currentSrc;
+        
+        lbImg.src = imgSrc;
+        lbImg.alt = img.alt || 'Saloni Trend';
+        if(lbCurrent) lbCurrent.textContent = currentIndex + 1;
+      }
+
+      if (lbClose) lbClose.addEventListener('click', closeLightbox);
+      
+      if (lbPrev) {
+        lbPrev.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          currentIndex = (currentIndex - 1 + totalSlides) % totalSlides; 
+          updateLightboxContent();
+        });
+      }
+      
+      if (lbNext) {
+        lbNext.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          currentIndex = (currentIndex + 1) % totalSlides; 
+          updateLightboxContent();
+        });
+      }
+
+      // Klavye Kontrolü
+      document.onkeydown = (e) => {
+        if (lightbox && lightbox.classList.contains('is-open')) {
+          if (e.key === 'Escape') closeLightbox();
+          if (e.key === 'ArrowRight') {
+              currentIndex = (currentIndex + 1) % totalSlides; 
+              updateLightboxContent();
+          }
+          if (e.key === 'ArrowLeft') {
+              currentIndex = (currentIndex - 1 + totalSlides) % totalSlides; 
+              updateLightboxContent();
+          }
+        } else if (window.innerWidth > 768) {
+             if (e.key === 'ArrowRight') {
+                 currentIndex = (currentIndex + 1) % totalSlides;
+                 updateGallery();
+             }
+             if (e.key === 'ArrowLeft') {
+                 currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                 updateGallery();
+             }
+        }
+      };
+      
+      // Lightbox dışına tıklayınca kapatma
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || e.target.classList.contains('saloni-lb-content')) {
+            closeLightbox();
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSaloniGallery('{{ section.id }}');
+    });
+
+    document.addEventListener('shopify:section:load', (e) => {
+      if (e.target.id === 'shopify-section-{{ section.id }}') {
+        initSaloniGallery('{{ section.id }}');
+      }
+    });
+  })();
+</script>

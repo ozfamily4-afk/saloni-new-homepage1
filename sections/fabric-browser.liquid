@@ -1,0 +1,460 @@
+{% comment %} {%- comment -%} Section: Fabric (grid + üstte aktif panel, container içinde) {%- endcomment -%}
+
+{%- assign variants_ref = product.metafields.custom.fabric_variants -%}
+{%- assign families_ref = product.metafields.custom.fabric_families -%}
+{%- assign variants = variants_ref.value -%}
+{%- assign families_explicit = families_ref.value -%}
+
+
+{%- unless variants_ref == blank and families_ref == blank -%}
+<section class="fabric2" data-section-id="{{ section.id }}">
+  <div class="container container--fullwidth">
+    <div class="fabric2__head">
+      <h2 class="fabric2__title">{{ section.settings.heading | default: 'Fabric' }}</h2>
+      <button class="fabric2__collapse" type="button" data-collapse hidden aria-expanded="true" aria-controls="fabric2-active">▲ Close</button>
+    </div>
+
+    <!-- Panel -->
+    <div id="fabric2-active" class="fabric2-active" hidden aria-hidden="true"></div>
+
+    <!-- Famıly Grid -->
+    <div class="fabric2-grid" role="list">
+      {%- assign seen = '' -%}
+      {%- if families_explicit != blank -%}
+        {%- for fam in families_explicit -%}
+          {%- render 'fabric2-family-card', fam: fam, variants: variants -%}
+        {%- endfor -%}
+      {%- elsif variants != blank -%}
+  {%- for v in variants -%}
+    {%- assign f = v.family.value -%}
+    {%- if f -%}
+      {%- assign f_key = f.id | default: f.system.id | default: f.handle | default: f.name.value | handleize -%}
+
+      {%- assign needle = ',' | append: f_key | append: ',' -%}
+      {%- unless seen contains needle -%}
+        {%- assign seen = seen | append: f_key | append: ',' -%}
+        {%- render 'fabric2-family-card', fam: f, variants: variants -%}
+      {%- endunless -%}
+
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+    </div>
+  </div>
+
+  <style>
+    .fabric2{margin:28px 0}
+    .fabric2__head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+     .fabric2__title {
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    @media (min-width: 768px) {
+      .fabric2__title {
+        margin-bottom: 20px;
+        font-size: 42px;
+      }
+    }
+    .fabric2__collapse{margin-left:auto;background:none;border:0;cursor:pointer;font-size:14px}
+    .fabric2-active{
+      border-top:1px solid #eaeaea;
+      padding:18px 0;
+      margin:10px 0 22px
+    }
+    .fabric2-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:22px}
+
+    .f2-card{cursor:pointer}
+
+    .f2-card{position:relative}
+    .f2-card__thumb{aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:#f6f6f6;border:1px solid #e7e7e7}
+    .f2-card__thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .f2-card__row{display:flex;align-items:center;gap:10px;margin-top:8px}
+    .f2-card__name{margin:0;font-size:15px;font-weight:500}
+    .fabric2 .f2-card__toggle{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;
+      width:28px;height:28px;font-size:20px !important;background:#fff;cursor:pointer}
+    .f2-card[aria-selected="true"] .f2-card__toggle{border-color:#000}
+
+    .f2-detail__title{margin:0 0 14px;font-size:22px}
+    .f2-variants{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;margin-bottom:16px}
+    .f2-variant__tile{aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:#f7f7f7;border:1px solid #e7e7e7}
+    .f2-variant__tile img{width:100%;height:100%;object-fit:cover;display:block}
+    .f2-variant__name{font-size:13px;margin:6px 0 0}
+    .f2-detail__desc{margin-top:14px;color:#444;line-height:1.65}
+    .f2-detail__desc p{margin:0 0 .5em}
+    .f2-detail__desc ul{margin:.5em 0;padding-left:1.1em}
+
+    @media (max-width: 768px){
+      .fabric2-grid{grid-template-columns:repeat(3,1fr)}
+      .f2-variants{grid-template-columns:repeat(3,1fr)}
+    }
+
+    /* ---- Fabric popup (final, clearer close + darker overlay) ---- */
+.f2-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fabric2 .f2-popup__overlay {
+  display: block !important;
+}
+
+
+.f2-popup__overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+.f2-popup__content {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  padding: 16px;
+  max-width: 460px;
+  width: 70vw;
+  max-height: 80vh;
+  overflow: auto;
+  animation: popupIn 0.25s ease-out;
+}
+
+@keyframes popupIn {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.f2-popup__image {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.f2-popup__image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 64vh;
+  object-fit: contain;
+}
+
+.f2-popup__title {
+  margin: 10px 4px 0;
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.02em;
+  padding-bottom: 10px;
+  text-transform: capitalize;
+}
+
+/* X butonu – beyaz zemin, siyah ikon */
+.f2-popup__content .f2-popup__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none !important;
+  background: #fff !important;
+  color: #000 !important;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+@media (min-width: 992px) {
+  .f2-popup__content { max-width: 460px; }
+}
+
+  /* ---- Fabric tooltip ---- */
+  .f2-tooltip {
+    position: fixed;          /* imleci takip için */
+    z-index: 10000;
+    pointer-events: none;     /* tıklamayı engellemesin */
+    display: none;
+    padding: 6px 12px;
+    background: rgba(20, 20, 20, 0.92);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    transform: translate(12px, 12px); /* imlecin biraz sağ-altı */
+  }
+
+
+  </style>
+
+  <script>
+(function(){
+  var root = document.querySelector('[data-section-id="{{ section.id }}"]');
+  if(!root) return;
+  
+  var active = root.querySelector('#fabric2-active');
+  var collapseBtn = root.querySelector('[data-collapse]');
+  var currentCard = null;
+
+  function hideNonMatchingVariants(key){
+    // aktif panel içindeki tüm varyantları filtrele
+    var allVariants = active.querySelectorAll('[data-variant]');
+    var hasVisibleVariants = false;
+    
+    allVariants.forEach(function(el){
+      var fk = (el.getAttribute('data-fkey') || '').trim();
+      if(fk === key){
+        el.style.display = '';
+        hasVisibleVariants = true;
+      } else {
+        el.style.display = 'none';
+      }
+    });
+    
+    // Görünür varyant yoksa fallback'i göster
+    var fallback = active.querySelector('[data-fallback]');
+    if(fallback){
+      var fallbackKey = (fallback.getAttribute('data-fkey') || '').trim();
+      if(fallbackKey === key && !hasVisibleVariants){
+        fallback.style.display = '';
+      } else {
+        fallback.style.display = 'none';
+      }
+    }
+  }
+
+  function closePanel(){
+    active.innerHTML = '';
+    active.hidden = true;
+    active.setAttribute('aria-hidden','true');
+    collapseBtn.hidden = true;
+    if(currentCard){
+      currentCard.setAttribute('aria-selected','false');
+      currentCard.setAttribute('aria-expanded','false');
+      var toggle = currentCard.querySelector('.f2-card__toggle');
+      if(toggle) toggle.textContent = '+';
+      currentCard = null;
+    }
+  }
+
+  function openPanel(card){
+    var targetId = card.getAttribute('data-target');
+    var key = card.getAttribute('data-key');
+    var panel = root.querySelector('#'+targetId);
+    if(!panel) return;
+
+    // Önceki kartı kapat
+    if(currentCard && currentCard !== card){
+      currentCard.setAttribute('aria-selected','false');
+      var oldToggle = currentCard.querySelector('.f2-card__toggle');
+      if(oldToggle) oldToggle.textContent = '+';
+    }
+    
+    currentCard = card;
+
+    // Paneli üst alana taşı
+    active.innerHTML = '';
+    var clonedPanel = panel.cloneNode(true);
+    clonedPanel.hidden = false;
+    active.appendChild(clonedPanel);
+
+    // Varyantlara tıklama olayı ekle
+    addVariantClickHandlers();
+
+    card.setAttribute('aria-selected','true');
+    var toggle = card.querySelector('.f2-card__toggle');
+    if(toggle) toggle.textContent = '−';
+    
+    active.hidden = false;
+    active.setAttribute('aria-hidden','false');
+    collapseBtn.hidden = false;
+    collapseBtn.setAttribute('aria-expanded','true');
+
+    // Sadece bu ailenin varyantlarını göster
+    hideNonMatchingVariants(key);
+
+    // Üst alana smooth scroll
+    active.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // ---- Tooltip helpers ----
+  var tooltipEl;
+  function ensureTooltip() {
+    if (tooltipEl) return tooltipEl;
+    tooltipEl = document.createElement('div');
+    tooltipEl.className = 'f2-tooltip';
+    document.body.appendChild(tooltipEl);
+    return tooltipEl;
+  }
+
+  function showTooltip(text) {
+    var el = ensureTooltip();
+    el.textContent = text || '';
+    el.style.display = text ? 'block' : 'none';
+  }
+
+  function moveTooltip(ev) {
+    if (!tooltipEl || tooltipEl.style.display === 'none') return;
+    var x = ev.clientX + 12;
+    var y = ev.clientY + 12;
+
+    // Ekran dışına taşmasın
+    var pad = 10;
+    var rectW = tooltipEl.offsetWidth;
+    var rectH = tooltipEl.offsetHeight;
+    var maxX = window.innerWidth - rectW - pad;
+    var maxY = window.innerHeight - rectH - pad;
+
+    if (x > maxX) x = ev.clientX - rectW - 12;
+    if (y > maxY) y = ev.clientY - rectH - 12;
+
+    tooltipEl.style.left = x + 'px';
+    tooltipEl.style.top  = y + 'px';
+  }
+
+  function hideTooltip() {
+    if (tooltipEl) tooltipEl.style.display = 'none';
+  }
+
+  function addVariantClickHandlers(){
+  active.querySelectorAll('[data-variant],[data-fallback]').forEach(function(item){
+    item.style.cursor = 'pointer';
+
+    // --- Tooltip: hover + klavye erişilebilirlik ---
+    var title = item.getAttribute('data-title') || '';
+    item.setAttribute('aria-label', title); // erişilebilirlik
+
+    item.addEventListener('mouseenter', function(e){
+      if (title) {
+        showTooltip(title);
+        moveTooltip(e);
+      }
+    });
+    item.addEventListener('mousemove', moveTooltip);
+    item.addEventListener('mouseleave', hideTooltip);
+    item.addEventListener('focus', function(){ showTooltip(title); });
+    item.addEventListener('blur', hideTooltip);
+
+    // Dokunmatik: kısa süreli göster (opsiyonel)
+    item.addEventListener('touchstart', function(){
+      if (!title) return;
+      showTooltip(title);
+      setTimeout(hideTooltip, 1200);
+    }, {passive:true});
+
+    // --- Tıklayınca popup (mevcut davranışın) ---
+    item.addEventListener('click', function(){
+      var t = this.getAttribute('data-title');
+      var image = this.getAttribute('data-image');
+      if(image){ showVariantPopup(t, image); }
+      hideTooltip(); // popup açılınca tooltip sakla
+    });
+
+    // Klavye ile aç
+    item.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+}
+
+
+  function showVariantPopup(title, image){
+  if(document.querySelector('.f2-popup')) return;
+
+  var popup = document.createElement('div');
+  popup.className = 'f2-popup';
+  popup.setAttribute('role','dialog');
+  popup.setAttribute('aria-modal','true');
+  popup.setAttribute('aria-label', title || 'Fabric preview');
+
+  popup.innerHTML = `
+    <div class="f2-popup__overlay">&nbsp;</div>
+    <div class="f2-popup__content">
+      <button class="f2-popup__close" type="button" aria-label="Close">✕</button>
+      ${title ? `<h2 class="f2-popup__title">${title}</h2>` : ``}
+      <div class="f2-popup__image">
+        <img src="${image}" alt="${title || ''}" loading="eager">
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+  var prevOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+
+  function closePopup(){
+    if(!popup.parentNode) return;
+    popup.parentNode.removeChild(popup);
+    document.body.style.overflow = prevOverflow || '';
+    document.removeEventListener('keydown', handleEsc);
+  }
+  function handleEsc(e){ if(e.key === 'Escape') closePopup(); }
+
+  // Kapatma: X, overlay, ve içerik dışı tık
+  popup.querySelector('.f2-popup__close').addEventListener('click', closePopup);
+  popup.querySelector('.f2-popup__overlay').addEventListener('click', closePopup);
+  popup.addEventListener('click', function(e){
+    var content = popup.querySelector('.f2-popup__content');
+    if(!content.contains(e.target)) closePopup();
+  });
+  document.addEventListener('keydown', handleEsc);
+}
+
+  // --- Tüm kartı tıklanabilir yap ---
+root.querySelectorAll('.f2-card').forEach(function(card){
+  // Tıkla → aç/kapat
+  card.addEventListener('click', function(e){
+    // (İsterseniz linklere tıklandığında kart tetiklenmesin)
+    if (e.target.closest('a')) return;
+
+    if(currentCard === card){
+      closePanel();
+      card.setAttribute('aria-expanded','false');
+    } else {
+      openPanel(card);
+      card.setAttribute('aria-expanded','true');
+    }
+  });
+
+  // Klavye ile (Enter/Space) aç/kapat
+  card.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      this.click();
+    }
+  });
+});
+
+  collapseBtn.addEventListener('click', closePanel);
+})();
+</script>
+
+</section>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Fabric",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Fabric" }
+  ],
+  "presets": [{ "name": "Fabric" }],
+  "enabled_on": { "templates": ["product"] }
+}
+{% endschema %} {% endcomment %}

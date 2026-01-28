@@ -1,0 +1,284 @@
+<div class="design-request-wrapper">
+  <div class="design-card">
+    
+    <div class="form-header">
+      <span class="eyebrow-text">Saloni Design Services</span>
+      <h1 class="h2 form-title">INTERIOR PLANNING</h1>
+      <p class="form-subtitle">
+        Share your floor plan and vision. Receive a complimentary,<br>
+        architectural 3D layout tailored to your lifestyle.
+      </p>
+    </div>
+
+    {% form 'contact' %}
+
+      {% if form.posted_successfully? %}
+        <div class="form-status-success">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#BCCF12" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <h3>Request Received</h3>
+          <p>Thank you. Our interior architects will review your details and contact you shortly.</p>
+        </div>
+      {% elsif form.errors %}
+        <div class="form-status-error">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+
+      <div class="contact__fields">
+        
+        <div class="form-section-header">
+          <span class="step-number">01</span>
+          <span class="step-title">Personal Details</span>
+        </div>
+
+        <div class="field-group">
+          <div class="floating-field">
+            <input class="modern-input" type="text" id="ContactForm-name" name="contact[Name]" placeholder=" " required>
+            <label class="modern-label" for="ContactForm-name">Full Name</label>
+          </div>
+          <div class="floating-field">
+            <input class="modern-input" type="email" id="ContactForm-email" name="contact[email]" placeholder=" " required>
+            <label class="modern-label" for="ContactForm-email">Email Address</label>
+          </div>
+        </div>
+        
+        <div class="floating-field">
+            <input class="modern-input" type="tel" id="ContactForm-phone" name="contact[phone]" placeholder=" ">
+            <label class="modern-label" for="ContactForm-phone">Phone Number</label>
+        </div>
+
+        <div class="form-section-header">
+          <span class="step-number">02</span>
+          <span class="step-title">The Space</span>
+        </div>
+        
+        <div class="file-upload-container">
+          <input type="file" id="ContactForm-file" name="contact[attachment]" class="inputfile" accept="image/*,.pdf" />
+          <label for="ContactForm-file" class="file-trigger">
+            <span class="icon-upload">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </span>
+            <span class="upload-text">Upload Floor Plan or Photos</span>
+            <span class="upload-hint">(PDF, JPG, PNG - Max 20MB)</span>
+          </label>
+        </div>
+
+        <div class="floating-field mt-4">
+            <input class="modern-input" type="text" id="ContactForm-dimensions" name="contact[Room_Dimensions]" placeholder=" ">
+            <label class="modern-label" for="ContactForm-dimensions">Room Dimensions (Optional)</label>
+        </div>
+
+        <div class="form-section-header">
+          <span class="step-number">03</span>
+          <span class="step-title">Design Preferences</span>
+        </div>
+
+        <div class="floating-field">
+          <textarea rows="4" id="ContactForm-body" class="modern-input text-area" name="contact[Product_Preferences]" placeholder=" "></textarea>
+          <label class="modern-label" for="ContactForm-body">Which products or styles do you envision?</label>
+        </div>
+
+        <div class="form-footer">
+          <button type="submit" class="luxury-button">
+            <span>SUBMIT REQUEST</span>
+          </button>
+        </div>
+        
+      </div>
+    {% endform %}
+  </div>
+</div>
+
+<style>
+  /* GENEL YAPI */
+  .design-request-wrapper {
+    background-color: #fcfcfc;
+    padding: 80px 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .design-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 750px; /* Kartı biraz genişlettim */
+    padding: 70px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.04);
+    border-radius: 2px;
+  }
+
+  /* BAŞLIKLAR - BÜYÜTÜLDÜ */
+  .form-header { text-align: center; margin-bottom: 60px; }
+  
+  .eyebrow-text {
+    display: block;
+    font-size: 0.9rem; /* Büyütüldü */
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #888;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  .form-title {
+    font-family: var(--font-heading-family);
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin: 0 0 25px 0;
+    text-transform: uppercase;
+    font-size: 3.2rem; /* Ciddi oranda büyütüldü */
+    line-height: 1.1;
+    color: #000;
+  }
+
+  .form-subtitle {
+    font-size: 1.2rem; /* Büyütüldü */
+    line-height: 1.6;
+    color: #444;
+    font-weight: 300;
+  }
+
+  /* FORM ADIMLARI */
+  .form-section-header {
+    display: flex;
+    align-items: baseline; /* Hizalama düzeltildi */
+    margin-top: 50px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+  }
+  .step-number {
+    font-family: serif;
+    font-size: 1.5rem; /* Büyütüldü */
+    color: #BCCF12;
+    font-style: italic;
+    margin-right: 15px;
+  }
+  .step-title {
+    font-size: 1rem; /* Büyütüldü */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #222;
+    font-weight: 600;
+  }
+
+  /* INPUT VE ETİKETLER - BÜYÜTÜLDÜ */
+  .field-group { display: flex; gap: 30px; }
+  
+  .floating-field {
+    position: relative;
+    margin-bottom: 30px;
+    flex: 1;
+  }
+
+  .modern-input {
+    width: 100%;
+    padding: 20px 0 12px 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    background: transparent;
+    font-size: 1.25rem; /* Yazı alanı büyütüldü */
+    color: #000;
+    transition: all 0.3s ease;
+    border-radius: 0;
+  }
+  
+  .modern-input:focus {
+    outline: none;
+    border-bottom-color: #BCCF12;
+  }
+
+  .modern-label {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    font-size: 1.15rem; /* Etiket büyütüldü */
+    color: #888;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  /* Label Hareketi */
+  .modern-input:focus ~ .modern-label,
+  .modern-input:not(:placeholder-shown) ~ .modern-label {
+    top: -8px; /* Daha yukarı çıkıyor */
+    font-size: 0.85rem; /* Küçülmüş hali bile okunabilir */
+    color: #BCCF12;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .text-area { resize: none; min-height: 100px; }
+
+  /* DOSYA YÜKLEME ALANI */
+  .file-upload-container {
+    border: 1px dashed #ccc;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s;
+    background: #fafafa;
+    margin-bottom: 30px;
+  }
+  .file-upload-container:hover { border-color: #BCCF12; background: #fff; }
+  
+  .inputfile { width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; position: absolute; z-index: -1; }
+  
+  .file-trigger { cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+  .icon-upload { color: #555; margin-bottom: 15px; }
+  .upload-text { font-weight: 500; font-size: 1.1rem; letter-spacing: 0.5px; color: #222; }
+  .upload-hint { font-size: 0.9rem; color: #888; margin-top: 8px; }
+
+  /* BUTON */
+  .form-footer { margin-top: 60px; }
+  
+  .luxury-button {
+    width: 100%;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 22px; /* Buton büyüdü */
+    font-size: 1.1rem; /* Yazı büyüdü */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .luxury-button:hover {
+    background-color: #BCCF12;
+    color: #000;
+    letter-spacing: 4px;
+  }
+
+  /* MOBİL AYARLAR */
+  @media screen and (max-width: 750px) {
+    .design-card { padding: 40px 20px; }
+    .design-request-wrapper { padding: 0; background: #fff; }
+    .field-group { flex-direction: column; gap: 0; }
+    .form-title { font-size: 2.2rem; } /* Mobilde biraz küçülttüm taşmasın diye */
+    .form-subtitle { font-size: 1rem; br { display: none; } }
+  }
+
+  .mt-4 { margin-top: 2rem; }
+  
+  .form-status-success { text-align: center; padding: 50px; background: #f9fff9; border: 1px solid #BCCF12; }
+  .form-status-success h3 { margin: 15px 0 10px 0; font-size: 1.5rem; }
+  .form-status-success p { font-size: 1.1rem; }
+  .form-status-error { color: #d00; margin-bottom: 30px; text-align: center; font-size: 1.1rem; }
+
+</style>
+
+{% schema %}
+{
+  "name": "Luxury Design Form",
+  "settings": []
+}
+{% endschema %}

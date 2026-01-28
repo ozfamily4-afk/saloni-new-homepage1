@@ -1,0 +1,196 @@
+<link rel="stylesheet" href="{{ 'section-features.css' | asset_url }}" media="print" onload="this.media='all'">
+
+<noscript>
+  {{- 'section-features.css' | asset_url | stylesheet_tag -}}
+</noscript>
+
+{% if section.settings.overwrite_colors %}
+  <style>
+    .section-features--{{ section.id }} {
+      --color: {{ section.settings.color }};
+      --background: {{ section.settings.background }};
+      --font-title: {% if section.settings.font == 'heading-font' %}var(--font-heading-family){% else %}var(--font-body-family){% endif %};
+    }
+  </style>
+{% endif %}
+
+{% if section.blocks.size > 0 %}
+  <section class="section-features section-features--{{ section.id }}">
+    <div class="container">
+      <ul class="section__list list-unstyled section__list--{{ section.settings.layout }}">
+        {% for block in section.blocks %}
+          {% assign _block = block.settings %}
+
+          {% if _block.heading != blank or _block.description != blank %}
+            <li>
+              <div class="section__item">
+                <div class="section__item-image">
+                  {% render 'icon-get', icon: _block.icon_type %}
+                </div><!-- /.section__item-image -->
+
+                {% if _block.heading != blank or _block.description != blank %}
+                  <div class="section__item-content">
+                    {% if _block.heading != blank %}
+                      <h6 class="section__item-title caption-ffb">
+                        {{ _block.heading }}
+                      </h6><!-- /.section__item-title -->
+                    {% endif %}
+
+                    {% if _block.description != blank %}
+                      <div class="section__item-entry">
+                        {{ _block.description }}
+                      </div><!-- /.section__item-entry -->
+                    {% endif %}
+                  </div><!-- /.section__item-content -->
+                {% endif %}
+              </div><!-- /.section__item -->
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul><!-- /.section__list -->
+    </div><!-- /.container -->
+  </section><!-- /.section-features -->
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:sections.features.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "overwrite_colors",
+      "label": "t:sections.global.settings.overwrite_colors.label",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:sections.global.settings.colors.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "t:sections.global.settings.colors.background",
+      "default": "#F4F4F4"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.features.settings.layout.label",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.features.settings.layout.options.option_1"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.features.settings.layout.options.option_2"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "t:sections.features.settings.font.label",
+      "options": [
+        {
+          "value": "heading-font",
+          "label": "t:sections.features.settings.font.options.heading-font"
+        },
+        {
+          "value": "body-font",
+          "label": "t:sections.features.settings.font.options.body-font"
+        }
+      ],
+      "default": "body-font"
+    }
+  ],
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "t:sections.features.blocks.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "t:sections.features.blocks.settings.icon_type.label",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:sections.features.blocks.settings.icon_type.options.option_1"
+            },
+            {
+              "value": "truck",
+              "label": "t:sections.features.blocks.settings.icon_type.options.option_2"
+            },
+            {
+              "value": "card",
+              "label": "t:sections.features.blocks.settings.icon_type.options.option_3"
+            },
+            {
+              "value": "cash",
+              "label": "t:sections.features.blocks.settings.icon_type.options.option_4"
+            },
+            {
+              "value": "shield-check",
+              "label": "t:sections.features.blocks.settings.icon_type.options.option_5"
+            },
+            {
+              "value": "globe",
+              "label": "t:sections.features.blocks.settings.icon_type.options.option_6"
+            },
+            {
+              "value": "pin",
+              "label": "t:sections.features.blocks.settings.icon_type.options.option_7"
+            },
+            {
+              "value": "lock",
+              "label": "t:sections.features.blocks.settings.icon_type.options.option_8"
+            }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.global.settings.heading.label",
+          "default": "Your heading goes here"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "t:sections.global.settings.description.label",
+          "default": "<p>Use this text to share information</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.features.name",
+      "blocks": [
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header"
+    ]
+  }
+}
+{% endschema %}
