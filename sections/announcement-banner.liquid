@@ -1,0 +1,47 @@
+{{ 'section-announcement-banner.css' | asset_url | stylesheet_tag }}
+
+<section class="announcement-banner" style="background-color: {{ section.settings.background_color }}; color: {{ section.settings.text_color }};">
+  <div class="announcement-banner__container">
+    <h1 class="announcement-banner__title">{{ section.settings.title }}</h1>
+    {% if section.settings.subtitle != blank %}
+      <p class="announcement-banner__subtitle">{{ section.settings.subtitle }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Announcement Banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "WE ARE CLOSED TODAY"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": ""
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Banner"
+    }
+  ]
+}
+{% endschema %}
