@@ -111,6 +111,7 @@
 
           <div class="card__price price">
           
+<div class="loox-rating" data-id="{{ card_product.id }}" data-rating="{{ card_product.metafields.loox.avg_rating }}" data-raters="{{ card_product.metafields.loox.num_reviews }}"></div>
 {% render 'price', product_ref: product_ref %}
           </div><!-- /.card__price -->
         </div><!-- /.card__content-head -->
